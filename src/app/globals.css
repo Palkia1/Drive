@@ -1,4 +1,8 @@
 @import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
 
 :root {
   --background: #f4f7fb;
@@ -95,22 +99,25 @@
   --motion-celebrate: 500ms;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0c0d14;
-    --surface: #17181f;
-    --surface-muted: #1f212b;
-    --foreground: #f4f5fa;
-    --foreground-muted: #9a9fb4;
-    --border: #2a2c38;
-    --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.3), 0 10px 26px -14px rgba(0, 0, 0, 0.55);
+/* Dark mode is driven by next-themes toggling a `.dark` class on <html>
+   (see components/theme-provider.tsx) — not a `prefers-color-scheme` media
+   query, so an explicit user choice always wins over the OS setting.
+   next-themes' "system" option still tracks the OS preference; it just does
+   so by adding/removing this same class, so one mechanism covers both. */
+.dark {
+  --background: #0c0d14;
+  --surface: #17181f;
+  --surface-muted: #1f212b;
+  --foreground: #f4f5fa;
+  --foreground-muted: #9a9fb4;
+  --border: #2a2c38;
+  --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.3), 0 10px 26px -14px rgba(0, 0, 0, 0.55);
 
-    /* brand-50/100 are used as "selected/active" tint backgrounds (bottom
-       nav, chosen answer, checked topic row) — the light-mode near-white
-       values would read as a jarring bright patch on a dark surface. */
-    --brand-50: #16233d;
-    --brand-100: #1c2c4a;
-  }
+  /* brand-50/100 are used as "selected/active" tint backgrounds (bottom
+     nav, chosen answer, checked topic row) — the light-mode near-white
+     values would read as a jarring bright patch on a dark surface. */
+  --brand-50: #16233d;
+  --brand-100: #1c2c4a;
 }
 
 @theme inline {
@@ -388,3 +395,4 @@ body {
     scroll-behavior: auto !important;
   }
 }
+

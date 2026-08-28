@@ -6,7 +6,8 @@ import { MasteryBar } from "@/components/ui/MasteryBar";
 import { PrivacyToggles } from "@/components/profile/PrivacyToggles";
 import { SignOutButton } from "@/components/profile/SignOutButton";
 import { BadgeIcon } from "@/components/profile/BadgeIcon";
-import { Trophy, Zap, Flame } from "lucide-react";
+import { ThemeToggleButton } from "@/components/ui/skiper-ui/skiper26";
+import { Trophy, Zap, Flame, Moon } from "lucide-react";
 
 export default async function ProfielPage() {
   const { student, user } = await requireStudent();
@@ -74,6 +75,19 @@ export default async function ProfielPage() {
           {topics.map((t) => (
             <MasteryBar key={t.topicId} name={t.topicName} level={t.level} insufficientData={t.insufficientData} icon={t.topicIcon} compact />
           ))}
+        </div>
+      </div>
+
+      <div>
+        <h2 className="font-extrabold mb-3">Weergave</h2>
+        <div className="card p-4 flex items-center justify-between">
+          <span className="flex items-center gap-2.5 text-sm font-semibold">
+            <div className="icon-bubble" style={{ width: 30, height: 30, borderRadius: 9, background: "var(--brand-600)" }}>
+              <Moon size={15} color="white" />
+            </div>
+            Donkere modus
+          </span>
+          <ThemeToggleButton variant="circle" start="center" />
         </div>
       </div>
 
