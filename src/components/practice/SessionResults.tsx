@@ -47,7 +47,7 @@ export function SessionResults({
             >
               <Target size={28} color="white" />
             </div>
-            <h2 className="text-2xl font-bold">
+            <h2 className="text-2xl font-extrabold">
               {result.examResult!.passed ? "Oefenexamen gehaald!" : "Nog niet gehaald"}
             </h2>
             <p className="mt-1 text-sm" style={{ color: "var(--foreground-muted)" }}>
@@ -60,24 +60,24 @@ export function SessionResults({
           </>
         ) : (
           <>
-            <div className="w-16 h-16 mx-auto rounded-full flex items-center justify-center mb-3" style={{ background: "var(--brand-500)" }}>
+            <div className="w-16 h-16 mx-auto rounded-full flex items-center justify-center mb-3" style={{ background: "linear-gradient(135deg, var(--primary-400), var(--primary-600))" }}>
               <Sparkles size={28} color="white" />
             </div>
-            <h2 className="text-2xl font-bold">Sessie voltooid</h2>
+            <h2 className="text-2xl font-extrabold">Sessie voltooid</h2>
             <p className="mt-1 text-sm" style={{ color: "var(--foreground-muted)" }}>
               {result.correctCount}/{result.totalCount} goed
             </p>
           </>
         )}
 
-        <div className="mt-5 flex items-center justify-center gap-3">
-          <StatChip label={`+${result.xpEarned} XP`} color="var(--brand-600)" />
-          {result.streak && <StatChip label={`🔥 ${result.streak.streak} dagen`} color="var(--accent-600)" />}
-          {result.xp.leveledUp && <StatChip label={`Level ${result.xp.newLevel}!`} color="var(--success-600)" />}
+        <div className="mt-5 flex items-center justify-center gap-2.5 flex-wrap">
+          <StatChip label={`+${result.xpEarned} XP`} color="var(--brand-500)" />
+          {result.streak && <StatChip label={`🔥 ${result.streak.streak} dagen`} color="var(--gold-600)" />}
+          {result.xp.leveledUp && <StatChip label={`Level ${result.xp.newLevel}!`} color="var(--primary-600)" />}
         </div>
 
         {result.dailyGoal?.justCompleted && (
-          <p className="mt-4 font-semibold" style={{ color: "var(--success-600)" }}>
+          <p className="mt-4 font-extrabold" style={{ color: "var(--primary-600)" }}>
             🎯 Dagdoel voltooid!
           </p>
         )}
@@ -85,10 +85,12 @@ export function SessionResults({
         {result.badges.length > 0 && (
           <div className="mt-5 space-y-2">
             {result.badges.map((b) => (
-              <div key={b.name} className="flex items-center gap-3 p-3 rounded-xl text-left" style={{ background: "var(--surface-muted)" }}>
-                <Award size={20} style={{ color: "var(--accent-600)" }} />
+              <div key={b.name} className="flex items-center gap-3 p-3 rounded-2xl text-left" style={{ background: "color-mix(in srgb, var(--gold-500) 12%, transparent)" }}>
+                <div className="icon-bubble shrink-0" style={{ width: 36, height: 36, borderRadius: 12, background: "var(--gold-500)" }}>
+                  <Award size={18} color="white" />
+                </div>
                 <div>
-                  <p className="font-semibold text-sm">Nieuwe badge: {b.name}</p>
+                  <p className="font-bold text-sm">Nieuwe badge: {b.name}</p>
                   <p className="text-xs" style={{ color: "var(--foreground-muted)" }}>
                     {b.description}
                   </p>
@@ -140,7 +142,7 @@ export function SessionResults({
 
 function StatChip({ label, color }: { label: string; color: string }) {
   return (
-    <span className="pill" style={{ background: "var(--surface-muted)", color }}>
+    <span className="pill" style={{ background: `color-mix(in srgb, ${color} 15%, transparent)`, color, fontSize: "0.85rem" }}>
       {label}
     </span>
   );

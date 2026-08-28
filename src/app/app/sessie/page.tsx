@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useEffect, useState, useCallback } from "react";
+import { Suspense, useEffect, useState, useCallback, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { X } from "lucide-react";
 import { ProgressBar } from "@/components/ui/ProgressBar";
@@ -26,7 +26,13 @@ function SessieRunner() {
   const [result, setResult] = useState<SessionCompleteResult | null>(null);
   const [error, setError] = useState<string | null>(null);
 
+  // Guards against a stale response clobbering newer state — matters under
+  // React Strict Mode's double-invoked effects in dev, and protects against
+  // any real double-fire (fast remount, rapid "nog een sessie" taps).
+  const requestId = useRef(0);
+
   const startSession = useCallback(async () => {
+    const myRequestId = ++requestId.current;
     setPhase("loading");
     setIndex(0);
     setResult(null);
@@ -37,6 +43,8 @@ function SessieRunner() {
       body: JSON.stringify({ mode, topicIds: ids }),
     });
     const data = await res.json();
+    if (myRequestId !== requestId.current) return; // a newer call already started
+
     if (!res.ok) {
       setError(data.error ?? "Kon geen sessie starten.");
       setPhase("error");

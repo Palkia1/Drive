@@ -23,7 +23,7 @@ export function TopBar({
             </span>
           )}
         </Link>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-3.5">
           <StreakPill streak={streak} />
           <XpPill xp={xp} />
           <LevelPill level={level} />

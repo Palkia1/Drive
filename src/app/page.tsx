@@ -50,23 +50,23 @@ export default async function LandingPage() {
         </div>
 
         <div className="grid grid-cols-2 gap-4">
-          <FeatureCard icon={<MapPinned size={22} />} title="Realistische situaties" text="Tik het juiste antwoord aan in interactieve kruispunten." />
-          <FeatureCard icon={<Flame size={22} />} title="Dagelijkse streak" text="Geen levens, geen straf — gewoon elke dag een beetje oefenen." />
-          <FeatureCard icon={<Trophy size={22} />} title="Mastery per onderwerp" text="Zie precies waar je goed in bent en wat aandacht nodig heeft." />
-          <FeatureCard icon={<Users size={22} />} title="Landelijk scoreboard" text="Daag vrienden uit en vergelijk je voortgang in heel Nederland." />
+          <FeatureCard color="var(--brand-500)" icon={<MapPinned size={20} color="white" />} title="Realistische situaties" text="Tik het juiste antwoord aan in interactieve kruispunten." />
+          <FeatureCard color="var(--gold-600)" icon={<Flame size={20} color="white" />} title="Dagelijkse streak" text="Geen levens, geen straf — gewoon elke dag een beetje oefenen." />
+          <FeatureCard color="var(--primary-500)" icon={<Trophy size={20} color="white" />} title="Mastery per onderwerp" text="Zie precies waar je goed in bent en wat aandacht nodig heeft." />
+          <FeatureCard color="var(--purple-500)" icon={<Users size={20} color="white" />} title="Landelijk scoreboard" text="Daag vrienden uit en vergelijk je voortgang in heel Nederland." />
         </div>
       </section>
     </div>
   );
 }
 
-function FeatureCard({ icon, title, text }: { icon: React.ReactNode; title: string; text: string }) {
+function FeatureCard({ icon, title, text, color }: { icon: React.ReactNode; title: string; text: string; color: string }) {
   return (
     <div className="card p-4">
-      <div className="w-10 h-10 rounded-xl flex items-center justify-center mb-3" style={{ background: "var(--brand-50)", color: "var(--brand-600)" }}>
+      <div className="icon-bubble mb-3" style={{ width: 40, height: 40, borderRadius: 13, background: color }}>
         {icon}
       </div>
-      <h3 className="font-semibold text-sm">{title}</h3>
+      <h3 className="font-bold text-sm">{title}</h3>
       <p className="text-xs mt-1" style={{ color: "var(--foreground-muted)" }}>
         {text}
       </p>

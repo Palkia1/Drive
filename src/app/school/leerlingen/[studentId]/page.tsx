@@ -52,7 +52,7 @@ export default async function StudentDetailPage({ params }: { params: Promise<{ 
             </h2>
             <div className="space-y-3">
               {strong.map((t) => (
-                <MasteryBar key={t.topicId} name={t.topicName} level={t.level} insufficientData={false} compact />
+                <MasteryBar key={t.topicId} name={t.topicName} level={t.level} insufficientData={false} icon={t.topicIcon} compact />
               ))}
             </div>
           </div>
@@ -62,7 +62,7 @@ export default async function StudentDetailPage({ params }: { params: Promise<{ 
             </h2>
             <div className="space-y-3">
               {weak.map((t) => (
-                <MasteryBar key={t.topicId} name={t.topicName} level={t.level} insufficientData={false} compact />
+                <MasteryBar key={t.topicId} name={t.topicName} level={t.level} insufficientData={false} icon={t.topicIcon} compact />
               ))}
             </div>
           </div>
@@ -73,7 +73,7 @@ export default async function StudentDetailPage({ params }: { params: Promise<{ 
         <h2 className="font-semibold text-sm mb-3">Mastery per onderwerp</h2>
         <div className="space-y-3">
           {masteries.map((m) => (
-            <MasteryBar key={m.topicId} name={m.topicName} level={m.level} insufficientData={m.insufficientData} compact />
+            <MasteryBar key={m.topicId} name={m.topicName} level={m.level} insufficientData={m.insufficientData} icon={m.topicIcon} compact />
           ))}
         </div>
       </div>

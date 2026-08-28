@@ -1,12 +1,13 @@
 import { ProgressBar } from "./ProgressBar";
+import { TopicIcon, getTopicColor } from "@/components/topics/TopicIcon";
 
 const LEVEL_COLORS = [
-  "var(--foreground-muted)",
+  "var(--border)",
   "var(--danger-500)",
-  "var(--accent-500)",
-  "var(--accent-500)",
-  "var(--success-500)",
-  "var(--success-600)",
+  "var(--gold-500)",
+  "var(--gold-500)",
+  "var(--primary-400)",
+  "var(--primary-600)",
 ];
 
 export function MasteryBar({
@@ -14,26 +15,35 @@ export function MasteryBar({
   level,
   insufficientData,
   compact,
+  icon,
 }: {
   name: string;
   level: number;
   insufficientData: boolean;
   compact?: boolean;
+  icon?: string;
 }) {
   return (
-    <div>
-      <div className="flex items-center justify-between mb-1.5">
-        <span className={compact ? "text-sm font-medium" : "font-semibold"}>{name}</span>
-        <span className="text-xs font-semibold" style={{ color: "var(--foreground-muted)" }}>
-          {insufficientData ? "Nog onvoldoende gegevens" : `Level ${level}/5`}
-        </span>
+    <div className="flex items-center gap-3">
+      {icon && (
+        <div className="icon-bubble shrink-0" style={{ width: 34, height: 34, borderRadius: 10, background: getTopicColor(icon) }}>
+          <TopicIcon icon={icon} size={17} />
+        </div>
+      )}
+      <div className="flex-1 min-w-0">
+        <div className="flex items-center justify-between mb-1.5 gap-2">
+          <span className={compact ? "text-sm font-semibold truncate" : "font-semibold truncate"}>{name}</span>
+          <span className="text-xs font-bold shrink-0" style={{ color: "var(--foreground-muted)" }}>
+            {insufficientData ? "Onvoldoende data" : `Level ${level}/5`}
+          </span>
+        </div>
+        <ProgressBar
+          value={insufficientData ? 0 : level}
+          max={5}
+          color={insufficientData ? "var(--border)" : LEVEL_COLORS[level]}
+          height={compact ? 8 : 10}
+        />
       </div>
-      <ProgressBar
-        value={insufficientData ? 0 : level}
-        max={5}
-        color={insufficientData ? "var(--border)" : LEVEL_COLORS[level]}
-        height={compact ? 8 : 10}
-      />
     </div>
   );
 }

@@ -20,18 +20,21 @@ export function BottomNav() {
       className="sticky bottom-0 z-20 border-t"
       style={{ background: "color-mix(in srgb, var(--background) 92%, transparent)", borderColor: "var(--border)", backdropFilter: "blur(10px)" }}
     >
-      <div className="mx-auto max-w-lg px-2 py-1.5 flex items-center justify-between">
+      <div className="mx-auto max-w-lg px-2 py-2 flex items-center justify-between gap-1">
         {ITEMS.map(({ href, label, icon: Icon }) => {
           const active = href === "/app" ? pathname === "/app" : pathname.startsWith(href);
           return (
             <Link
               key={href}
               href={href}
-              className="flex-1 flex flex-col items-center gap-0.5 py-2 rounded-xl transition"
-              style={{ color: active ? "var(--brand-600)" : "var(--foreground-muted)" }}
+              className="flex-1 flex flex-col items-center gap-0.5 py-1.5 rounded-2xl transition"
+              style={{
+                color: active ? "var(--brand-600)" : "var(--foreground-muted)",
+                background: active ? "var(--brand-50)" : "transparent",
+              }}
             >
-              <Icon size={22} strokeWidth={active ? 2.5 : 2} />
-              <span className="text-[11px] font-medium">{label}</span>
+              <Icon size={22} strokeWidth={active ? 2.75 : 2} />
+              <span className="text-[11px] font-bold">{label}</span>
             </Link>
           );
         })}

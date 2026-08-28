@@ -5,6 +5,7 @@ import { MasteryBar } from "@/components/ui/MasteryBar";
 import { PrivacyToggles } from "@/components/profile/PrivacyToggles";
 import { SignOutButton } from "@/components/profile/SignOutButton";
 import { BadgeIcon } from "@/components/profile/BadgeIcon";
+import { Trophy, Zap, Flame } from "lucide-react";
 
 export default async function ProfielPage() {
   const { student, user } = await requireStudent();
@@ -38,13 +39,13 @@ export default async function ProfielPage() {
       </div>
 
       <div className="grid grid-cols-3 gap-3 text-center">
-        <StatBlock label="Level" value={student.level} />
-        <StatBlock label="XP" value={student.xp} />
-        <StatBlock label="Streak" value={`${student.streakCount}🔥`} />
+        <StatBlock icon={<Trophy size={16} color="white" />} color="var(--primary-500)" label="Level" value={student.level} />
+        <StatBlock icon={<Zap size={16} color="white" />} color="var(--brand-500)" label="XP" value={student.xp} />
+        <StatBlock icon={<Flame size={16} color="white" />} color="var(--gold-600)" label="Streak" value={student.streakCount} />
       </div>
 
       <div>
-        <h2 className="font-semibold mb-2">Badges ({badges.length})</h2>
+        <h2 className="font-extrabold mb-2">Badges ({badges.length})</h2>
         {badges.length === 0 ? (
           <div className="card p-4 text-center text-sm" style={{ color: "var(--foreground-muted)" }}>
             Nog geen badges — voltooi je eerste sessie!
@@ -54,12 +55,12 @@ export default async function ProfielPage() {
             {badges.map((ub) => (
               <div key={ub.id} className="card p-3 flex flex-col items-center gap-1.5 text-center">
                 <div
-                  className="w-10 h-10 rounded-full flex items-center justify-center"
-                  style={{ background: "var(--accent-500)", color: "white" }}
+                  className="icon-bubble"
+                  style={{ width: 44, height: 44, borderRadius: 14, background: "linear-gradient(135deg, var(--gold-400), var(--gold-600))" }}
                 >
                   <BadgeIcon icon={ub.badge.icon} />
                 </div>
-                <p className="text-[11px] font-semibold leading-tight">{ub.badge.name}</p>
+                <p className="text-[11px] font-bold leading-tight">{ub.badge.name}</p>
               </div>
             ))}
           </div>
@@ -67,16 +68,16 @@ export default async function ProfielPage() {
       </div>
 
       <div>
-        <h2 className="font-semibold mb-3">Mastery per onderwerp</h2>
+        <h2 className="font-extrabold mb-3">Mastery per onderwerp</h2>
         <div className="card p-4 space-y-4">
           {topics.map((t) => (
-            <MasteryBar key={t.topicId} name={t.topicName} level={t.level} insufficientData={t.insufficientData} compact />
+            <MasteryBar key={t.topicId} name={t.topicName} level={t.level} insufficientData={t.insufficientData} icon={t.topicIcon} compact />
           ))}
         </div>
       </div>
 
       <div>
-        <h2 className="font-semibold mb-3">Privacy</h2>
+        <h2 className="font-extrabold mb-3">Privacy</h2>
         <div className="card p-4">
           <PrivacyToggles
             initial={{
@@ -99,11 +100,14 @@ export default async function ProfielPage() {
   );
 }
 
-function StatBlock({ label, value }: { label: string; value: string | number }) {
+function StatBlock({ icon, color, label, value }: { icon: React.ReactNode; color: string; label: string; value: string | number }) {
   return (
     <div className="card p-3">
-      <p className="text-lg font-bold">{value}</p>
-      <p className="text-xs" style={{ color: "var(--foreground-muted)" }}>
+      <div className="icon-bubble mx-auto mb-1.5" style={{ width: 28, height: 28, borderRadius: 9, background: color }}>
+        {icon}
+      </div>
+      <p className="text-lg font-extrabold">{value}</p>
+      <p className="text-xs font-medium" style={{ color: "var(--foreground-muted)" }}>
         {label}
       </p>
     </div>

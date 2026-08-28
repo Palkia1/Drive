@@ -172,14 +172,16 @@ export function QuestionCard({
 
       {!isExam && result && (
         <div
-          className="absolute inset-x-0 bottom-0 px-5 py-3 flex items-center gap-2 font-semibold animate-pop-in"
+          className="absolute inset-x-0 bottom-0 px-5 py-4 flex items-center gap-3 font-extrabold animate-pop-in"
           style={{
-            background: result === "correct" ? "var(--success-500)" : "var(--danger-500)",
+            background: result === "correct" ? "var(--primary-500)" : "var(--danger-500)",
             color: "white",
           }}
         >
-          <OutcomeIcon outcome={result} />
-          {result === "correct" ? "Goed!" : "Niet goed."}
+          <div className="w-8 h-8 rounded-full flex items-center justify-center shrink-0" style={{ background: "rgba(255,255,255,0.25)" }}>
+            <OutcomeIcon outcome={result} size={18} />
+          </div>
+          <span className="text-base">{result === "correct" ? "Goed zo!" : "Niet helemaal."}</span>
         </div>
       )}
     </div>
@@ -188,35 +190,37 @@ export function QuestionCard({
 
 function optionStyle(outcome: "correct" | "incorrect" | null, isSelected: boolean): React.CSSProperties {
   if (outcome && isSelected) {
+    const color = outcome === "correct" ? "var(--primary-500)" : "var(--danger-500)";
     return {
-      background: outcome === "correct" ? "color-mix(in srgb, var(--success-500) 15%, transparent)" : "color-mix(in srgb, var(--danger-500) 15%, transparent)",
-      boxShadow: `0 0 0 2px ${outcome === "correct" ? "var(--success-500)" : "var(--danger-500)"}`,
+      background: `color-mix(in srgb, ${color} 12%, transparent)`,
+      border: `2.5px solid ${color}`,
+      color: `color-mix(in srgb, ${color} 80%, black)`,
     };
   }
   return {
     background: isSelected ? "var(--brand-50)" : "var(--surface-muted)",
-    boxShadow: isSelected ? "0 0 0 2px var(--brand-400)" : "none",
+    border: `2.5px solid ${isSelected ? "var(--brand-400)" : "transparent"}`,
   };
 }
 
-function OutcomeIcon({ outcome, className }: { outcome: "correct" | "incorrect"; className?: string }) {
+function OutcomeIcon({ outcome, className, size = 20 }: { outcome: "correct" | "incorrect"; className?: string; size?: number }) {
   return outcome === "correct" ? (
-    <Check size={20} className={className} />
+    <Check size={size} className={className} strokeWidth={3} />
   ) : (
-    <X size={20} className={className} />
+    <X size={size} className={className} strokeWidth={3} />
   );
 }
 
 function Checkbox({ checked }: { checked: boolean }) {
   return (
     <span
-      className="w-5 h-5 rounded-md flex items-center justify-center"
+      className="w-6 h-6 rounded-lg flex items-center justify-center"
       style={{
         background: checked ? "var(--brand-500)" : "transparent",
-        boxShadow: checked ? "none" : "inset 0 0 0 2px var(--border)",
+        boxShadow: checked ? "none" : "inset 0 0 0 2.5px var(--border)",
       }}
     >
-      {checked && <Check size={14} color="white" />}
+      {checked && <Check size={15} color="white" strokeWidth={3} />}
     </span>
   );
 }

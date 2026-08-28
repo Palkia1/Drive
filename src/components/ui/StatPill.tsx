@@ -1,32 +1,29 @@
 import { Flame, Zap, Trophy } from "lucide-react";
 
-function softBg(color: string) {
-  return `color-mix(in srgb, ${color} 15%, transparent)`;
+function Stat({ icon, value, color }: { icon: React.ReactNode; value: string | number; color: string }) {
+  return (
+    <div className="flex items-center gap-1">
+      <div
+        className="w-6 h-6 rounded-full flex items-center justify-center shrink-0"
+        style={{ background: color, boxShadow: `0 2px 0 color-mix(in srgb, ${color} 70%, black)` }}
+      >
+        {icon}
+      </div>
+      <span className="font-extrabold text-[15px]" style={{ color }}>
+        {value}
+      </span>
+    </div>
+  );
 }
 
 export function StreakPill({ streak }: { streak: number }) {
-  return (
-    <div className="pill" style={{ background: softBg("var(--accent-500)"), color: "var(--accent-600)" }}>
-      <Flame size={14} strokeWidth={2.5} />
-      {streak}
-    </div>
-  );
+  return <Stat icon={<Flame size={13} color="white" strokeWidth={2.5} />} value={streak} color="var(--gold-600)" />;
 }
 
 export function XpPill({ xp }: { xp: number }) {
-  return (
-    <div className="pill" style={{ background: softBg("var(--brand-500)"), color: "var(--brand-600)" }}>
-      <Zap size={14} strokeWidth={2.5} />
-      {xp.toLocaleString("nl-NL")}
-    </div>
-  );
+  return <Stat icon={<Zap size={13} color="white" strokeWidth={2.5} />} value={xp.toLocaleString("nl-NL")} color="var(--brand-500)" />;
 }
 
 export function LevelPill({ level }: { level: number }) {
-  return (
-    <div className="pill" style={{ background: softBg("var(--success-500)"), color: "var(--success-600)" }}>
-      <Trophy size={14} strokeWidth={2.5} />
-      Level {level}
-    </div>
-  );
+  return <Stat icon={<Trophy size={13} color="white" strokeWidth={2.5} />} value={level} color="var(--primary-500)" />;
 }

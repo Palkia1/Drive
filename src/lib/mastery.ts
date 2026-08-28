@@ -118,6 +118,7 @@ export type TopicMasterySummary = {
   topicId: string;
   topicName: string;
   topicSlug: string;
+  topicIcon: string;
   level: number;
   confidence: number;
   totalAttempts: number;
@@ -136,6 +137,7 @@ export async function getTopicMasterySummaries(studentId: string): Promise<Topic
       topicId: topic.id,
       topicName: topic.name,
       topicSlug: topic.slug,
+      topicIcon: topic.icon,
       level: m?.level ?? 0,
       confidence: m?.confidence ?? 0,
       totalAttempts: m?.totalAttempts ?? 0,
