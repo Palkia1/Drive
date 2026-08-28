@@ -1,17 +1,6 @@
 import Link from "next/link";
-import { StreakPill, XpPill, LevelPill } from "@/components/ui/StatPill";
 
-export function TopBar({
-  xp,
-  level,
-  streak,
-  schoolName,
-}: {
-  xp: number;
-  level: number;
-  streak: number;
-  schoolName?: string | null;
-}) {
+export function TopBar({ schoolName }: { schoolName?: string | null }) {
   return (
     <header className="sticky top-0 z-20 backdrop-blur-md border-b" style={{ background: "color-mix(in srgb, var(--background) 85%, transparent)", borderColor: "var(--border)" }}>
       <div className="mx-auto max-w-lg px-4 py-3 flex items-center justify-between">
@@ -23,11 +12,6 @@ export function TopBar({
             </span>
           )}
         </Link>
-        <div className="flex items-center gap-3.5">
-          <StreakPill streak={streak} />
-          <XpPill xp={xp} />
-          <LevelPill level={level} />
-        </div>
       </div>
     </header>
   );
