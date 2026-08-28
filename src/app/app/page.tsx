@@ -70,8 +70,9 @@ export default async function HomePage() {
         className="block relative overflow-hidden rounded-[26px] p-5"
         style={{ background: `linear-gradient(135deg, ${recColor}, color-mix(in srgb, ${recColor} 65%, black))`, boxShadow: "0 14px 30px -14px color-mix(in srgb, " + recColor + " 70%, transparent)" }}
       >
-        <span className="absolute -right-6 -top-10 w-28 h-28 rounded-full pointer-events-none" style={{ background: "rgba(255,255,255,0.08)" }} />
-        <span className="absolute -right-10 bottom-0 w-36 h-36 rounded-full pointer-events-none" style={{ background: "rgba(255,255,255,0.06)" }} />
+        <span className="absolute -right-6 -top-10 w-28 h-28 rounded-full pointer-events-none animate-bokeh-a" style={{ background: "rgba(255,255,255,0.08)" }} />
+        <span className="absolute -right-10 bottom-0 w-36 h-36 rounded-full pointer-events-none animate-bokeh-b" style={{ background: "rgba(255,255,255,0.06)" }} />
+        <span className="absolute left-8 -bottom-8 w-16 h-16 rounded-full pointer-events-none animate-bokeh-b" style={{ background: "rgba(255,255,255,0.07)" }} />
 
         <div className="relative flex items-start justify-between gap-3">
           <span className="inline-block rounded-full px-3 py-1 text-[11px] font-bold uppercase tracking-wide text-white" style={{ background: "rgba(255,255,255,0.22)" }}>
@@ -106,7 +107,7 @@ export default async function HomePage() {
                   </div>
                   <p className="truncate font-extrabold text-white">{t.topicName}</p>
                   <p className="mb-2 mt-0.5 text-xs font-bold text-white/80">
-                    {t.insufficientData ? "Nog niet geoefend" : `Level ${t.level}/5`}
+                    {t.insufficientData ? " " : `Level ${t.level}/5`}
                   </p>
                   <ProgressBar value={t.insufficientData ? 0 : t.level} max={5} color="white" trackColor="rgba(255,255,255,0.25)" height={6} />
                 </Link>

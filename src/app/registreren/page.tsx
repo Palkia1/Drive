@@ -68,7 +68,6 @@ export default function RegisterPage() {
         <IconInput
           icon={KeyRound}
           placeholder="Rijschoolcode (optioneel)"
-          className="uppercase"
           maxLength={6}
           value={schoolCode}
           onChange={(e) => setSchoolCode(e.target.value.toUpperCase())}

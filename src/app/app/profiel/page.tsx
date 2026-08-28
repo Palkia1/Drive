@@ -9,7 +9,7 @@ import { PrivacyToggles } from "@/components/profile/PrivacyToggles";
 import { SignOutButton } from "@/components/profile/SignOutButton";
 import { BadgeIcon } from "@/components/profile/BadgeIcon";
 import { ThemeToggleButton } from "@/components/ui/skiper-ui/skiper26";
-import { Trophy, Star, Flame, Moon, SlidersHorizontal } from "lucide-react";
+import { Trophy, Star, Flame, Moon, SlidersHorizontal, type LucideIcon } from "lucide-react";
 
 export default async function ProfielPage() {
   const { student, user } = await requireStudent();
@@ -43,10 +43,10 @@ export default async function ProfielPage() {
         </div>
       </div>
 
-      <div className="grid grid-cols-3 gap-3 text-center">
-        <StatBlock icon={<Trophy size={16} color="white" />} color="var(--purple-500)" label="Level" value={student.level} />
-        <StatBlock icon={<Star size={16} color="white" fill="white" />} color="var(--brand-500)" label="XP" value={student.xp} />
-        <StatBlock icon={<Flame size={16} color="white" />} color="var(--gold-600)" label="Streak" value={student.streakCount} />
+      <div className="grid grid-cols-3 gap-3">
+        <StatTile icon={Trophy} color="var(--purple-500)" label="Level" value={student.level} offsetY={-1} />
+        <StatTile icon={Star} color="var(--brand-500)" label="XP" value={student.xp} />
+        <StatTile icon={Flame} color="var(--gold-600)" label="Streak" value={student.streakCount} offsetY={2} />
       </div>
 
       <ActivityWidget days={activity} streakCount={student.streakCount} />
@@ -147,16 +147,36 @@ export default async function ProfielPage() {
   );
 }
 
-function StatBlock({ icon, color, label, value }: { icon: React.ReactNode; color: string; label: string; value: string | number }) {
+function StatTile({
+  icon: Icon,
+  color,
+  label,
+  value,
+  offsetY = 0,
+}: {
+  icon: LucideIcon;
+  color: string;
+  label: string;
+  value: string | number;
+  /** Nudges the overlaid number toward an icon's visual "belly" (e.g. a
+   * flame's number sits a little low, a trophy's a little high) since a
+   * dead-center overlay doesn't read as centered on every glyph. */
+  offsetY?: number;
+}) {
+  const digits = String(value).length;
+  const fontSize = digits <= 2 ? 14 : digits === 3 ? 11.5 : 9.5;
   return (
-    <div className="card p-3">
-      <div className="icon-bubble mx-auto mb-1.5" style={{ width: 28, height: 28, borderRadius: 9, background: color }}>
-        {icon}
+    <div className="rounded-[20px] p-3.5 flex flex-col items-center" style={{ background: color }}>
+      <div className="relative flex items-center justify-center" style={{ width: 40, height: 40 }}>
+        <Icon size={40} color="white" fill="white" strokeWidth={1.5} />
+        <span
+          className="absolute inset-0 flex items-center justify-center font-extrabold"
+          style={{ color, fontSize, transform: `translateY(${offsetY}px)` }}
+        >
+          {value}
+        </span>
       </div>
-      <p className="text-lg font-extrabold">{value}</p>
-      <p className="text-xs font-medium" style={{ color: "var(--foreground-muted)" }}>
-        {label}
-      </p>
+      <p className="mt-1.5 text-xs font-bold text-white/85">{label}</p>
     </div>
   );
 }

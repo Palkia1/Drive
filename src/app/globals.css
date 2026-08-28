@@ -382,12 +382,43 @@ body {
   animation: fade-in 0.2s ease both;
 }
 
+/* Slow drifting "bokeh" circles for the hero card — small, looping,
+   never distracting enough to fight for attention against the CTA. */
+@keyframes bokeh-drift-a {
+  0%, 100% {
+    transform: translate(0, 0) scale(1);
+    opacity: 0.5;
+  }
+  50% {
+    transform: translate(-8px, 10px) scale(1.08);
+    opacity: 0.75;
+  }
+}
+@keyframes bokeh-drift-b {
+  0%, 100% {
+    transform: translate(0, 0) scale(1);
+    opacity: 0.4;
+  }
+  50% {
+    transform: translate(10px, -8px) scale(0.94);
+    opacity: 0.65;
+  }
+}
+.animate-bokeh-a {
+  animation: bokeh-drift-a 7s ease-in-out infinite;
+}
+.animate-bokeh-b {
+  animation: bokeh-drift-b 9s ease-in-out infinite;
+}
+
 /* Respect the OS-level "reduce motion" preference: keep the end-state (so
    nothing pops in invisible) but drop the actual motion. */
 @media (prefers-reduced-motion: reduce) {
   .animate-pop-in,
   .animate-sheet-up,
-  .animate-fade-in {
+  .animate-fade-in,
+  .animate-bokeh-a,
+  .animate-bokeh-b {
     animation-duration: 0.001ms;
     animation-iteration-count: 1;
   }
