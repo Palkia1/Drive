@@ -28,6 +28,32 @@ npm run dev                   # http://localhost:3000
 Nieuwe leerlingen kunnen zich ook gewoon registreren via `/registreren` en daarbij de code
 `DB4K7P` invullen om zich aan de demo-rijschool te koppelen.
 
+## Android-app (Capacitor)
+
+Rijklaar is een server-rendered Next.js-app (server components, sessie-cookies, een database),
+geen statische SPA — dus Capacitor bundelt de app niet als bestanden in de APK. In plaats
+daarvan opent het een WebView die naar de live URL van de app wijst (`server.url` in
+`capacitor.config.ts`), net als een browser maar dan als installeerbare app-schil.
+
+**Vereist dus eerst een live deployment** (bijv. Vercel) met een echte Postgres-achtige
+database — SQLite werkt niet op de meeste serverless hosts. Zodra dat adres bekend is:
+
+```bash
+# capacitor.config.ts: vervang server.url door het echte productie-adres
+npx cap sync android
+```
+
+Daarna open je de `android/`-map in Android Studio (File → Open) om te bouwen/draaien:
+
+- **Testen op emulator/telefoon**: gewoon op Run drukken in Android Studio (telefoon via
+  USB met ontwikkelaarsopties/USB-debugging aan, of een emulator).
+- **Installeerbare APK/AAB maken**: Build → Generate Signed App Bundle / APK — hiervoor moet
+  je eenmalig een keystore aanmaken (Android Studio begeleidt dit); bewaar 'm goed, want
+  dezelfde keystore heb je nodig voor elke toekomstige update van de app.
+
+De `android/`-map wordt gewoon meegecommit (standaard bij Capacitor) — alleen build-output,
+`local.properties` (machine-specifiek SDK-pad) en keystores staan in `android/.gitignore`.
+
 ## Techstack — en waarom
 
 - **Next.js 16 (App Router) + TypeScript** — één codebase voor de leerling-app, het
