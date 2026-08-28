@@ -58,6 +58,13 @@ export default function RegisterPage() {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
+        <div className="flex items-center gap-2 pt-1">
+          <span className="h-px flex-1" style={{ background: "var(--border)" }} />
+          <span className="text-xs font-semibold" style={{ color: "var(--foreground-muted)" }}>
+            Rijles bij een rijschool?
+          </span>
+          <span className="h-px flex-1" style={{ background: "var(--border)" }} />
+        </div>
         <IconInput
           icon={KeyRound}
           placeholder="Rijschoolcode (optioneel)"

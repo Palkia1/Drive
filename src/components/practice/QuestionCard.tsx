@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Check, X, Bookmark } from "lucide-react";
+import { Check, X, Bookmark, Star } from "lucide-react";
 import { IntersectionScene } from "@/components/scenes/IntersectionScene";
 import { SignStripScene } from "@/components/scenes/SignStripScene";
 import { SignIcon } from "@/components/scenes/SignIcon";
@@ -68,13 +68,15 @@ export function QuestionCard({
 
   return (
     <div className="card p-5 relative overflow-hidden">
-      {scene.kind === "SINGLE_CHOICE" && scene.promptSignId && (
-        <div className="flex justify-center mb-4">
-          <SignIcon id={scene.promptSignId} size={104} />
-        </div>
-      )}
-      <div className="flex items-start justify-between gap-3 mb-4">
-        <p className="text-lg font-semibold leading-snug">{question.prompt}</p>
+      {/* Decorative corner blob, matching the hero card's motif — the goal is
+         just to break up the plain white, not to add busy chrome. */}
+      <span
+        className="absolute -right-10 -top-14 w-32 h-32 rounded-full pointer-events-none"
+        style={{ background: "color-mix(in srgb, var(--brand-500) 6%, transparent)" }}
+      />
+
+      <div className="relative flex items-center justify-between mb-3">
+        <DifficultyStars difficulty={question.difficulty} />
         <button
           type="button"
           aria-label={saved ? "Verwijder uit bewaard" : "Bewaar deze vraag"}
@@ -85,6 +87,13 @@ export function QuestionCard({
           <Bookmark size={20} fill={saved ? "var(--accent-500)" : "none"} />
         </button>
       </div>
+
+      {scene.kind === "SINGLE_CHOICE" && scene.promptSignId && (
+        <div className="relative flex justify-center mb-4">
+          <SignIcon id={scene.promptSignId} size={104} />
+        </div>
+      )}
+      <p className="relative text-lg font-semibold leading-snug mb-4">{question.prompt}</p>
 
       {scene.kind === "SINGLE_CHOICE" && (
         <div className="space-y-2">
@@ -213,6 +222,22 @@ function OutcomeIcon({ outcome, className, size = 20 }: { outcome: "correct" | "
     <Check size={size} className={className} strokeWidth={3} />
   ) : (
     <X size={size} className={className} strokeWidth={3} />
+  );
+}
+
+function DifficultyStars({ difficulty }: { difficulty: number }) {
+  return (
+    <div className="flex items-center gap-0.5" aria-label={`Moeilijkheid ${difficulty} van 5`}>
+      {Array.from({ length: 5 }).map((_, i) => (
+        <Star
+          key={i}
+          size={13}
+          strokeWidth={2.5}
+          color="var(--gold-500)"
+          fill={i < difficulty ? "var(--gold-500)" : "none"}
+        />
+      ))}
+    </div>
   );
 }
 

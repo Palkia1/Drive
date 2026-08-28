@@ -295,6 +295,12 @@ model Question {
   id          String         @id @default(cuid())
   topicId     String
   subtopicId  String?
+  // Extra topics this question also counts toward for mastery, beyond the
+  // required `topicId` — JSON string[] of Topic.id, e.g. a question that's
+  // really about both voorrang and weggebruikers. Null/empty for the common
+  // single-topic case; see recomputeMasteryAfterAttempt's caller in the
+  // answer route for how both get credited.
+  secondaryTopicIds String?
   type        QuestionType   @default(SINGLE_CHOICE)
   status      QuestionStatus @default(PUBLISHED)
   difficulty  Int            @default(2) // 1 (easy) .. 5 (hard)

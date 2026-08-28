@@ -23,6 +23,9 @@ const prisma = new PrismaClient();
 // Topics
 // ---------------------------------------------------------------------------
 
+// Verlichting and Stoppen-en-parkeren were folded into Veiligheid and
+// Bijzondere manoeuvres respectively (too many near-empty top-level topics
+// for a student to scan); Milieu was dropped entirely as out of scope.
 const TOPICS = [
   { slug: "verkeersborden", name: "Verkeersborden", icon: "sign", order: 1 },
   { slug: "voorrang", name: "Voorrang", icon: "intersection", order: 2 },
@@ -31,13 +34,10 @@ const TOPICS = [
   { slug: "inhalen", name: "Inhalen", icon: "overtake", order: 5 },
   { slug: "bijzondere-manoeuvres", name: "Bijzondere manoeuvres", icon: "maneuver", order: 6 },
   { slug: "weggebruikers", name: "Weggebruikers", icon: "pedestrian", order: 7 },
-  { slug: "verlichting", name: "Verlichting", icon: "light", order: 8 },
-  { slug: "stoppen-en-parkeren", name: "Stoppen en parkeren", icon: "parking", order: 9 },
-  { slug: "autosnelwegen", name: "Autosnelwegen", icon: "highway", order: 10 },
-  { slug: "milieu", name: "Milieu", icon: "leaf", order: 11 },
-  { slug: "veiligheid", name: "Veiligheid", icon: "shield", order: 12 },
-  { slug: "bord-naar-betekenis", name: "Bord → betekenis", icon: "sign", order: 13 },
-  { slug: "betekenis-naar-bord", name: "Betekenis → bord", icon: "sign", order: 14 },
+  { slug: "autosnelwegen", name: "Autosnelwegen", icon: "highway", order: 8 },
+  { slug: "veiligheid", name: "Veiligheid", icon: "shield", order: 9 },
+  { slug: "bord-naar-betekenis", name: "Bord → betekenis", icon: "sign", order: 10 },
+  { slug: "betekenis-naar-bord", name: "Betekenis → bord", icon: "sign", order: 11 },
 ] as const;
 
 const SUBTOPICS: Record<string, { slug: string; name: string }[]> = {
@@ -60,6 +60,12 @@ const SUBTOPICS: Record<string, { slug: string; name: string }[]> = {
 
 type SeedQuestion = {
   topic: string;
+  /** Extra topic slugs this question also counts toward for mastery, beyond
+   * `topic` (its primary topic) — e.g. a question that's really about both
+   * voorrang and weggebruikers. Optional and rarely used today; the
+   * question-selection pools (Snel oefenen, Onderwerp kiezen, ...) still key
+   * off the single primary `topic`, only mastery-crediting reads this. */
+  secondaryTopics?: string[];
   subtopic?: string;
   type: QuestionType;
   difficulty: number;
@@ -398,6 +404,11 @@ const QUESTIONS: SeedQuestion[] = [
   },
   {
     topic: "weggebruikers",
+    // Proof of concept for multi-topic crediting (see SeedQuestion.secondaryTopics
+    // below): this question is as much about voorrang as it is about
+    // weggebruikers, so a correct/incorrect answer should move the needle on
+    // both — not force a single "which bucket does this belong to" choice.
+    secondaryTopics: ["voorrang"],
     type: "HOTSPOT",
     difficulty: 2,
     prompt: "Een voetganger steekt over op de voetgangersoversteekplaats. Wie moet hier voorrang verlenen?",
@@ -415,9 +426,9 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
 
-  // ---- Verlichting -------------------------------------------------------
+  // ---- Verlichting (ondergebracht bij Veiligheid) --------------------------
   {
-    topic: "verlichting",
+    topic: "veiligheid",
     type: "SINGLE_CHOICE",
     difficulty: 1,
     prompt: "Wanneer ben je verplicht je dimlicht (of daglicht) te voeren?",
@@ -434,9 +445,9 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
 
-  // ---- Stoppen en parkeren -------------------------------------------------------
+  // ---- Stoppen en parkeren (ondergebracht bij Bijzondere manoeuvres) -------
   {
-    topic: "stoppen-en-parkeren",
+    topic: "bijzondere-manoeuvres",
     type: "MULTIPLE_CHOICE",
     difficulty: 2,
     prompt: "Waar mag je in principe niet parkeren?",
@@ -453,7 +464,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
-    topic: "stoppen-en-parkeren",
+    topic: "bijzondere-manoeuvres",
     type: "HOTSPOT",
     difficulty: 1,
     prompt: "Tik op het bord dat 'verboden te parkeren' betekent.",
@@ -480,25 +491,6 @@ const QUESTIONS: SeedQuestion[] = [
         { id: "b", label: "Meteen stoppen op de invoegstrook" },
         { id: "c", label: "Verwachten dat het verkeer op de snelweg voor mij stopt" },
         { id: "d", label: "Zo langzaam mogelijk invoegen" },
-      ],
-      correctOptionId: "a",
-    },
-  },
-
-  // ---- Milieu -------------------------------------------------------
-  {
-    topic: "milieu",
-    type: "SINGLE_CHOICE",
-    difficulty: 2,
-    prompt: "Welke rijstijl is het meest milieuvriendelijk?",
-    explanation: "Vroegtijdig opschakelen, anticiperen op het verkeer en een gelijkmatige snelheid aanhouden verlaagt het brandstofverbruik en de uitstoot.",
-    scene: {
-      kind: "SINGLE_CHOICE",
-      options: [
-        { id: "a", label: "Vroeg opschakelen en anticiperend rijden" },
-        { id: "b", label: "Zo laat mogelijk opschakelen en hard optrekken" },
-        { id: "c", label: "Constant afwisselend hard remmen en optrekken" },
-        { id: "d", label: "Altijd in de laagste versnelling rijden" },
       ],
       correctOptionId: "a",
     },
@@ -662,10 +654,18 @@ async function main() {
     const topicId = topicBySlug.get(q.topic);
     if (!topicId) throw new Error(`Unknown topic ${q.topic}`);
     const subtopicId = q.subtopic ? subtopicBySlug.get(q.subtopic) : undefined;
+    const secondaryTopicIds = "secondaryTopics" in q && q.secondaryTopics?.length
+      ? q.secondaryTopics.map((slug) => {
+          const id = topicBySlug.get(slug);
+          if (!id) throw new Error(`Unknown secondary topic ${slug}`);
+          return id;
+        })
+      : undefined;
     await prisma.question.create({
       data: {
         topicId,
         subtopicId,
+        secondaryTopicIds: secondaryTopicIds ? JSON.stringify(secondaryTopicIds) : undefined,
         type: q.type,
         difficulty: q.difficulty,
         prompt: q.prompt,

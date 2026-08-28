@@ -62,10 +62,17 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
     },
   });
 
-  await recomputeMasteryAfterAttempt(student.id, question.topicId, {
-    correct: isCorrect,
-    difficulty: question.difficulty,
-  });
+  // A question can count toward more than one topic (e.g. one that's really
+  // about both voorrang and weggebruikers) — credit its primary topic plus
+  // any secondaryTopicIds, so mastery reflects every category the question
+  // actually tests rather than an arbitrary single bucket.
+  const secondaryTopicIds: string[] = question.secondaryTopicIds ? JSON.parse(question.secondaryTopicIds) : [];
+  for (const topicId of [question.topicId, ...secondaryTopicIds]) {
+    await recomputeMasteryAfterAttempt(student.id, topicId, {
+      correct: isCorrect,
+      difficulty: question.difficulty,
+    });
+  }
 
   if (isCorrect) {
     await prisma.questionMark.updateMany({

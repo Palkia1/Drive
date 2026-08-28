@@ -16,12 +16,19 @@ export function MasteryBar({
   insufficientData,
   compact,
   icon,
+  quietEmptyState,
 }: {
   name: string;
   level: number;
   insufficientData: boolean;
   compact?: boolean;
   icon?: string;
+  /** Skip the "Onvoldoende data" label for topics with no attempts yet —
+   * just show an empty bar. Useful on a learner's own profile, where a
+   * dozen "onvoldoende data" labels reads as an error message rather than
+   * "you haven't tried this yet"; keep the label where an instructor is
+   * the audience and that distinction matters. */
+  quietEmptyState?: boolean;
 }) {
   return (
     <div className="flex items-center gap-3">
@@ -33,9 +40,11 @@ export function MasteryBar({
       <div className="flex-1 min-w-0">
         <div className="flex items-center justify-between mb-1.5 gap-2">
           <span className={compact ? "text-sm font-semibold truncate" : "font-semibold truncate"}>{name}</span>
-          <span className="text-xs font-bold shrink-0" style={{ color: "var(--foreground-muted)" }}>
-            {insufficientData ? "Onvoldoende data" : `Level ${level}/5`}
-          </span>
+          {!(insufficientData && quietEmptyState) && (
+            <span className="text-xs font-bold shrink-0" style={{ color: "var(--foreground-muted)" }}>
+              {insufficientData ? "Onvoldoende data" : `Level ${level}/5`}
+            </span>
+          )}
         </div>
         <ProgressBar
           value={insufficientData ? 0 : level}
