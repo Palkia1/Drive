@@ -93,26 +93,31 @@ heuristiek, geen gekalibreerd psychometrisch model — precies zoals het brief v
 
 ## Verkeersbordencatalogus
 
-`src/lib/questions/signCatalogue.ts` bevat 128 officiële RVV 1990-borden (categorieën
+`src/lib/questions/signCatalogue.ts` bevat 135 officiële RVV 1990-borden (categorieën
 A/B/C/D/E/F/G/H/J/L). De **codes en namen zijn gecontroleerd** tegen de OpenStreetMap
 NL-bordenreferentie (die kaart-tagging voedt en dus overeen moet komen met de wettelijke
-bijlage, aangevuld met itheorie.nl voor een paar L-codes die daar ontbraken), niet uit het
-geheugen gegokt.
+bijlage, aangevuld met itheorie.nl en een gerichte websearch voor een paar L-codes die
+daar ontbraken), niet uit het geheugen gegokt.
 
-Voor de **tekeningen** geldt: 110 van de 128 borden renderen nu echte, door de gebruiker
-aangeleverde vectorbestanden (`public/signs/*.svg`/`.png`) in plaats van een eigen
+Voor de **tekeningen** geldt: 133 van de 135 borden renderen nu echte, door de gebruiker
+aangeleverde artwork (`public/signs/*.svg`/`.png`/`.webp`) in plaats van een eigen
 benadering — een eerdere poging om die vanaf Wikimedia Commons te scrapen liep tegen een
-rate-limit op de gedeelde dev-proxy aan, dus zijn ze via Google Drive en een directe
-upload aangeleverd. `SignIcon.tsx` rendert automatisch de echte artwork zodra die
+rate-limit op de gedeelde dev-proxy aan, dus zijn ze via Google Drive en twee directe
+uploads aangeleverd (eerst 110 vector-SVG's, later 32 raster-WEBP's voor de codes die nog
+ontbraken — vooral de hele D-categorie en de "begin"-varianten van G). Waar beide
+leveringen dezelfde code bevatten is steeds de vector-SVG gehouden, ook als de WEBP in
+pixels groter was: vector schaalt scherp op elk formaat, dus dat is voor een icoon altijd
+de betere "resolutie". `SignIcon.tsx` rendert automatisch de echte artwork zodra die
 bestaat (zie `realSigns.generated.ts`, gegenereerd met `npm run signs:manifest` — opnieuw
 draaien na het toevoegen van bestanden aan `public/signs/`) en valt voor de resterende
-~18 borden terug op een zelfgetekende, illustratieve versie die nog een instructeur-controle
-nodig heeft. Op `/app/borden` (link onderaan het profielscherm) is dit meteen zichtbaar:
-borden met een blauw randje hebben echte artwork, de rest is de tijdelijke tekening.
+2 borden (E8c, L2) terug op een zelfgetekende, illustratieve versie die nog een
+instructeur-controle nodig heeft. Op `/app/borden` (link onderaan het profielscherm) is
+dit meteen zichtbaar: borden met een blauw randje hebben echte artwork, de rest is de
+tijdelijke tekening.
 
 Nummerborden (snelheid) zijn geparametriseerd, bv. `"A1-50"` voor een 50 km/h-bord — zie
-`baseCodeOf`/`numberOf` in `signCatalogue.ts`. Categorie K (milieuzones) en een handvol
-zeldzame J/L-varianten zijn nog niet toegevoegd.
+`baseCodeOf`/`numberOf` in `signCatalogue.ts`. Categorie K (milieuzones) en de J-codes
+J12/J13 zijn nog niet toegevoegd (geen betrouwbare bron/artwork gevonden).
 
 ## Wat is bewust niet afgemaakt (zie brief §47 "daarna uitbreiden")
 

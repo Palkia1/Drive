@@ -7,7 +7,14 @@
  *    and is what NL mappers use to tag signs accurately.
  *  - J/L: the same wiki's "Informerende RVV-borden" subpage, cross-checked for
  *    L9-L12 against driving-school reference sites (itheorie.nl) since that
- *    subpage only listed a handful of L-codes.
+ *    subpage only listed a handful of L-codes. L1 isn't on either OSM page;
+ *    its name/purpose was confirmed via web search (CROW kennisbank +
+ *    traffictotaal.nl product listing) — "Hoogte onderdoorgang", showing the
+ *    actual (reduced) clearance height under a low structure.
+ *  - F10/H1: also from the main OSM page; H1 ("Bebouwde kom") is simplified
+ *    to one generic entry the same way H2 already was, even though the only
+ *    supplied artwork for H1 bakes in a specific example place name
+ *    ("Helmond") rather than being blank.
  *
  * Artwork: most signs below now render real, user-supplied vector art (see
  * public/signs/ and realSigns.generated.ts) rather than our hand-drawn
@@ -102,10 +109,15 @@ export const SIGN_CATALOGUE: SignCatalogueEntry[] = [
 
   // --- F: Overige geboden en verboden -----------------------------------------
   { code: "F1", name: "Verbod motorvoertuigen in te halen", category: "F" },
+  { code: "F2", name: "Einde verbod voor motorvoertuigen om elkaar onderling in te halen", category: "F" },
   { code: "F3", name: "Verbod voor vrachtauto's om motorvoertuigen in te halen", category: "F" },
+  { code: "F4", name: "Einde verbod voor vrachtauto's om motorvoertuigen in te halen", category: "F" },
   { code: "F5", name: "Verbod door te rijden bij tegengesteld verkeer", category: "F" },
   { code: "F6", name: "Verkeer in tegengestelde richting heeft voorrang", category: "F" },
   { code: "F7", name: "Keerverbod", category: "F" },
+  { code: "F8", name: "Einde van alle door verkeersborden aangegeven verboden", category: "F" },
+  { code: "F9", name: "Einde van alle op een elektronisch signaleringsbord aangegeven verboden", category: "F" },
+  { code: "F10", name: "Verboden toegang, in te vullen door wie of waarom", category: "F" },
 
   // --- G: Wegtype / verkeersdeelnemer -----------------------------------------
   { code: "G1", name: "Autosnelweg", category: "G" },
@@ -126,6 +138,7 @@ export const SIGN_CATALOGUE: SignCatalogueEntry[] = [
   { code: "G14", name: "Einde onverplicht fietspad", category: "G" },
 
   // --- H: Bebouwde kom ---------------------------------------------------------
+  { code: "H1", name: "Bebouwde kom", category: "H" },
   { code: "H2", name: "Einde bebouwde kom", category: "H" },
 
   // --- J: Waarschuwing ----------------------------------------------------------
@@ -168,6 +181,7 @@ export const SIGN_CATALOGUE: SignCatalogueEntry[] = [
   { code: "J39", name: "Elektrische in- en uitschuifbare paal in de rijbaan", category: "J" },
 
   // --- L: Informatie -------------------------------------------------------------
+  { code: "L1", name: "Hoogte onderdoorgang (actuele vrije hoogte)", category: "L" },
   { code: "L2", name: "Voetgangersoversteekplaats", category: "L" },
   { code: "L8", name: "Doodlopende weg", category: "L" },
   { code: "L9", name: "Vooraanduiding doodlopende weg", category: "L" },
