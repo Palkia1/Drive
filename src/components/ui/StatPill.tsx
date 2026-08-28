@@ -25,5 +25,5 @@ export function XpPill({ xp }: { xp: number }) {
 }
 
 export function LevelPill({ level }: { level: number }) {
-  return <Stat icon={<Trophy size={13} color="white" strokeWidth={2.5} />} value={level} color="var(--primary-500)" />;
+  return <Stat icon={<Trophy size={13} color="white" strokeWidth={2.5} />} value={level} color="var(--purple-500)" />;
 }

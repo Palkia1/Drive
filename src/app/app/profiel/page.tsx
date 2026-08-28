@@ -40,7 +40,7 @@ export default async function ProfielPage() {
       </div>
 
       <div className="grid grid-cols-3 gap-3 text-center">
-        <StatBlock icon={<Trophy size={16} color="white" />} color="var(--primary-500)" label="Level" value={student.level} />
+        <StatBlock icon={<Trophy size={16} color="white" />} color="var(--purple-500)" label="Level" value={student.level} />
         <StatBlock icon={<Zap size={16} color="white" />} color="var(--brand-500)" label="XP" value={student.xp} />
         <StatBlock icon={<Flame size={16} color="white" />} color="var(--gold-600)" label="Streak" value={student.streakCount} />
       </div>

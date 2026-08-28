@@ -179,7 +179,7 @@ export function QuestionCard({
         <div
           className="absolute inset-x-0 bottom-0 px-5 py-4 flex items-center gap-3 font-extrabold animate-pop-in"
           style={{
-            background: result === "correct" ? "var(--primary-500)" : "var(--danger-500)",
+            background: result === "correct" ? "var(--success-500)" : "var(--danger-500)",
             color: "white",
           }}
         >
@@ -195,7 +195,7 @@ export function QuestionCard({
 
 function optionStyle(outcome: "correct" | "incorrect" | null, isSelected: boolean): React.CSSProperties {
   if (outcome && isSelected) {
-    const color = outcome === "correct" ? "var(--primary-500)" : "var(--danger-500)";
+    const color = outcome === "correct" ? "var(--success-500)" : "var(--danger-500)";
     return {
       background: `color-mix(in srgb, ${color} 12%, transparent)`,
       border: `2.5px solid ${color}`,

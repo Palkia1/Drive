@@ -6,8 +6,8 @@ const LEVEL_COLORS = [
   "var(--danger-500)",
   "var(--gold-500)",
   "var(--gold-500)",
-  "var(--primary-400)",
-  "var(--primary-600)",
+  "var(--success-400)",
+  "var(--success-600)",
 ];
 
 export function MasteryBar({

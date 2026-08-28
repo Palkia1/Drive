@@ -33,7 +33,7 @@ const ICONS: Record<string, LucideIcon> = {
  * list reads as its own thing rather than a wall of same-colored rows. */
 const COLORS = [
   "var(--brand-500)",
-  "var(--primary-500)",
+  "var(--success-500)",
   "var(--gold-600)",
   "var(--purple-500)",
   "var(--pink-500)",

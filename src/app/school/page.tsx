@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Users, Activity, CircleAlert } from "lucide-react";
 import { requireInstructor } from "@/lib/session";
 import { getSchoolStudentsOverview } from "@/lib/schoolStats";
 import { ActivityDot } from "@/components/school/ActivityDot";
@@ -20,63 +21,84 @@ export default async function SchoolDashboardPage() {
       </div>
 
       <div className="grid grid-cols-3 gap-3">
-        <SummaryCard label="Totaal leerlingen" value={students.length} />
-        <SummaryCard label="Actief deze week" value={highActivity} color="var(--success-600)" />
-        <SummaryCard label="Extra aandacht nodig" value={needsAttention} color="var(--danger-500)" />
+        <SummaryCard icon={<Users size={16} color="white" />} label="Totaal leerlingen" value={students.length} color="var(--brand-500)" />
+        <SummaryCard icon={<Activity size={16} color="white" />} label="Actief deze week" value={highActivity} color="var(--success-600)" />
+        <SummaryCard icon={<CircleAlert size={16} color="white" />} label="Extra aandacht nodig" value={needsAttention} color="var(--danger-500)" />
       </div>
 
-      <div className="card overflow-x-auto">
-        <table className="w-full text-sm">
-          <thead>
-            <tr className="text-left" style={{ color: "var(--foreground-muted)" }}>
-              <th className="px-4 py-3 font-medium">Leerling</th>
-              <th className="px-4 py-3 font-medium">Activiteit</th>
-              <th className="px-4 py-3 font-medium">Sterkste onderwerp</th>
-              <th className="px-4 py-3 font-medium">Zwakste onderwerp</th>
-              <th className="px-4 py-3 font-medium text-center">Examens</th>
-              <th className="px-4 py-3 font-medium text-right">Level</th>
-            </tr>
-          </thead>
-          <tbody>
-            {students.map((s) => (
-              <tr key={s.studentId} className="border-t" style={{ borderColor: "var(--border)" }}>
-                <td className="px-4 py-3">
-                  <Link href={`/school/leerlingen/${s.studentId}`} className="font-semibold" style={{ color: "var(--brand-600)" }}>
-                    {s.username}
-                  </Link>
-                </td>
-                <td className="px-4 py-3">
-                  <span className="flex items-center gap-1.5">
-                    <ActivityDot level={s.activity.level} />
-                    {s.activity.label}
+      {students.length === 0 ? (
+        <div className="card p-10 text-center" style={{ color: "var(--foreground-muted)" }}>
+          Nog geen leerlingen gekoppeld.
+        </div>
+      ) : (
+        <div className="card divide-y" style={{ borderColor: "var(--border)" }}>
+          <div
+            className="hidden md:grid px-5 py-2.5 text-xs font-bold uppercase tracking-wide"
+            style={{ gridTemplateColumns: "1.4fr 1fr 1fr 1fr 0.6fr 0.5fr", color: "var(--foreground-muted)" }}
+          >
+            <span>Leerling</span>
+            <span>Activiteit</span>
+            <span>Sterkste onderwerp</span>
+            <span>Aandachtspunt</span>
+            <span className="text-center">Examens</span>
+            <span className="text-right">Level</span>
+          </div>
+          {students.map((s) => (
+            <Link
+              key={s.studentId}
+              href={`/school/leerlingen/${s.studentId}`}
+              className="flex flex-col gap-2 md:grid md:grid-cols-[1.4fr_1fr_1fr_1fr_0.6fr_0.5fr] md:items-center md:gap-y-0 px-5 py-3.5 transition hover:bg-[var(--surface-muted)]"
+            >
+              <span className="flex items-center gap-2.5 justify-between md:justify-start">
+                <span className="flex items-center gap-2.5 min-w-0">
+                  <span
+                    className="w-8 h-8 rounded-full flex items-center justify-center shrink-0 text-xs font-extrabold text-white"
+                    style={{ background: "var(--brand-500)" }}
+                  >
+                    {s.username.slice(0, 1).toUpperCase()}
                   </span>
-                </td>
-                <td className="px-4 py-3">{s.strongestTopic ?? "—"}</td>
-                <td className="px-4 py-3">{s.weakestTopic ?? "—"}</td>
-                <td className="px-4 py-3 text-center">{s.examCount}</td>
-                <td className="px-4 py-3 text-right font-semibold">{s.level}</td>
-              </tr>
-            ))}
-            {students.length === 0 && (
-              <tr>
-                <td colSpan={6} className="px-4 py-10 text-center" style={{ color: "var(--foreground-muted)" }}>
-                  Nog geen leerlingen gekoppeld.
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-      </div>
+                  <span className="font-bold truncate">{s.username}</span>
+                </span>
+                <span className="text-sm font-bold md:hidden shrink-0" style={{ color: "var(--purple-500)" }}>
+                  Level {s.level}
+                </span>
+              </span>
+              <span className="flex items-center gap-1.5 text-sm" style={{ color: "var(--foreground-muted)" }}>
+                <ActivityDot level={s.activity.level} />
+                {s.activity.label}
+              </span>
+              <Field label="Sterkste onderwerp" value={s.strongestTopic} />
+              <Field label="Aandachtspunt" value={s.weakestTopic} />
+              <Field label="Examens" value={String(s.examCount)} className="md:text-center" />
+              <span className="hidden md:block text-sm font-bold text-right" style={{ color: "var(--purple-500)" }}>
+                {s.level}
+              </span>
+            </Link>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
 
-function SummaryCard({ label, value, color }: { label: string; value: number; color?: string }) {
+function Field({ label, value, className = "" }: { label: string; value: string | null; className?: string }) {
+  return (
+    <span className={`text-sm truncate ${className}`}>
+      <span className="md:hidden text-xs font-bold uppercase tracking-wide mr-1.5" style={{ color: "var(--foreground-muted)" }}>
+        {label}:
+      </span>
+      {value ?? "—"}
+    </span>
+  );
+}
+
+function SummaryCard({ icon, label, value, color }: { icon: React.ReactNode; label: string; value: number; color: string }) {
   return (
     <div className="card p-4">
-      <p className="text-2xl font-bold" style={{ color: color ?? "var(--foreground)" }}>
-        {value}
-      </p>
+      <div className="icon-bubble mb-2.5" style={{ width: 32, height: 32, borderRadius: 10, background: color }}>
+        {icon}
+      </div>
+      <p className="text-2xl font-bold">{value}</p>
       <p className="text-xs mt-0.5" style={{ color: "var(--foreground-muted)" }}>
         {label}
       </p>

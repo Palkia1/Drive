@@ -51,7 +51,7 @@ export function OefenenClient({
         />
         <MenuRow
           icon={<ListChecks size={20} color="white" />}
-          color="var(--brand-500)"
+          color="var(--foreground-muted)"
           title="Onderwerp kiezen"
           subtitle="Kies zelf één of meer onderwerpen"
           onClick={() => setSheetOpen(true)}

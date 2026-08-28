@@ -138,7 +138,7 @@ function ReadinessCard({ readiness }: { readiness: Awaited<ReturnType<typeof get
           icon: Hourglass,
         };
       case "ready":
-        return { title: "Je bent er klaar voor!", text: "Je scoort consistent goed en beheerst de onderwerpen.", color: "var(--primary-600)", icon: PartyPopper };
+        return { title: "Je bent er klaar voor!", text: "Je scoort consistent goed en beheerst de onderwerpen.", color: "var(--success-600)", icon: PartyPopper };
       case "almost":
         return {
           title: "Je bent er bijna",
