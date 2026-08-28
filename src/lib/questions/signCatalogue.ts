@@ -63,6 +63,7 @@ export const SIGN_CATALOGUE: SignCatalogueEntry[] = [
   { code: "C5", name: "Inrijden toegestaan", category: "C" },
   { code: "C6", name: "Gesloten voor motorvoertuigen op meer dan twee wielen", category: "C" },
   { code: "C7", name: "Gesloten voor vrachtauto's", category: "C" },
+  { code: "C7a", name: "Gesloten voor autobussen", category: "C" },
   { code: "C8", name: "Gesloten voor landbouw- en bosbouwtrekkers", category: "C" },
   { code: "C9", name: "Gesloten voor ruiters, vee, wagens en andere voertuigen", category: "C" },
   { code: "C10", name: "Gesloten voor motorvoertuigen met aanhangwagen", category: "C" },

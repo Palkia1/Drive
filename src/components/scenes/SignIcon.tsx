@@ -198,11 +198,16 @@ function PicTruck({ color = black }: { color?: string }) {
 function PicBus({ color = black }: { color?: string }) {
   return (
     <g transform="translate(32,33)">
-      <rect x="-17" y="-8" width="34" height="16" rx="3" fill={color} />
-      <circle cx="-9" cy="10" r="3" fill={color} />
-      <circle cx="9" cy="10" r="3" fill={color} />
-      <rect x="-13" y="-4" width="6" height="6" fill={white} />
-      <rect x="-4" y="-4" width="6" height="6" fill={white} />
+      <polygon points="-17,3 -16,-3 -11,-9 16,-9 17,-8 17,6 -17,6" fill={color} />
+      <rect x="-13" y="-6" width="4" height="5" fill={white} />
+      <rect x="-7.5" y="-6" width="4" height="5" fill={white} />
+      <rect x="-2" y="-6" width="4" height="5" fill={white} />
+      <rect x="3.5" y="-6" width="4" height="5" fill={white} />
+      <rect x="9" y="-6" width="4" height="5" fill={white} />
+      <circle cx="-9" cy="7" r="3.3" fill={color} />
+      <circle cx="9" cy="7" r="3.3" fill={color} />
+      <circle cx="-9" cy="7" r="1.2" fill={white} />
+      <circle cx="9" cy="7" r="1.2" fill={white} />
     </g>
   );
 }

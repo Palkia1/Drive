@@ -22,10 +22,9 @@ npm run signs:manifest
 
 **Nog ontbrekend** (zie `verkeersborden-index.md` voor de oorspronkelijke volledige lijst,
 en `signCatalogue.ts` voor de actuele):
-- **E8c** (parkeergelegenheid elektrische voertuigen) en **L2** (voetgangersoversteekplaats)
-  — de enige twee catalogus-codes zonder echte artwork; beide vallen terug op een
-  zelfgetekende versie.
+- **E8c** (parkeergelegenheid elektrische voertuigen), **L2** (voetgangersoversteekplaats)
+  en **C7a** (gesloten voor autobussen) — de enige drie catalogus-codes zonder echte
+  artwork; alle drie vallen terug op een zelfgetekende versie (C7a's tekening is wel
+  nagetekend van een door de gebruiker gedeelde foto van het echte bord).
 - **Categorie K** (milieuzones) — zit nog niet in de catalogus, geen bestanden aangeleverd.
 - Losse J-codes **J12/J13** — niet in de catalogus (geen betrouwbare naam/bron gevonden).
-- **C7a** — heeft wel een hand-getekende fallback in `SignIcon.tsx`, maar staat niet als
-  catalogus-entry (geen bevestigde naam).

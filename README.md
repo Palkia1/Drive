@@ -93,13 +93,13 @@ heuristiek, geen gekalibreerd psychometrisch model — precies zoals het brief v
 
 ## Verkeersbordencatalogus
 
-`src/lib/questions/signCatalogue.ts` bevat 135 officiële RVV 1990-borden (categorieën
+`src/lib/questions/signCatalogue.ts` bevat 136 officiële RVV 1990-borden (categorieën
 A/B/C/D/E/F/G/H/J/L). De **codes en namen zijn gecontroleerd** tegen de OpenStreetMap
 NL-bordenreferentie (die kaart-tagging voedt en dus overeen moet komen met de wettelijke
 bijlage, aangevuld met itheorie.nl en een gerichte websearch voor een paar L-codes die
 daar ontbraken), niet uit het geheugen gegokt.
 
-Voor de **tekeningen** geldt: 133 van de 135 borden renderen nu echte, door de gebruiker
+Voor de **tekeningen** geldt: 133 van de 136 borden renderen nu echte, door de gebruiker
 aangeleverde artwork (`public/signs/*.svg`/`.png`/`.webp`) in plaats van een eigen
 benadering — een eerdere poging om die vanaf Wikimedia Commons te scrapen liep tegen een
 rate-limit op de gedeelde dev-proxy aan, dus zijn ze via Google Drive en twee directe
@@ -110,9 +110,10 @@ pixels groter was: vector schaalt scherp op elk formaat, dus dat is voor een ico
 de betere "resolutie". `SignIcon.tsx` rendert automatisch de echte artwork zodra die
 bestaat (zie `realSigns.generated.ts`, gegenereerd met `npm run signs:manifest` — opnieuw
 draaien na het toevoegen van bestanden aan `public/signs/`) en valt voor de resterende
-2 borden (E8c, L2) terug op een zelfgetekende, illustratieve versie die nog een
-instructeur-controle nodig heeft. Op `/app/borden` (link onderaan het profielscherm) is
-dit meteen zichtbaar: borden met een blauw randje hebben echte artwork, de rest is de
+3 borden (E8c, L2, C7a) terug op een zelfgetekende, illustratieve versie die nog een
+instructeur-controle nodig heeft (C7a's tekening is wel nagetekend van een foto van het
+echte bord die de gebruiker deelde). Op `/app/borden` (link onderaan het profielscherm)
+is dit meteen zichtbaar: borden met een blauw randje hebben echte artwork, de rest is de
 tijdelijke tekening.
 
 Nummerborden (snelheid) zijn geparametriseerd, bv. `"A1-50"` voor een 50 km/h-bord — zie
