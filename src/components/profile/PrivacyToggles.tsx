@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { GlobeStarIcon } from "@/components/icons/GlobeStarIcon";
 
 type Flags = {
   showOnLeaderboard: boolean;
@@ -38,7 +39,14 @@ export function PrivacyToggles({ initial }: { initial: Flags }) {
     <div className="space-y-3">
       {(Object.keys(LABELS) as (keyof Flags)[]).map((key) => (
         <label key={key} className="flex items-center justify-between gap-3 cursor-pointer">
-          <span className="text-sm">{LABELS[key]}</span>
+          <span className="flex items-center gap-2.5 text-sm">
+            {key === "showOnLeaderboard" && (
+              <div className="icon-bubble shrink-0" style={{ width: 26, height: 26, borderRadius: 8, background: "var(--brand-600)" }}>
+                <GlobeStarIcon size={14} color="white" />
+              </div>
+            )}
+            {LABELS[key]}
+          </span>
           <button
             type="button"
             role="switch"

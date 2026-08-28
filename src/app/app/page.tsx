@@ -7,7 +7,8 @@ import { getTopicMasterySummaries } from "@/lib/mastery";
 import { RECOGNITION_TOPIC_SLUGS } from "@/lib/practice";
 import { ProgressBar } from "@/components/ui/ProgressBar";
 import { TopicIcon, getTopicColor } from "@/components/topics/TopicIcon";
-import { ArrowRight, Target, Flame, Star, PartyPopper, CircleAlert, Hourglass } from "lucide-react";
+import { ArrowRight, Target, Star, PartyPopper, CircleAlert, Hourglass } from "lucide-react";
+import { StreakFlameIcon } from "@/components/icons/StreakFlameIcon";
 
 function greeting() {
   const hour = new Date().getHours();
@@ -53,7 +54,7 @@ export default async function HomePage() {
         </div>
         <div className="flex shrink-0 items-center gap-3">
           <div className="flex items-center gap-1">
-            <Flame size={18} strokeWidth={2.5} style={{ color: "var(--gold-600)" }} />
+            <StreakFlameIcon size={18} color="var(--gold-600)" />
             <span className="text-sm font-extrabold">{student.streakCount}</span>
           </div>
           <div className="flex items-center gap-1">

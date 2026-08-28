@@ -1,7 +1,9 @@
 import Link from "next/link";
 import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
-import { Flame, MapPinned, Trophy, Users } from "lucide-react";
+import { MapPinned, Trophy } from "lucide-react";
+import { StreakFlameIcon } from "@/components/icons/StreakFlameIcon";
+import { GlobeStarIcon } from "@/components/icons/GlobeStarIcon";
 
 export default async function LandingPage() {
   const session = await auth();
@@ -51,9 +53,9 @@ export default async function LandingPage() {
 
         <div className="grid grid-cols-2 gap-4">
           <FeatureCard color="var(--brand-500)" icon={<MapPinned size={20} color="white" />} title="Realistische situaties" text="Tik het juiste antwoord aan in interactieve kruispunten." />
-          <FeatureCard color="var(--gold-600)" icon={<Flame size={20} color="white" />} title="Dagelijkse streak" text="Geen levens, geen straf — gewoon elke dag een beetje oefenen." />
+          <FeatureCard color="var(--gold-600)" icon={<StreakFlameIcon size={20} color="white" />} title="Dagelijkse streak" text="Geen levens, geen straf — gewoon elke dag een beetje oefenen." />
           <FeatureCard color="var(--success-500)" icon={<Trophy size={20} color="white" />} title="Mastery per onderwerp" text="Zie precies waar je goed in bent en wat aandacht nodig heeft." />
-          <FeatureCard color="var(--purple-500)" icon={<Users size={20} color="white" />} title="Landelijk scoreboard" text="Daag vrienden uit en vergelijk je voortgang in heel Nederland." />
+          <FeatureCard color="var(--purple-500)" icon={<GlobeStarIcon size={20} color="white" />} title="Landelijk scoreboard" text="Daag vrienden uit en vergelijk je voortgang in heel Nederland." />
         </div>
       </section>
     </div>

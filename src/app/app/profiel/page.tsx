@@ -9,7 +9,9 @@ import { PrivacyToggles } from "@/components/profile/PrivacyToggles";
 import { SignOutButton } from "@/components/profile/SignOutButton";
 import { BadgeIcon } from "@/components/profile/BadgeIcon";
 import { ThemeToggleButton } from "@/components/ui/skiper-ui/skiper26";
-import { Trophy, Star, Flame, Moon, SlidersHorizontal, type LucideIcon } from "lucide-react";
+import { Star, Moon, SlidersHorizontal } from "lucide-react";
+import { LevelTrophyIcon } from "@/components/icons/LevelTrophyIcon";
+import { StreakFlameIcon } from "@/components/icons/StreakFlameIcon";
 
 export default async function ProfielPage() {
   const { student, user } = await requireStudent();
@@ -44,9 +46,26 @@ export default async function ProfielPage() {
       </div>
 
       <div className="grid grid-cols-3 gap-3">
-        <StatTile icon={Trophy} color="var(--purple-500)" label="Level" value={student.level} offsetY={-1} />
-        <StatTile icon={Star} color="var(--brand-500)" label="XP" value={student.xp} />
-        <StatTile icon={Flame} color="var(--gold-600)" label="Streak" value={student.streakCount} offsetY={2} />
+        <StatTile
+          icon={<LevelTrophyIcon size={38} color="white" />}
+          color="var(--purple-500)"
+          label="Level"
+          value={student.level}
+          offsetY={-8}
+        />
+        <StatTile
+          icon={<Star size={40} color="white" fill="white" strokeWidth={1.5} />}
+          color="var(--brand-500)"
+          label="XP"
+          value={student.xp}
+        />
+        <StatTile
+          icon={<StreakFlameIcon size={38} color="white" />}
+          color="var(--gold-600)"
+          label="Streak"
+          value={student.streakCount}
+          offsetY={4}
+        />
       </div>
 
       <ActivityWidget days={activity} streakCount={student.streakCount} />
@@ -148,13 +167,13 @@ export default async function ProfielPage() {
 }
 
 function StatTile({
-  icon: Icon,
+  icon,
   color,
   label,
   value,
   offsetY = 0,
 }: {
-  icon: LucideIcon;
+  icon: React.ReactNode;
   color: string;
   label: string;
   value: string | number;
@@ -168,7 +187,7 @@ function StatTile({
   return (
     <div className="rounded-[20px] p-3.5 flex flex-col items-center" style={{ background: color }}>
       <div className="relative flex items-center justify-center" style={{ width: 40, height: 40 }}>
-        <Icon size={40} color="white" fill="white" strokeWidth={1.5} />
+        {icon}
         <span
           className="absolute inset-0 flex items-center justify-center font-extrabold"
           style={{ color, fontSize, transform: `translateY(${offsetY}px)` }}

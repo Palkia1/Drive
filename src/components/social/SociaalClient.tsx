@@ -2,7 +2,9 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Copy, UserPlus, Trophy, Flame, Award } from "lucide-react";
+import { Copy, UserPlus, Trophy, Award, Users } from "lucide-react";
+import { GlobeStarIcon } from "@/components/icons/GlobeStarIcon";
+import { StreakFlameIcon } from "@/components/icons/StreakFlameIcon";
 import type { FriendView } from "@/lib/friendsData";
 import type { LeaderboardRow } from "@/lib/leaderboard";
 
@@ -20,8 +22,8 @@ export function SociaalClient({ friendCode, friends, pending, leaderboard }: Pro
     <div>
       <h1 className="text-2xl font-bold mb-4">Sociaal</h1>
       <div className="flex gap-2 mb-4">
-        <TabButton active={tab === "vrienden"} onClick={() => setTab("vrienden")} label="Vrienden" />
-        <TabButton active={tab === "ranglijst"} onClick={() => setTab("ranglijst")} label="Landelijk" />
+        <TabButton active={tab === "vrienden"} onClick={() => setTab("vrienden")} label="Vrienden" icon={Users} />
+        <TabButton active={tab === "ranglijst"} onClick={() => setTab("ranglijst")} label="Landelijk" icon={GlobeStarIcon} />
       </div>
 
       {tab === "vrienden" ? (
@@ -166,7 +168,7 @@ function VriendenTab({
                 <div className="flex items-center gap-3 text-xs font-semibold" style={{ color: "var(--foreground-muted)" }}>
                   {f.streak !== null && (
                     <span className="flex items-center gap-1">
-                      <Flame size={14} style={{ color: "var(--accent-500)" }} /> {f.streak}
+                      <StreakFlameIcon size={14} color="var(--accent-500)" /> {f.streak}
                     </span>
                   )}
                   {f.xp !== null && <span>{f.xp} XP</span>}
@@ -240,17 +242,28 @@ function RanglijstTab({ leaderboard }: { leaderboard: Props["leaderboard"] }) {
   );
 }
 
-function TabButton({ active, onClick, label }: { active: boolean; onClick: () => void; label: string }) {
+function TabButton({
+  active,
+  onClick,
+  label,
+  icon: Icon,
+}: {
+  active: boolean;
+  onClick: () => void;
+  label: string;
+  icon: React.ComponentType<{ size?: number; color?: string; className?: string }>;
+}) {
   return (
     <button
       type="button"
       onClick={onClick}
-      className="flex-1 py-2 rounded-xl text-sm font-semibold transition"
+      className="flex-1 py-2 rounded-xl text-sm font-semibold transition flex items-center justify-center gap-1.5"
       style={{
         background: active ? "var(--brand-500)" : "var(--surface-muted)",
         color: active ? "white" : "var(--foreground-muted)",
       }}
     >
+      <Icon size={15} />
       {label}
     </button>
   );

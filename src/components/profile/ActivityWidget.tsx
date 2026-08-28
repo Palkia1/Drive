@@ -1,4 +1,4 @@
-import { Flame } from "lucide-react";
+import { StreakFlameIcon } from "@/components/icons/StreakFlameIcon";
 import type { DayActivity } from "@/lib/activity";
 
 /** A Strava-style weekly activity card: streak header, a couple of summary
@@ -15,7 +15,7 @@ export function ActivityWidget({ days, streakCount }: { days: DayActivity[]; str
     <div className="card p-4">
       <div className="flex items-center gap-2 mb-4">
         <div className="icon-bubble" style={{ width: 30, height: 30, borderRadius: 9, background: "var(--gold-600)" }}>
-          <Flame size={15} color="white" />
+          <StreakFlameIcon size={15} color="white" />
         </div>
         <p className="text-sm font-bold">
           {streakCount} {streakCount === 1 ? "dag" : "dagen"} op rij
@@ -50,7 +50,7 @@ export function ActivityWidget({ days, streakCount }: { days: DayActivity[]; str
                   boxShadow: isToday ? "0 0 0 2px var(--gold-600)" : undefined,
                 }}
               >
-                {d.practiced && <Flame size={12} color="white" />}
+                {d.practiced && <StreakFlameIcon size={12} color="white" />}
               </div>
               <div
                 className="w-full rounded-full"
