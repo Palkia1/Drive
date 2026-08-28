@@ -68,6 +68,11 @@ export function QuestionCard({
 
   return (
     <div className="card p-5 relative overflow-hidden">
+      {scene.kind === "SINGLE_CHOICE" && scene.promptSignId && (
+        <div className="flex justify-center mb-4">
+          <SignIcon id={scene.promptSignId} size={104} />
+        </div>
+      )}
       <div className="flex items-start justify-between gap-3 mb-4">
         <p className="text-lg font-semibold leading-snug">{question.prompt}</p>
         <button

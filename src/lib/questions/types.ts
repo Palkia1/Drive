@@ -11,6 +11,8 @@ export type ChoiceOption = {
 
 export type SingleChoiceScene = {
   kind: "SINGLE_CHOICE";
+  /** optional sign shown large above the prompt, e.g. for "wat betekent dit bord?" questions */
+  promptSignId?: SignId;
   options: ChoiceOption[];
   correctOptionId: string;
 };

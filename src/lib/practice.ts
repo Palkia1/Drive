@@ -5,6 +5,13 @@ export const SESSION_SIZE = 8;
 export const EXAM_SIZE = 20;
 export const LESSON_PRACTICE_SIZE = 4;
 
+// Procedurally generated (one per catalogue sign × 2 directions, see
+// generateSignQuestions.ts) — hundreds of near-identical recognition drills
+// that would otherwise swamp the "a bit of everything" pools. Still fully
+// reachable via mode: "TOPIC" with one of these ids (see OefenenClient's
+// dedicated buttons), just excluded from QUICK/EXAM/WEAK_SPOTS.
+const RECOGNITION_TOPIC_SLUGS = ["bord-naar-betekenis", "betekenis-naar-bord"];
+
 function shuffle<T>(arr: T[]): T[] {
   const copy = [...arr];
   for (let i = copy.length - 1; i > 0; i--) {
@@ -52,11 +59,20 @@ export async function selectQuestionsForSession(
 
   if (mode === "WEAK_SPOTS") {
     const masteries = await prisma.mastery.findMany({ where: { studentId }, orderBy: { confidence: "asc" } });
-    const attemptedWeak = masteries.filter((m) => m.totalAttempts > 0).slice(0, 3).map((m) => m.topicId);
+    const recognitionTopicIds = new Set(
+      (await prisma.topic.findMany({ where: { slug: { in: RECOGNITION_TOPIC_SLUGS } } })).map((t) => t.id)
+    );
+    const attemptedWeak = masteries
+      .filter((m) => m.totalAttempts > 0 && !recognitionTopicIds.has(m.topicId))
+      .slice(0, 3)
+      .map((m) => m.topicId);
     let weakTopicIds = attemptedWeak;
     if (weakTopicIds.length < 3) {
       const attemptedIds = new Set(masteries.map((m) => m.topicId));
-      const unattempted = await prisma.topic.findMany({ where: { id: { notIn: [...attemptedIds] } }, take: 3 - weakTopicIds.length });
+      const unattempted = await prisma.topic.findMany({
+        where: { id: { notIn: [...attemptedIds] }, slug: { notIn: RECOGNITION_TOPIC_SLUGS } },
+        take: 3 - weakTopicIds.length,
+      });
       weakTopicIds = [...weakTopicIds, ...unattempted.map((t) => t.id)];
     }
     const questions = await prisma.question.findMany({ where: { topicId: { in: weakTopicIds }, status: "PUBLISHED" } });
@@ -64,7 +80,9 @@ export async function selectQuestionsForSession(
   }
 
   if (mode === "EXAM") {
-    const questions = await prisma.question.findMany({ where: { status: "PUBLISHED" } });
+    const questions = await prisma.question.findMany({
+      where: { status: "PUBLISHED", topic: { slug: { notIn: RECOGNITION_TOPIC_SLUGS } } },
+    });
     return { questions: shuffle(questions).slice(0, Math.min(EXAM_SIZE, questions.length)), resolvedTopicIds: [] };
   }
 
@@ -79,6 +97,8 @@ export async function selectQuestionsForSession(
   }
 
   // QUICK (default): a bit of everything.
-  const questions = await prisma.question.findMany({ where: { status: "PUBLISHED" } });
+  const questions = await prisma.question.findMany({
+    where: { status: "PUBLISHED", topic: { slug: { notIn: RECOGNITION_TOPIC_SLUGS } } },
+  });
   return { questions: await pickFromPool(studentId, questions, SESSION_SIZE), resolvedTopicIds: [] };
 }

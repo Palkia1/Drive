@@ -2,10 +2,16 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Zap, ListChecks, RotateCcw, TrendingDown, GraduationCap, ChevronRight, Check } from "lucide-react";
+import { Zap, ListChecks, RotateCcw, TrendingDown, GraduationCap, ChevronRight, Check, ScanEye, HelpCircle } from "lucide-react";
 import { BottomSheet } from "@/components/ui/BottomSheet";
 import { TopicIcon, getTopicColor } from "@/components/topics/TopicIcon";
 import type { TopicMasterySummary } from "@/lib/mastery";
+
+// These two topics are procedurally generated (one per catalogue sign, both
+// directions — see generateSignQuestions.ts) and get dedicated one-tap modes
+// below instead of showing up in the generic multi-select topic picker.
+const SIGN_TO_MEANING_SLUG = "bord-naar-betekenis";
+const MEANING_TO_SIGN_SLUG = "betekenis-naar-bord";
 
 export function OefenenClient({
   topics,
@@ -17,6 +23,10 @@ export function OefenenClient({
   const router = useRouter();
   const [sheetOpen, setSheetOpen] = useState(false);
   const [selectedTopics, setSelectedTopics] = useState<string[]>([]);
+
+  const signToMeaningId = topics.find((t) => t.topicSlug === SIGN_TO_MEANING_SLUG)?.topicId;
+  const meaningToSignId = topics.find((t) => t.topicSlug === MEANING_TO_SIGN_SLUG)?.topicId;
+  const pickableTopics = topics.filter((t) => t.topicSlug !== SIGN_TO_MEANING_SLUG && t.topicSlug !== MEANING_TO_SIGN_SLUG);
 
   function start(mode: string, topicIds: string[] = []) {
     router.push(`/app/sessie?mode=${mode}&topics=${topicIds.join(",")}`);
@@ -70,9 +80,36 @@ export function OefenenClient({
         />
       </div>
 
+      <div>
+        <h2 className="text-sm font-bold" style={{ color: "var(--foreground-muted)" }}>
+          Borden herkennen
+        </h2>
+        <p className="text-xs mt-0.5 mb-2.5" style={{ color: "var(--foreground-muted)" }}>
+          Alle officiële verkeersborden, twee kanten op geoefend.
+        </p>
+        <div className="space-y-2.5">
+          <MenuRow
+            icon={<ScanEye size={20} color="white" />}
+            color="var(--teal-500)"
+            title="Bord → betekenis"
+            subtitle="Zie het bord, kies de juiste betekenis"
+            disabled={!signToMeaningId}
+            onClick={() => signToMeaningId && start("TOPIC", [signToMeaningId])}
+          />
+          <MenuRow
+            icon={<HelpCircle size={20} color="white" />}
+            color="var(--pink-500)"
+            title="Betekenis → bord"
+            subtitle="Lees de betekenis, kies het juiste bord"
+            disabled={!meaningToSignId}
+            onClick={() => meaningToSignId && start("TOPIC", [meaningToSignId])}
+          />
+        </div>
+      </div>
+
       <BottomSheet open={sheetOpen} onClose={() => setSheetOpen(false)} title="Kies onderwerpen">
         <div className="space-y-1.5 mb-4 max-h-[52vh] overflow-y-auto">
-          {topics.map((t) => {
+          {pickableTopics.map((t) => {
             const isSelected = selectedTopics.includes(t.topicId);
             return (
               <button

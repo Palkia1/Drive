@@ -15,6 +15,7 @@ import type {
   SignStripHotspotScene,
   SingleChoiceScene,
 } from "../src/lib/questions/types";
+import { generateSignQuestions } from "../src/lib/questions/generateSignQuestions";
 
 const prisma = new PrismaClient();
 
@@ -35,6 +36,8 @@ const TOPICS = [
   { slug: "autosnelwegen", name: "Autosnelwegen", icon: "highway", order: 10 },
   { slug: "milieu", name: "Milieu", icon: "leaf", order: 11 },
   { slug: "veiligheid", name: "Veiligheid", icon: "shield", order: 12 },
+  { slug: "bord-naar-betekenis", name: "Bord → betekenis", icon: "sign", order: 13 },
+  { slug: "betekenis-naar-bord", name: "Betekenis → bord", icon: "sign", order: 14 },
 ] as const;
 
 const SUBTOPICS: Record<string, { slug: string; name: string }[]> = {
@@ -653,8 +656,9 @@ async function main() {
     }
   }
 
-  console.log(`Seeding ${QUESTIONS.length} questions...`);
-  for (const q of QUESTIONS) {
+  const allQuestions: SeedQuestion[] = [...QUESTIONS, ...generateSignQuestions()];
+  console.log(`Seeding ${allQuestions.length} questions (${QUESTIONS.length} curated + ${allQuestions.length - QUESTIONS.length} generated sign-recognition)...`);
+  for (const q of allQuestions) {
     const topicId = topicBySlug.get(q.topic);
     if (!topicId) throw new Error(`Unknown topic ${q.topic}`);
     const subtopicId = q.subtopic ? subtopicBySlug.get(q.subtopic) : undefined;

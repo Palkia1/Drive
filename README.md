@@ -120,6 +120,25 @@ Nummerborden (snelheid) zijn geparametriseerd, bv. `"A1-50"` voor een 50 km/h-bo
 `baseCodeOf`/`numberOf` in `signCatalogue.ts`. Categorie K (milieuzones) en de J-codes
 J12/J13 zijn nog niet toegevoegd (geen betrouwbare bron/artwork gevonden).
 
+Elke entry heeft ook een `definition`: een kort, praktisch zinnetje ("wat betekent dit
+voor mij als bestuurder") dat losstaat van de officiële korte `name` — zelf geschreven op
+basis van de al geverifieerde namen/categorieën, niet uit een externe bron gescraped.
+
+### Bordherkenning-oefenmodi
+
+Op basis van die catalogus + definities genereert `src/lib/questions/generateSignQuestions.ts`
+automatisch twee vragen per bord (272 in totaal, zie ook `prisma/seed.ts`): "welk van deze
+vier betekenissen hoort bij dit bord" (`promptSignId` op een `SINGLE_CHOICE`-scene, zie
+`types.ts`/`QuestionCard.tsx`) en het omgekeerde, "welk van deze vier borden hoort bij deze
+betekenis" (dezelfde scene, maar dan met `signId` per keuze-optie i.p.v. een `promptSignId`).
+Distractors zijn drie willekeurige andere catalogus-entries (seeded per bordcode, dus
+stabiel tussen reseeds). Beide vormen krijgen een eigen topic (`bord-naar-betekenis` /
+`betekenis-naar-bord`) met een eigen knop op de Oefenen-pagina, en zijn bewust uitgesloten
+van "Snel oefenen"/"Oefenexamen"/"Zwakke punten" (zie `RECOGNITION_TOPIC_SLUGS` in
+`practice.ts`) — anders zouden 272 gegenereerde herkenningsvragen die modi domineren
+tegenover de ~28 handgeschreven scenariovragen. Wel expliciet kiesbaar via de twee
+dedicated knoppen, en ze tellen gewoon mee voor "Mijn fouten" als je ze fout beantwoordt.
+
 ## Wat is bewust niet afgemaakt (zie brief §47 "daarna uitbreiden")
 
 Deze dingen zijn *ontworpen om niet in de weg te zitten* bij latere uitbreiding, maar zijn
