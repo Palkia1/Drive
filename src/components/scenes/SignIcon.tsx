@@ -1,13 +1,22 @@
-import type { SignId } from "@/lib/questions/types";
+import { baseCodeOf, numberOf } from "@/lib/questions/signCatalogue";
 
 /**
- * A small, consistent vector sign set. These are stylized approximations of
- * Dutch RVV road signs — enough to teach shape/color recognition — not
- * pixel-accurate reproductions. Every question that shows a sign renders it
- * through this one component, so the visual language stays identical across
- * the whole app (see product brief §20).
+ * Renders a Dutch traffic sign from its RVV code (see signCatalogue.ts for
+ * the sourced code → name list). The pictograms below are hand-drawn by us,
+ * not traced from official artwork — we tried to fetch reference SVGs from
+ * Wikimedia Commons (the RVV designs are public domain, being government-
+ * prescribed) but hit that host's rate limit on the shared dev proxy. So:
+ * codes and names are sourced and correct; the drawings are our best-effort
+ * and — like the seed questions — need a driving-instructor review pass
+ * before this is exam-accurate. Every question that shows a sign renders it
+ * through this one component, so at least the visual language stays
+ * identical across the whole app.
+ *
+ * Covers categories A, B, C, D, E, G (what a real theory exam draws from).
+ * J (waarschuwing) is a follow-up — three old ad-hoc J icons are kept working
+ * unchanged at the bottom of `render()` until that pass happens.
  */
-export function SignIcon({ id, size = 56 }: { id: SignId; size?: number }) {
+export function SignIcon({ id, size = 56 }: { id: string; size?: number }) {
   return (
     <svg width={size} height={size} viewBox="0 0 64 64" role="img" aria-label={id}>
       {render(id)}
@@ -20,142 +29,731 @@ const red = "var(--sign-red)";
 const yellow = "var(--sign-yellow)";
 const white = "var(--sign-white)";
 const black = "var(--sign-black)";
+const grey = "#8b8f9c";
 
-function render(id: SignId) {
-  switch (id) {
-    case "priorityRoad":
+// ---------------------------------------------------------------------------
+// Frame primitives — every sign below is "a frame + a pictogram"
+// ---------------------------------------------------------------------------
+
+function ProhibitionCircle({ children }: { children: React.ReactNode }) {
+  return (
+    <g>
+      <circle cx="32" cy="32" r="28" fill={white} stroke={red} strokeWidth="6" />
+      {children}
+    </g>
+  );
+}
+
+function MandatoryCircle({ children }: { children: React.ReactNode }) {
+  return (
+    <g>
+      <circle cx="32" cy="32" r="28" fill={blue} />
+      {children}
+    </g>
+  );
+}
+
+function EndStripe() {
+  return <line x1="12" y1="52" x2="52" y2="12" stroke={red} strokeWidth="4" />;
+}
+
+function PriorityDiamond({ ended }: { ended?: boolean }) {
+  return (
+    <g>
+      <rect x="10" y="10" width="44" height="44" rx="6" fill={yellow} stroke={white} strokeWidth="5" transform="rotate(45 32 32)" />
+      <rect x="19" y="19" width="26" height="26" rx="3" fill="none" stroke={white} strokeWidth="3" transform="rotate(45 32 32)" />
+      {ended && <line x1="12" y1="52" x2="52" y2="12" stroke={black} strokeWidth="4" />}
+    </g>
+  );
+}
+
+function PriorityCrossroadDiamond({ variant }: { variant: "equal" | "left" | "right" }) {
+  return (
+    <g>
+      <rect x="9" y="9" width="46" height="46" rx="4" fill={white} stroke={black} strokeWidth="2.5" transform="rotate(45 32 32)" />
+      {/* thick main road (vertical) */}
+      <line x1="32" y1="10" x2="32" y2="54" stroke={black} strokeWidth="5" strokeLinecap="round" />
+      {/* side road(s) — thin */}
+      {variant !== "right" && <line x1="10" y1="32" x2="32" y2="32" stroke={black} strokeWidth="3" strokeLinecap="round" />}
+      {variant !== "left" && <line x1="32" y1="32" x2="54" y2="32" stroke={black} strokeWidth="3" strokeLinecap="round" />}
+    </g>
+  );
+}
+
+function GiveWayTriangle() {
+  return (
+    <g>
+      <polygon points="32,8 58,54 6,54" fill={white} stroke={red} strokeWidth="6" strokeLinejoin="round" />
+      <polygon points="32,22 46,46 18,46" fill={white} />
+    </g>
+  );
+}
+
+function StopOctagon() {
+  return (
+    <g>
+      <polygon points="22,6 42,6 58,22 58,42 42,58 22,58 6,42 6,22" fill={red} />
+      <text x="32" y="39" textAnchor="middle" fontSize="15" fontWeight="700" fill={white} fontFamily="sans-serif">
+        STOP
+      </text>
+    </g>
+  );
+}
+
+/** Blue square used for G-category "wegtype" signs and informational E-signs. */
+function InfoSquare({ children, ended }: { children: React.ReactNode; ended?: boolean }) {
+  return (
+    <g>
+      <rect x="6" y="6" width="52" height="52" rx="8" fill={blue} />
+      {children}
+      {ended && <EndStripe />}
+    </g>
+  );
+}
+
+function ParkingSquare({ children, prohibited }: { children?: React.ReactNode; prohibited?: boolean }) {
+  return (
+    <g>
+      <rect x="6" y="6" width="52" height="52" rx="8" fill={blue} />
+      <text x="32" y="41" textAnchor="middle" fontSize="26" fontWeight="800" fill={white} fontFamily="sans-serif">
+        P
+      </text>
+      {children}
+      {prohibited && (
+        <>
+          <circle cx="32" cy="32" r="21" fill="none" stroke={red} strokeWidth="5.5" />
+          <line x1="17" y1="47" x2="47" y2="17" stroke={red} strokeWidth="5.5" />
+        </>
+      )}
+    </g>
+  );
+}
+
+/** Speed-limit circle; takes the number to show. */
+function SpeedCircle({ n, ended, zone }: { n?: number; ended?: boolean; zone?: boolean }) {
+  const circle = (
+    <g>
+      <circle cx={zone ? 26 : 32} cy="32" r={zone ? 20 : 28} fill={white} stroke={ended ? grey : red} strokeWidth={zone ? 4.5 : 6} />
+      <text x={zone ? 26 : 32} y={zone ? 40 : 41} textAnchor="middle" fontSize={zone ? 15 : 20} fontWeight="700" fill={black} fontFamily="sans-serif">
+        {n ?? "--"}
+      </text>
+      {ended && <line x1={zone ? 12 : 12} y1={zone ? 46 : 50} x2={zone ? 40 : 52} y2={zone ? 18 : 14} stroke={grey} strokeWidth="3" />}
+    </g>
+  );
+  if (!zone) return circle;
+  return (
+    <g>
+      <rect x="4" y="8" width="56" height="48" rx="6" fill={white} stroke={black} strokeWidth="2" />
+      {circle}
+      <text x="46" y="46" textAnchor="middle" fontSize="9" fontWeight="700" fill={black} fontFamily="sans-serif" transform="rotate(90 46 46)">
+        ZONE
+      </text>
+    </g>
+  );
+}
+
+function AdvisorySpeedCircle({ n, ended }: { n?: number; ended?: boolean }) {
+  return (
+    <g>
+      <circle cx="32" cy="32" r="28" fill={blue} />
+      <text x="32" y="41" textAnchor="middle" fontSize="20" fontWeight="700" fill={white} fontFamily="sans-serif">
+        {n ?? "--"}
+      </text>
+      {ended && <line x1="12" y1="50" x2="52" y2="14" stroke={white} strokeWidth="3" />}
+    </g>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Small pictogram pieces, reused across many signs
+// ---------------------------------------------------------------------------
+
+function PicCar({ color = black }: { color?: string }) {
+  return (
+    <g transform="translate(32,33)">
+      <rect x="-14" y="-6" width="28" height="14" rx="4" fill={color} />
+      <rect x="-8" y="-13" width="16" height="9" rx="3" fill={color} />
+      <circle cx="-8" cy="9" r="3" fill={color} />
+      <circle cx="8" cy="9" r="3" fill={color} />
+    </g>
+  );
+}
+
+function PicTruck({ color = black }: { color?: string }) {
+  return (
+    <g transform="translate(32,33)">
+      <rect x="-16" y="-9" width="20" height="18" rx="2" fill={color} />
+      <rect x="6" y="-2" width="12" height="11" rx="2" fill={color} />
+      <circle cx="-9" cy="10" r="3" fill={color} />
+      <circle cx="10" cy="10" r="3" fill={color} />
+    </g>
+  );
+}
+
+function PicBus({ color = black }: { color?: string }) {
+  return (
+    <g transform="translate(32,33)">
+      <rect x="-17" y="-8" width="34" height="16" rx="3" fill={color} />
+      <circle cx="-9" cy="10" r="3" fill={color} />
+      <circle cx="9" cy="10" r="3" fill={color} />
+      <rect x="-13" y="-4" width="6" height="6" fill={white} />
+      <rect x="-4" y="-4" width="6" height="6" fill={white} />
+    </g>
+  );
+}
+
+function PicMotorcycle({ color = black }: { color?: string }) {
+  return (
+    <g transform="translate(32,34)">
+      <circle cx="-10" cy="6" r="6" fill="none" stroke={color} strokeWidth="3" />
+      <circle cx="10" cy="6" r="6" fill="none" stroke={color} strokeWidth="3" />
+      <path d="M-10 6 L-2 -8 H8 M-2 -8 L10 6 M-6 -2 H4" stroke={color} strokeWidth="3" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+    </g>
+  );
+}
+
+function PicMoped({ color = black }: { color?: string }) {
+  return (
+    <g transform="translate(32,34)">
+      <circle cx="-9" cy="7" r="5.5" fill="none" stroke={color} strokeWidth="3" />
+      <circle cx="9" cy="7" r="5.5" fill="none" stroke={color} strokeWidth="3" />
+      <path d="M-9 7 L-3 -6 H9 M-3 -6 L9 7" stroke={color} strokeWidth="3" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+      <circle cx="-3" cy="-6" r="2.5" fill={color} />
+    </g>
+  );
+}
+
+function PicBicycle({ color = black }: { color?: string }) {
+  return (
+    <g transform="translate(32,34)">
+      <circle cx="-9" cy="7" r="6" fill="none" stroke={color} strokeWidth="3" />
+      <circle cx="9" cy="7" r="6" fill="none" stroke={color} strokeWidth="3" />
+      <path d="M-9 7 L0 -6 H9 M0 -6 L9 7 M-9 7 H3" stroke={color} strokeWidth="3" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+      <circle cx="0" cy="-6" r="2.3" fill={color} />
+    </g>
+  );
+}
+
+function PicPedestrian({ color = black }: { color?: string }) {
+  return (
+    <g transform="translate(32,32)">
+      <circle cy="-11" r="4.5" fill={color} />
+      <path d="M0 -6 v13 M0 -1 l-8 8 M0 -1 l8 8 M-6 2 h12" stroke={color} strokeWidth="3" strokeLinecap="round" fill="none" />
+    </g>
+  );
+}
+
+function PicHorseRider({ color = black }: { color?: string }) {
+  return (
+    <g transform="translate(32,34)">
+      <circle cx="-2" cy="-10" r="3.5" fill={color} />
+      <path
+        d="M-2 -6 v6 M-2 0 q10 -2 12 8 M-14 10 q2 -10 12 -10 q6 0 8 6"
+        stroke={color}
+        strokeWidth="3"
+        fill="none"
+        strokeLinecap="round"
+      />
+      <circle cx="-13" cy="11" r="3" fill="none" stroke={color} strokeWidth="2.5" />
+      <circle cx="9" cy="11" r="3" fill="none" stroke={color} strokeWidth="2.5" />
+    </g>
+  );
+}
+
+function PicHouse({ color = white }: { color?: string }) {
+  return (
+    <g transform="translate(32,33)">
+      <polygon points="0,-14 16,-2 -16,-2" fill={color} />
+      <rect x="-11" y="-2" width="22" height="14" fill={color} />
+    </g>
+  );
+}
+
+function PicArrow({ rotation = 0, color = white }: { rotation?: number; color?: string }) {
+  return (
+    <g transform={`translate(32,32) rotate(${rotation})`}>
+      <line x1="0" y1="16" x2="0" y2="-14" stroke={color} strokeWidth="6" strokeLinecap="round" />
+      <polygon points="0,-20 -10,-4 10,-4" fill={color} />
+    </g>
+  );
+}
+
+function PicRoundaboutArrow({ color = white }: { color?: string }) {
+  return (
+    <g transform="translate(32,32)">
+      <path d="M-12 0a12 12 0 1 1 6 10.4" fill="none" stroke={color} strokeWidth="4" strokeLinecap="round" />
+      <polygon points="-8,12 -6,2 2,8" fill={color} />
+    </g>
+  );
+}
+
+function PicPlug({ color = white }: { color?: string }) {
+  return (
+    <g transform="translate(32,32)" stroke={color} strokeWidth="2.5" fill="none" strokeLinecap="round">
+      <path d="M-6 -10 v6 M6 -10 v6 M-9 -4 h18 v8 a9 9 0 0 1 -18 0 z" />
+      <path d="M0 4 v8" />
+    </g>
+  );
+}
+
+function PicWheelchair({ color = white }: { color?: string }) {
+  return (
+    <g transform="translate(32,33)" stroke={color} strokeWidth="2.5" fill="none" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="-2" cy="-10" r="2.6" fill={color} stroke="none" />
+      <path d="M-2 -6 v6 h9 M-2 -1 l-3 9 M4 4 a6 6 0 1 1 -8 -2" />
+    </g>
+  );
+}
+
+function PicWeight({ color = black }: { color?: string }) {
+  return (
+    <g transform="translate(32,33)" stroke={color} strokeWidth="2.6" fill="none" strokeLinecap="round">
+      <path d="M-14 -8 h28 M-10 -8 l-4 12 h8 z M10 -8 l-4 12 h8 z M0 -8 v14 h0" />
+      <line x1="-14" y1="6" x2="14" y2="6" />
+    </g>
+  );
+}
+
+function PicMeasure({ axis = "h", color = black }: { axis?: "h" | "v"; color?: string }) {
+  if (axis === "h") {
+    return (
+      <g transform="translate(32,33)" stroke={color} strokeWidth="2.6" fill="none" strokeLinecap="round">
+        <line x1="-16" y1="0" x2="16" y2="0" />
+        <polyline points="-11,-5 -16,0 -11,5" />
+        <polyline points="11,-5 16,0 11,5" />
+      </g>
+    );
+  }
+  return (
+    <g transform="translate(32,33)" stroke={color} strokeWidth="2.6" fill="none" strokeLinecap="round">
+      <line x1="0" y1="-16" x2="0" y2="16" />
+      <polyline points="-5,-11 0,-16 5,-11" />
+      <polyline points="-5,11 0,16 5,11" />
+    </g>
+  );
+}
+
+function PicBox({ color = white }: { color?: string }) {
+  return (
+    <g transform="translate(32,33)" stroke={color} strokeWidth="2.5" fill="none" strokeLinejoin="round">
+      <rect x="-10" y="-8" width="20" height="16" />
+      <line x1="-10" y1="0" x2="10" y2="0" />
+      <line x1="0" y1="-8" x2="0" y2="0" />
+    </g>
+  );
+}
+
+function PicClock({ color = white }: { color?: string }) {
+  return (
+    <g transform="translate(32,33)" stroke={color} strokeWidth="2.5" fill="none" strokeLinecap="round">
+      <circle r="11" />
+      <line x1="0" y1="0" x2="0" y2="-6" />
+      <line x1="0" y1="0" x2="4" y2="2" />
+    </g>
+  );
+}
+
+function PicBusTrain({ color = white }: { color?: string }) {
+  return (
+    <g transform="translate(32,31)">
+      <rect x="-13" y="-8" width="14" height="14" rx="2" fill="none" stroke={color} strokeWidth="2.3" />
+      <path d="M2 6 h11 M2 -8 h11 v14 h-11 z" stroke={color} strokeWidth="2.3" fill="none" strokeLinejoin="round" />
+    </g>
+  );
+}
+
+function PicCarPool({ color = white }: { color?: string }) {
+  return (
+    <g transform="translate(32,34)">
+      <circle cx="-6" cy="-9" r="3" fill={color} />
+      <circle cx="6" cy="-9" r="3" fill={color} />
+      <rect x="-15" y="-4" width="30" height="12" rx="4" fill="none" stroke={color} strokeWidth="2.3" />
+      <circle cx="-8" cy="10" r="2.6" fill={color} />
+      <circle cx="8" cy="10" r="2.6" fill={color} />
+    </g>
+  );
+}
+
+function PicMotorway({ color = white }: { color?: string }) {
+  return (
+    <g transform="translate(32,33)" stroke={color} strokeWidth="3" fill="none" strokeLinecap="round">
+      <path d="M-16 12 L-4 -12 M4 -12 L16 12" />
+      <line x1="-14" y1="8" x2="14" y2="8" />
+      <line x1="0" y1="-12" x2="0" y2="12" strokeDasharray="4 4" />
+    </g>
+  );
+}
+
+// ---------------------------------------------------------------------------
+
+function render(rawId: string) {
+  const code = baseCodeOf(rawId);
+  const n = numberOf(rawId);
+
+  switch (code) {
+    // A — snelheid
+    case "A1":
+      return <SpeedCircle n={n} />;
+    case "A1zone":
+      return <SpeedCircle n={n} zone />;
+    case "A2":
+      return <SpeedCircle n={n} ended />;
+    case "A2zone":
+      return <SpeedCircle n={n} zone ended />;
+    case "A4":
+      return <AdvisorySpeedCircle n={n} />;
+    case "A5":
+      return <AdvisorySpeedCircle n={n} ended />;
+
+    // B — voorrang
+    case "B1":
+      return <PriorityDiamond />;
+    case "B2":
+      return <PriorityDiamond ended />;
+    case "B3":
+      return <PriorityCrossroadDiamond variant="equal" />;
+    case "B4":
+      return <PriorityCrossroadDiamond variant="left" />;
+    case "B5":
+      return <PriorityCrossroadDiamond variant="right" />;
+    case "B6":
+      return <GiveWayTriangle />;
+    case "B7":
+      return <StopOctagon />;
+
+    // C — geslotenverklaring
+    case "C1":
       return (
-        <g>
-          <rect x="10" y="10" width="44" height="44" rx="6" fill={yellow} stroke={white} strokeWidth="5" transform="rotate(45 32 32)" />
-          <rect x="19" y="19" width="26" height="26" rx="3" fill="none" stroke={white} strokeWidth="3" transform="rotate(45 32 32)" />
-        </g>
+        <ProhibitionCircle>
+          <rect x="12" y="27" width="40" height="10" rx="2" fill={black} />
+        </ProhibitionCircle>
       );
-    case "endPriorityRoad":
+    case "C2":
       return (
-        <g>
-          <rect x="10" y="10" width="44" height="44" rx="6" fill={yellow} stroke={white} strokeWidth="5" transform="rotate(45 32 32)" />
-          <rect x="19" y="19" width="26" height="26" rx="3" fill="none" stroke={white} strokeWidth="3" transform="rotate(45 32 32)" />
-          <line x1="12" y1="52" x2="52" y2="12" stroke={black} strokeWidth="4" />
-        </g>
+        <ProhibitionCircle>
+          <rect x="12" y="27" width="40" height="10" rx="2" fill={black} />
+          <polygon points="32,14 24,26 40,26" fill={black} />
+        </ProhibitionCircle>
       );
-    case "giveWay":
+    case "C3":
+    case "C4":
       return (
-        <g>
-          <polygon points="32,8 58,54 6,54" fill={white} stroke={red} strokeWidth="6" strokeLinejoin="round" />
-          <polygon points="32,22 46,46 18,46" fill={white} />
-        </g>
+        <InfoSquare>
+          <PicArrow rotation={code === "C4" ? 180 : 0} />
+        </InfoSquare>
       );
-    case "stop":
+    case "C5":
       return (
-        <g>
-          <polygon
-            points="22,6 42,6 58,22 58,42 42,58 22,58 6,42 6,22"
-            fill={red}
-          />
-          <text x="32" y="39" textAnchor="middle" fontSize="15" fontWeight="700" fill={white} fontFamily="sans-serif">
-            STOP
-          </text>
-        </g>
+        <InfoSquare>
+          <PicArrow rotation={0} />
+        </InfoSquare>
       );
-    case "roundabout":
+    case "C6":
       return (
-        <g>
-          <circle cx="32" cy="32" r="28" fill={blue} />
-          <path d="M20 32a12 12 0 1 1 6 10.4" fill="none" stroke={white} strokeWidth="4" strokeLinecap="round" />
-          <polygon points="24,44 26,34 34,40" fill={white} />
-        </g>
+        <ProhibitionCircle>
+          <PicCar />
+        </ProhibitionCircle>
       );
-    case "noEntry":
+    case "C7":
       return (
-        <g>
-          <circle cx="32" cy="32" r="28" fill={red} />
-          <rect x="12" y="27" width="40" height="10" rx="2" fill={white} />
-        </g>
+        <ProhibitionCircle>
+          <PicTruck />
+        </ProhibitionCircle>
       );
-    case "noOvertakingCars":
+    case "C7a":
       return (
-        <g>
-          <circle cx="32" cy="32" r="28" fill={white} stroke={red} strokeWidth="6" />
-          <rect x="10" y="30" width="20" height="10" rx="2" fill={black} />
-          <rect x="30" y="24" width="22" height="10" rx="2" fill={red} />
-          <line x1="10" y1="50" x2="54" y2="14" stroke={red} strokeWidth="4" />
-        </g>
+        <ProhibitionCircle>
+          <PicBus />
+        </ProhibitionCircle>
       );
-    case "maxSpeed30":
-    case "maxSpeed50":
-    case "maxSpeed80": {
-      const n = id === "maxSpeed30" ? "30" : id === "maxSpeed50" ? "50" : "80";
+    case "C9":
       return (
-        <g>
-          <circle cx="32" cy="32" r="28" fill={white} stroke={red} strokeWidth="6" />
-          <text x="32" y="40" textAnchor="middle" fontSize="20" fontWeight="700" fill={black} fontFamily="sans-serif">
-            {n}
-          </text>
-        </g>
+        <ProhibitionCircle>
+          <PicHorseRider />
+        </ProhibitionCircle>
       );
-    }
-    case "endMaxSpeed":
+    case "C11":
       return (
-        <g>
-          <circle cx="32" cy="32" r="28" fill={white} stroke="#8b8f9c" strokeWidth="5" />
-          <text x="32" y="40" textAnchor="middle" fontSize="18" fontWeight="700" fill={black} fontFamily="sans-serif">
-            80
-          </text>
-          <line x1="10" y1="50" x2="54" y2="14" stroke="#8b8f9c" strokeWidth="3" />
-        </g>
+        <ProhibitionCircle>
+          <PicMotorcycle />
+        </ProhibitionCircle>
       );
-    case "compulsoryAheadOnly":
+    case "C12":
       return (
-        <g>
-          <circle cx="32" cy="32" r="28" fill={blue} />
-          <polygon points="32,14 44,32 35,32 35,50 29,50 29,32 20,32" fill={white} />
-        </g>
+        <ProhibitionCircle>
+          <PicCar />
+        </ProhibitionCircle>
       );
-    case "compulsoryCycleTrack":
+    case "C13":
       return (
-        <g>
-          <circle cx="32" cy="32" r="28" fill={blue} />
-          <circle cx="22" cy="42" r="6" fill="none" stroke={white} strokeWidth="3" />
-          <circle cx="42" cy="42" r="6" fill="none" stroke={white} strokeWidth="3" />
-          <path d="M22 42 L30 24 L38 24 M30 24 L42 42 M26 32 H36" stroke={white} strokeWidth="3" fill="none" strokeLinecap="round" />
-        </g>
+        <ProhibitionCircle>
+          <PicMoped />
+        </ProhibitionCircle>
       );
-    case "pedestrianCrossing":
+    case "C14":
       return (
-        <g>
-          <rect x="6" y="6" width="52" height="52" rx="6" fill={blue} />
-          <polygon points="32,14 50,44 14,44" fill={white} />
-          <circle cx="32" cy="28" r="3.5" fill={black} />
-          <path d="M32 32 v8 M32 34 l-5 8 M32 34 l5 8 M28 36 h8" stroke={black} strokeWidth="2.5" strokeLinecap="round" />
-        </g>
+        <ProhibitionCircle>
+          <PicBicycle />
+        </ProhibitionCircle>
       );
-    case "noParking":
+    case "C15":
       return (
-        <g>
-          <circle cx="32" cy="32" r="28" fill={blue} />
-          <circle cx="32" cy="32" r="20" fill="none" stroke={red} strokeWidth="6" />
-          <line x1="18" y1="46" x2="46" y2="18" stroke={red} strokeWidth="6" />
-          <text x="32" y="39" textAnchor="middle" fontSize="20" fontWeight="700" fill={white} fontFamily="sans-serif">
-            P
-          </text>
-        </g>
+        <ProhibitionCircle>
+          <PicBicycle />
+        </ProhibitionCircle>
       );
-    case "noStoppingOrParking":
+    case "C16":
+      return (
+        <ProhibitionCircle>
+          <PicPedestrian />
+        </ProhibitionCircle>
+      );
+    case "C17":
+      return (
+        <ProhibitionCircle>
+          <PicMeasure axis="h" />
+        </ProhibitionCircle>
+      );
+    case "C18":
+      return (
+        <ProhibitionCircle>
+          <PicMeasure axis="h" />
+        </ProhibitionCircle>
+      );
+    case "C19":
+      return (
+        <ProhibitionCircle>
+          <PicMeasure axis="v" />
+        </ProhibitionCircle>
+      );
+    case "C21":
+      return (
+        <ProhibitionCircle>
+          <PicWeight />
+        </ProhibitionCircle>
+      );
+
+    // D — rijrichting (gebod)
+    case "D1":
+      return (
+        <MandatoryCircle>
+          <PicRoundaboutArrow />
+        </MandatoryCircle>
+      );
+    case "D2":
+      return (
+        <MandatoryCircle>
+          <PicArrow rotation={20} />
+        </MandatoryCircle>
+      );
+    case "D3":
+      return (
+        <MandatoryCircle>
+          <PicArrow rotation={-30} />
+          <PicArrow rotation={30} />
+        </MandatoryCircle>
+      );
+    case "D4":
+      return (
+        <MandatoryCircle>
+          <PicArrow rotation={0} />
+        </MandatoryCircle>
+      );
+    case "D5":
+      return (
+        <MandatoryCircle>
+          <PicArrow rotation={45} />
+        </MandatoryCircle>
+      );
+    case "D6":
+      return (
+        <MandatoryCircle>
+          <PicArrow rotation={-20} />
+          <PicArrow rotation={20} />
+        </MandatoryCircle>
+      );
+    case "D7":
+      return (
+        <MandatoryCircle>
+          <PicArrow rotation={-45} />
+          <PicArrow rotation={45} />
+        </MandatoryCircle>
+      );
+
+    // E — parkeren en stilstaan
+    case "E1":
+      return <ParkingSquare prohibited />;
+    case "E2":
       return (
         <g>
-          <circle cx="32" cy="32" r="28" fill={blue} />
+          <rect x="6" y="6" width="52" height="52" rx="8" fill={blue} />
           <line x1="16" y1="16" x2="48" y2="48" stroke={red} strokeWidth="6" />
           <line x1="48" y1="16" x2="16" y2="48" stroke={red} strokeWidth="6" />
         </g>
       );
-    case "oneWay":
+    case "E3":
       return (
         <g>
-          <rect x="6" y="18" width="52" height="28" rx="3" fill={blue} />
-          <polygon points="46,32 30,22 30,42" fill={white} />
-          <rect x="16" y="28" width="16" height="8" fill={white} />
+          <rect x="6" y="6" width="52" height="52" rx="8" fill={blue} />
+          <PicBicycle color={white} />
+          <circle cx="32" cy="32" r="21" fill="none" stroke={red} strokeWidth="5.5" />
+          <line x1="17" y1="47" x2="47" y2="17" stroke={red} strokeWidth="5.5" />
         </g>
       );
+    case "E4":
+      return <ParkingSquare />;
+    case "E5":
+      return (
+        <g>
+          <rect x="6" y="6" width="52" height="52" rx="8" fill={blue} />
+          <text x="32" y="42" textAnchor="middle" fontSize="17" fontWeight="800" fill={white} fontFamily="sans-serif">
+            TAXI
+          </text>
+        </g>
+      );
+    case "E6":
+      return <ParkingSquare>
+          <g transform="translate(13,13) scale(0.55)"><PicWheelchair /></g>
+        </ParkingSquare>;
+    case "E7":
+      return (
+        <InfoSquare>
+          <PicBox />
+        </InfoSquare>
+      );
+    case "E8":
+      return <ParkingSquare>
+          <g transform="translate(11,10) scale(0.5)"><PicTruck color={white} /></g>
+        </ParkingSquare>;
+    case "E8c":
+      return <ParkingSquare>
+          <g transform="translate(13,12) scale(0.55)"><PicPlug /></g>
+        </ParkingSquare>;
+    case "E9":
+      return (
+        <g>
+          <rect x="6" y="6" width="52" height="52" rx="8" fill={blue} />
+          <text x="32" y="36" textAnchor="middle" fontSize="20" fontWeight="800" fill={white} fontFamily="sans-serif">
+            P
+          </text>
+          <text x="32" y="51" textAnchor="middle" fontSize="7" fontWeight="700" fill={white} fontFamily="sans-serif">
+            VERGUNNING
+          </text>
+        </g>
+      );
+    case "E10":
+      return <ParkingSquare>
+          <g transform="translate(13,10) scale(0.5)"><PicClock /></g>
+        </ParkingSquare>;
+    case "E11":
+      return (
+        <g>
+          <ParkingSquare>
+          <g transform="translate(13,10) scale(0.5)"><PicClock /></g>
+        </ParkingSquare>
+          <EndStripe />
+        </g>
+      );
+    case "E12":
+      return <ParkingSquare>
+          <g transform="translate(12,10) scale(0.5)"><PicBusTrain /></g>
+        </ParkingSquare>;
+    case "E13":
+      return <ParkingSquare>
+          <g transform="translate(11,12) scale(0.5)"><PicCarPool /></g>
+        </ParkingSquare>;
+
+    // G — wegtype / weggebruiker
+    case "G1":
+      return (
+        <InfoSquare>
+          <PicMotorway />
+        </InfoSquare>
+      );
+    case "G2":
+      return (
+        <InfoSquare ended>
+          <PicMotorway />
+        </InfoSquare>
+      );
+    case "G3":
+      return (
+        <InfoSquare>
+          <g transform="translate(32,33)" stroke={white} strokeWidth="3" fill="none" strokeLinecap="round">
+            <line x1="0" y1="-14" x2="0" y2="14" />
+          </g>
+        </InfoSquare>
+      );
+    case "G4":
+      return (
+        <InfoSquare ended>
+          <g transform="translate(32,33)" stroke={white} strokeWidth="3" fill="none" strokeLinecap="round">
+            <line x1="0" y1="-14" x2="0" y2="14" />
+          </g>
+        </InfoSquare>
+      );
+    case "G5":
+      return (
+        <InfoSquare>
+          <PicHouse />
+        </InfoSquare>
+      );
+    case "G6":
+      return (
+        <InfoSquare ended>
+          <PicHouse />
+        </InfoSquare>
+      );
+    case "G7":
+      return (
+        <InfoSquare>
+          <PicPedestrian color={white} />
+        </InfoSquare>
+      );
+    case "G8":
+      return (
+        <InfoSquare ended>
+          <PicPedestrian color={white} />
+        </InfoSquare>
+      );
+    case "G9":
+      return (
+        <InfoSquare>
+          <PicHorseRider color={white} />
+        </InfoSquare>
+      );
+    case "G10":
+      return (
+        <InfoSquare ended>
+          <PicHorseRider color={white} />
+        </InfoSquare>
+      );
+    case "G11":
+      return (
+        <MandatoryCircle>
+          <PicBicycle color={white} />
+        </MandatoryCircle>
+      );
+    case "G12":
+      return (
+        <InfoSquare ended>
+          <PicBicycle color={white} />
+        </InfoSquare>
+      );
+    case "G13":
+      return (
+        <InfoSquare>
+          <PicBicycle color={white} />
+        </InfoSquare>
+      );
+    case "G14":
+      return (
+        <InfoSquare ended>
+          <PicBicycle color={white} />
+        </InfoSquare>
+      );
+
+    // --- legacy J placeholders (unchanged, pending a sourced J-category pass) ---
     case "warningChildren":
       return (
         <g>
@@ -179,6 +777,29 @@ function render(id: SignId) {
           <path d="M12 46 L26 30 L38 30 L52 46 M26 30 L32 40 L38 30" stroke={black} strokeWidth="3" fill="none" strokeLinejoin="round" strokeLinecap="round" />
         </g>
       );
+
+    // A couple of one-off signs from categories outside this pass's scope
+    // (F, L) that existing seed questions already relied on.
+    case "F1": // Verbod motorvoertuigen in te halen
+      return (
+        <ProhibitionCircle>
+          <g transform="translate(30,32)">
+            <PicCar />
+          </g>
+          <g transform="translate(20,26) scale(0.8)">
+            <PicCar color={red} />
+          </g>
+        </ProhibitionCircle>
+      );
+    case "pedestrianCrossing": // L2, Voetgangersoversteekplaats
+      return (
+        <g>
+          <rect x="6" y="6" width="52" height="52" rx="6" fill={blue} />
+          <polygon points="32,14 50,44 14,44" fill={white} />
+          <PicPedestrian />
+        </g>
+      );
+
     default:
       return <circle cx="32" cy="32" r="28" fill="#ccc" />;
   }

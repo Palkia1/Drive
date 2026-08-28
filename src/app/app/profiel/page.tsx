@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { requireStudent } from "@/lib/session";
 import { prisma } from "@/lib/db";
 import { getTopicMasterySummaries } from "@/lib/mastery";
@@ -94,6 +95,10 @@ export default async function ProfielPage() {
       <div className="card p-4 text-sm" style={{ color: "var(--foreground-muted)" }}>
         {user.email}
       </div>
+
+      <Link href="/app/borden" className="block text-center text-sm font-semibold py-2" style={{ color: "var(--brand-600)" }}>
+        Bordenoverzicht (intern)
+      </Link>
 
       <SignOutButton />
     </div>

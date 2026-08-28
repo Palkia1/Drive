@@ -19,9 +19,9 @@ const SLOT_ROTATION: Record<IntersectionSlot, number> = {
 };
 
 const SIGN_FOR_KIND = {
-  "priority-road": "priorityRoad",
-  "give-way": "giveWay",
-  stop: "stop",
+  "priority-road": "B1",
+  "give-way": "B6",
+  stop: "B7",
 } as const;
 
 export function IntersectionScene({

@@ -40,8 +40,9 @@ Nieuwe leerlingen kunnen zich ook gewoon registreren via `/registreren` en daarb
   Google- en Apple-providers zijn bedraad maar staan uit totdat er echte OAuth-credentials
   in `.env` staan (zie §"Wat is bewust niet afgemaakt").
 - **Tailwind CSS v4** — eigen designtokens (kleuren, radius, schaduwen) in
-  `src/app/globals.css`, geen kant-en-klare component-library. De stijl is bewust *niet*
-  Duolingo-groen: een rustige, iets serieuzere "verkeerseducatie"-blauw/amber-palet.
+  `src/app/globals.css`, geen kant-en-klare component-library. Bewust een levendig,
+  hoog-contrast palet met "3D-pressed" knoppen (duolingo-achtige gamification-stijl),
+  met een eigen kleur per onderwerp (`src/components/topics/TopicIcon.tsx`).
 - **Framer Motion** — subtiele micro-animaties (level-up confetti, pop-ins).
 - **Eigen SVG-scenes** (`src/components/scenes`) in plaats van stockfoto's of een externe
   asset-pipeline: een herbruikbare kruispunt-scene (auto's/fietsers/voetgangers op vaste
@@ -90,6 +91,23 @@ structureel fouten maakt, zakt vanzelf terug. Dit is nadrukkelijk een verklaarba
 heuristiek, geen gekalibreerd psychometrisch model — precies zoals het brief vraagt
 ("mag niet doen alsof het intelligent is als het dat niet is").
 
+## Verkeersbordencatalogus
+
+`src/lib/questions/signCatalogue.ts` bevat 67 officiële RVV 1990-borden (categorieën
+A/B/C/D/E/G — precies wat een echt CBR-theorie-examen gebruikt; J/F/H/K/L zijn een
+vervolgstap). De **codes en namen zijn gecontroleerd** tegen de OpenStreetMap NL-
+bordenreferentie (die kaart-tagging voedt en dus overeen moet komen met de wettelijke
+bijlage), niet uit het geheugen gegokt. De **tekeningen** in `SignIcon.tsx` zijn wél
+zelfgemaakt: een poging om de officiële vectorbestanden van Wikimedia Commons te gebruiken
+(publiek domein, want wettelijk voorgeschreven ontwerpen) liep tegen een rate-limit van
+Wikimedia op de gedeelde dev-proxy aan. Dus: codes/namen zijn betrouwbaar, de pictogrammen
+zijn een eerste versie die nog een instructeur-controle nodig heeft, zoals de rest van de
+content (zie hieronder). Bekijk ze op `/app/borden` (ingelogd als leerling) of via de link
+onderaan het profielscherm.
+
+Nummerborden (snelheid, afmetingen) zijn geparametriseerd in plaats van uitgeschreven, bv.
+`"A1-50"` voor een 50 km/h-bord — zie `baseCodeOf`/`numberOf` in hetzelfde bestand.
+
 ## Wat is bewust niet afgemaakt (zie brief §47 "daarna uitbreiden")
 
 Deze dingen zijn *ontworpen om niet in de weg te zitten* bij latere uitbreiding, maar zijn
@@ -118,6 +136,9 @@ nu niet gebouwd:
   `ChallengeParticipant`) staat al klaar, maar er is geen UI voor.
 - **Licentie-/betaalflow**: `License` heeft een `plan`/`status`/`seats`, seat-limiet wordt
   al gehandhaafd bij het koppelen van een leerling — maar er zit geen betaalprovider achter.
+- **Verkeersbordencategorie J (waarschuwing, ~40 borden)** en de kleine F/H/K/L-categorieën
+  zijn nog niet toegevoegd aan de bordencatalogus (zie hierboven) — drie oude J-iconen
+  (kinderen, slipgevaar, wegversmalling) blijven ongewijzigd werken tot die pas gedaan is.
 
 ## Bekende beperkingen
 

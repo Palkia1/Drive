@@ -174,10 +174,10 @@ const QUESTIONS: SeedQuestion[] = [
     scene: {
       kind: "SINGLE_CHOICE",
       options: [
-        { id: "a", label: "Stopbord", signId: "stop" },
-        { id: "b", label: "Verleen voorrang", signId: "giveWay" },
-        { id: "c", label: "Voorrangsweg", signId: "priorityRoad" },
-        { id: "d", label: "Rotonde", signId: "roundabout" },
+        { id: "a", label: "Stopbord", signId: "B7" },
+        { id: "b", label: "Verleen voorrang", signId: "B6" },
+        { id: "c", label: "Voorrangsweg", signId: "B1" },
+        { id: "d", label: "Rotonde", signId: "D1" },
       ],
       correctOptionId: "b",
     },
@@ -192,8 +192,8 @@ const QUESTIONS: SeedQuestion[] = [
     scene: {
       kind: "HOTSPOT",
       sceneId: "sign-strip",
-      signs: ["giveWay", "priorityRoad", "endPriorityRoad", "stop"],
-      correctSignId: "endPriorityRoad",
+      signs: ["B6", "B1", "B2", "B7"],
+      correctSignId: "B2",
     },
   },
   {
@@ -207,9 +207,9 @@ const QUESTIONS: SeedQuestion[] = [
     scene: {
       kind: "MULTIPLE_CHOICE",
       options: [
-        { id: "a", label: "Geslotenverklaring / geen toegang", signId: "noEntry" },
-        { id: "b", label: "Verboden in te halen (motorvoertuigen)", signId: "noOvertakingCars" },
-        { id: "c", label: "Verplicht rechtdoor", signId: "compulsoryAheadOnly" },
+        { id: "a", label: "Geslotenverklaring / geen toegang", signId: "C1" },
+        { id: "b", label: "Verboden in te halen (motorvoertuigen)", signId: "F1" },
+        { id: "c", label: "Verplicht rechtdoor", signId: "D4" },
         { id: "d", label: "Voetgangersoversteekplaats", signId: "pedestrianCrossing" },
       ],
       correctOptionIds: ["a", "b"],
@@ -242,8 +242,8 @@ const QUESTIONS: SeedQuestion[] = [
     scene: {
       kind: "HOTSPOT",
       sceneId: "sign-strip",
-      signs: ["maxSpeed50", "maxSpeed30", "maxSpeed80", "endMaxSpeed"],
-      correctSignId: "maxSpeed30",
+      signs: ["A1-50", "A1-30", "A1-80", "A2-50"],
+      correctSignId: "A1-30",
     },
   },
 
@@ -458,8 +458,8 @@ const QUESTIONS: SeedQuestion[] = [
     scene: {
       kind: "HOTSPOT",
       sceneId: "sign-strip",
-      signs: ["noStoppingOrParking", "noParking", "oneWay", "compulsoryAheadOnly"],
-      correctSignId: "noParking",
+      signs: ["E2", "E1", "C3", "D4"],
+      correctSignId: "E1",
     },
   },
 
