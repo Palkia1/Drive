@@ -536,6 +536,41 @@ const QUESTIONS: SeedQuestion[] = [
       correctOptionId: "a",
     },
   },
+
+  // ---- Overwegen (spoorwegkruisingen) ---------------------------------------
+  {
+    topic: "voorrang",
+    type: "SINGLE_CHOICE",
+    difficulty: 2,
+    prompt: "Je nadert een overweg met een Andreaskruis, zonder slagbomen of verkeerslichten. Wat is de regel?",
+    explanation:
+      "Bij een overweg zonder slagbomen of verkeerslichten — herkenbaar aan het rood-witte Andreaskruis — verleen je altijd voorrang aan het spoorverkeer. Kijk en luister goed voor je oversteekt, ook als je geen trein ziet aankomen.",
+    scene: {
+      kind: "SINGLE_CHOICE",
+      options: [
+        { id: "a", label: "Ik heb altijd voorrang op de trein" },
+        { id: "b", label: "Ik verleen altijd voorrang aan de trein", signId: "andreaskruis" },
+        { id: "c", label: "Voorrang hangt af van wie er het eerst is" },
+        { id: "d", label: "Alleen bij twee sporen moet ik voorrang verlenen" },
+      ],
+      correctOptionId: "b",
+    },
+  },
+  {
+    topic: "verkeersborden",
+    subtopic: "gevaarsborden",
+    type: "HOTSPOT",
+    difficulty: 2,
+    prompt: "Tik op het Andreaskruis — het teken dat pal bij de rails staat, niet de waarschuwing ervoor.",
+    explanation:
+      "De gele driehoeken (J10/J11) waarschuwen al eerder voor een overweg. Het Andreaskruis zelf staat direct bij de spoorstaven en geeft aan waar je moet stoppen als er een trein nadert.",
+    scene: {
+      kind: "HOTSPOT",
+      sceneId: "sign-strip",
+      signs: ["J10", "J11", "andreaskruis", "L2"],
+      correctSignId: "andreaskruis",
+    },
+  },
 ];
 
 // ---------------------------------------------------------------------------

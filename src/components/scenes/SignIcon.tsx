@@ -379,6 +379,17 @@ function PicCarPool({ color = white }: { color?: string }) {
   );
 }
 
+/** One striped arm of an Andreaskruis (railway-crossing marker) — red with dashed-white bands over a black outline. */
+function StripedArm({ x1, y1, x2, y2, width }: { x1: number; y1: number; x2: number; y2: number; width: number }) {
+  return (
+    <g>
+      <line x1={x1} y1={y1} x2={x2} y2={y2} stroke={black} strokeWidth={width + 2} strokeLinecap="round" />
+      <line x1={x1} y1={y1} x2={x2} y2={y2} stroke={red} strokeWidth={width} strokeLinecap="round" />
+      <line x1={x1} y1={y1} x2={x2} y2={y2} stroke={white} strokeWidth={width - 1.5} strokeDasharray="6 6" />
+    </g>
+  );
+}
+
 function PicMotorway({ color = white }: { color?: string }) {
   return (
     <g transform="translate(32,33)" stroke={color} strokeWidth="3" fill="none" strokeLinecap="round">
@@ -771,6 +782,14 @@ function render(rawId: string) {
             <PicCar color={red} />
           </g>
         </ProhibitionCircle>
+      );
+    case "andreaskruis": // Overwegmarkering — geen RVV-bord (art. 40 RVV 1990), dus geen catalogue-entry
+      return (
+        <g>
+          <StripedArm x1={32} y1={20} x2={32} y2={60} width={6} />
+          <StripedArm x1={10} y1={6} x2={54} y2={34} width={7} />
+          <StripedArm x1={54} y1={6} x2={10} y2={34} width={7} />
+        </g>
       );
     case "L2": // Voetgangersoversteekplaats
       return (
