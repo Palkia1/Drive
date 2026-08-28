@@ -8,10 +8,14 @@ het Nederlandse rijbewijs-B examen, met een apart rijschooldashboard voor instru
 
 ## Snel starten
 
+De app draait op Postgres (ook lokaal — nodig omdat productie op Vercel geen SQLite
+ondersteunt). Heb je lokaal geen Postgres, dan is een gratis [Neon](https://neon.tech)-
+projectje het snelste alternatief; vul de connection string in als `DATABASE_URL`.
+
 ```bash
 npm install
-cp .env.example .env          # standaard werkt dit direct met SQLite, geen setup nodig
-npm run db:migrate            # maakt prisma/dev.db aan en past het schema toe
+cp .env.example .env          # zet hierin je eigen DATABASE_URL (lokale Postgres of bijv. Neon)
+npm run db:migrate            # past het schema toe op die database
 npm run db:seed               # vult onderwerpen, vragen, badges en demo-accounts
 npm run dev                   # http://localhost:3000
 ```
@@ -59,9 +63,9 @@ De `android/`-map wordt gewoon meegecommit (standaard bij Capacitor) — alleen 
 - **Next.js 16 (App Router) + TypeScript** — één codebase voor de leerling-app, het
   rijschooldashboard én de API, met React Server Components voor snelle, SEO-vrije
   server-rendered data-fetching en Route Handlers voor de interactieve delen.
-- **Prisma + SQLite (dev)** — het schema is expliciet geschreven zonder SQLite-specifieke
-  aannames; in productie is het een kwestie van `provider = "postgresql"` +
-  `DATABASE_URL` aanpassen (zie `prisma/schema.prisma`).
+- **Prisma + Postgres** — hetzelfde schema lokaal en in productie (Vercel), zonder
+  SQLite-specifieke aannames; migraties draaien automatisch mee in de build
+  (`prisma migrate deploy`, zie `package.json`).
 - **NextAuth (Auth.js) v5** — credentials-provider (e-mail/wachtwoord) werkt volledig;
   Google- en Apple-providers zijn bedraad maar staan uit totdat er echte OAuth-credentials
   in `.env` staan (zie §"Wat is bewust niet afgemaakt").
@@ -199,8 +203,6 @@ nu niet gebouwd:
 
 ## Bekende beperkingen
 
-- **SQLite in dev**: prima voor lokaal draaien en demo's; voor productie/meerdere
-  gelijktijdige schrijvers is Postgres nodig (schema is al provider-neutraal geschreven).
 - **Sessietoestand leeft client-side**: als je een oefensessie ververst (F5) halverwege,
   gaat de voortgang van die sessie verloren (de server heeft de losse antwoorden al wel
   opgeslagen). Nieuwe sessie starten lost dit meteen op.

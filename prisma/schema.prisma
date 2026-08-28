@@ -1,16 +1,17 @@
 // P² Studios — Theorie-app schema
 //
-// Dev uses SQLite (zero-config, file-based) so the app runs without any
-// external services. Swap `provider` to "postgresql" and set DATABASE_URL
-// to a real connection string for production — the schema itself doesn't
-// depend on SQLite (no native array/json operators are relied on).
+// Production (Vercel) runs on Postgres — set DATABASE_URL to a real
+// connection string (e.g. from Vercel Postgres / Neon). Local dev can still
+// point DATABASE_URL at a SQLite file if you'd rather not use Postgres
+// locally; the schema itself doesn't depend on either (no native
+// array/json operators are relied on).
 
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
