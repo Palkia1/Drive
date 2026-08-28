@@ -1,0 +1,502 @@
+// P² Studios — Theorie-app schema
+//
+// Dev uses SQLite (zero-config, file-based) so the app runs without any
+// external services. Swap `provider` to "postgresql" and set DATABASE_URL
+// to a real connection string for production — the schema itself doesn't
+// depend on SQLite (no native array/json operators are relied on).
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// ---------------------------------------------------------------------------
+// Accounts & auth (NextAuth-compatible)
+// ---------------------------------------------------------------------------
+
+enum UserRole {
+  STUDENT
+  INSTRUCTOR
+}
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  emailVerified DateTime?
+  passwordHash  String?
+  name          String
+  image         String?
+  role          UserRole  @default(STUDENT)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  accounts Account[]
+  sessions Session[]
+
+  student     StudentProfile?
+  ownedSchool DrivingSchool?
+
+  @@map("users")
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@map("accounts")
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+  @@map("verification_tokens")
+}
+
+// ---------------------------------------------------------------------------
+// Driving schools & licensing
+// ---------------------------------------------------------------------------
+
+model DrivingSchool {
+  id        String   @id @default(cuid())
+  name      String
+  code      String   @unique // e.g. R7K4P9 — given to students, school is not publicly listed
+  ownerId   String   @unique
+  createdAt DateTime @default(now())
+
+  owner    User             @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  license  License?
+  students StudentProfile[]
+
+  @@map("driving_schools")
+}
+
+// Seat-based licensing: a school pays for N *concurrently active* student
+// seats. Kept as its own model (rather than columns on DrivingSchool) so the
+// commercial model (tiers, trial, billing period) can evolve independently.
+model License {
+  id               String    @id @default(cuid())
+  drivingSchoolId  String    @unique
+  seats            Int
+  plan             String    @default("standard")
+  status           String    @default("active") // active | trial | suspended | canceled
+  currentPeriodEnd DateTime?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  drivingSchool DrivingSchool @relation(fields: [drivingSchoolId], references: [id], onDelete: Cascade)
+
+  @@map("licenses")
+}
+
+// ---------------------------------------------------------------------------
+// Student profile & social graph
+// ---------------------------------------------------------------------------
+
+model StudentProfile {
+  id              String  @id @default(cuid())
+  userId          String  @unique
+  username        String  @unique
+  friendCode      String  @unique // e.g. LUCAS4821
+  drivingSchoolId String?
+  licenseCategory String  @default("B")
+
+  xp             Int       @default(0)
+  level          Int       @default(1)
+  streakCount    Int       @default(0)
+  longestStreak  Int       @default(0)
+  lastActivityAt DateTime?
+  timezone       String    @default("Europe/Amsterdam")
+
+  // Privacy: what friends / leaderboard are allowed to see.
+  showOnLeaderboard      Boolean @default(true)
+  shareXpWithFriends     Boolean @default(true)
+  shareStreakWithFriends Boolean @default(true)
+  shareBadgesWithFriends Boolean @default(true)
+  shareMasteryWithFriends Boolean @default(true)
+
+  activeTitle String? // cosmetic reward, e.g. "Voorrangskenner"
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user          User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  drivingSchool DrivingSchool? @relation(fields: [drivingSchoolId], references: [id])
+
+  masteries   Mastery[]
+  attempts    Attempt[]
+  sessions    PracticeSession[]
+  marks       QuestionMark[]
+  badges      UserBadge[]
+  xpEvents    XpEvent[]
+  dailyGoals  DailyGoal[]
+  examResults ExamResult[]
+
+  friendshipsSent     Friendship[] @relation("FriendshipRequester")
+  friendshipsReceived Friendship[] @relation("FriendshipAddressee")
+
+  challengesCreated Challenge[]            @relation("ChallengeCreator")
+  challengeInvites  ChallengeParticipant[]
+
+  @@map("student_profiles")
+}
+
+enum FriendshipStatus {
+  PENDING
+  ACCEPTED
+  DECLINED
+}
+
+model Friendship {
+  id          String           @id @default(cuid())
+  requesterId String
+  addresseeId String
+  status      FriendshipStatus @default(PENDING)
+  createdAt   DateTime         @default(now())
+  respondedAt DateTime?
+
+  requester StudentProfile @relation("FriendshipRequester", fields: [requesterId], references: [id], onDelete: Cascade)
+  addressee StudentProfile @relation("FriendshipAddressee", fields: [addresseeId], references: [id], onDelete: Cascade)
+
+  @@unique([requesterId, addresseeId])
+  @@map("friendships")
+}
+
+// A lightweight, non-realtime social challenge ("who gets the most XP
+// today"). No chat, no moderation system — just a shared target + a mini
+// leaderboard among the participants.
+model Challenge {
+  id        String   @id @default(cuid())
+  creatorId String
+  metric    String   // "xp" | "topic_accuracy"
+  topicId   String?
+  label     String
+  startsAt  DateTime @default(now())
+  endsAt    DateTime
+  createdAt DateTime @default(now())
+
+  creator      StudentProfile         @relation("ChallengeCreator", fields: [creatorId], references: [id], onDelete: Cascade)
+  topic        Topic?                 @relation(fields: [topicId], references: [id])
+  participants ChallengeParticipant[]
+
+  @@map("challenges")
+}
+
+model ChallengeParticipant {
+  id          String   @id @default(cuid())
+  challengeId String
+  studentId   String
+  startXp     Int      @default(0)
+  joinedAt    DateTime @default(now())
+
+  challenge Challenge      @relation(fields: [challengeId], references: [id], onDelete: Cascade)
+  student   StudentProfile @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@unique([challengeId, studentId])
+  @@map("challenge_participants")
+}
+
+// ---------------------------------------------------------------------------
+// Content: categories (licence type) → topics → subtopics → questions
+// ---------------------------------------------------------------------------
+
+// A driving-licence category (B today; A/AM/C/D/E later). Kept as data, not
+// an enum, so a new category is a content task, not an app release.
+model Category {
+  id          String  @id @default(cuid())
+  code        String  @unique // "B", "A", "AM", ...
+  name        String
+  description String?
+  order       Int     @default(0)
+
+  topics Topic[]
+
+  @@map("categories")
+}
+
+model Topic {
+  id         String  @id @default(cuid())
+  categoryId String
+  slug       String  @unique
+  name       String
+  icon       String  @default("road-sign")
+  order      Int     @default(0)
+
+  category   Category    @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  subtopics  Subtopic[]
+  questions  Question[]
+  lessons    TheoryLesson[]
+  masteries  Mastery[]
+  challenges Challenge[]
+
+  @@map("topics")
+}
+
+model Subtopic {
+  id      String @id @default(cuid())
+  topicId String
+  slug    String @unique
+  name    String
+  order   Int    @default(0)
+
+  topic     Topic      @relation(fields: [topicId], references: [id], onDelete: Cascade)
+  questions Question[]
+
+  @@map("subtopics")
+}
+
+enum QuestionType {
+  SINGLE_CHOICE
+  MULTIPLE_CHOICE
+  HOTSPOT
+}
+
+enum QuestionStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+// The content model is deliberately generic (type + JSON scene payload)
+// so the content team can add questions/scenes through a CMS later without
+// any app release. `scene` holds type-specific data (see src/lib/questions
+// /types.ts for the shape per QuestionType).
+model Question {
+  id          String         @id @default(cuid())
+  topicId     String
+  subtopicId  String?
+  type        QuestionType   @default(SINGLE_CHOICE)
+  status      QuestionStatus @default(PUBLISHED)
+  difficulty  Int            @default(2) // 1 (easy) .. 5 (hard)
+  prompt      String
+  explanation String?
+  scene       String // JSON: options / hotspot targets / svg scene description
+  version     Int            @default(1)
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+
+  topic    Topic     @relation(fields: [topicId], references: [id], onDelete: Cascade)
+  subtopic Subtopic? @relation(fields: [subtopicId], references: [id])
+
+  attempts Attempt[]
+  marks    QuestionMark[]
+
+  @@map("questions")
+}
+
+model TheoryLesson {
+  id      String @id @default(cuid())
+  topicId String
+  slug    String @unique
+  title   String
+  order   Int    @default(0)
+  content String // JSON: array of content blocks (text / interactive / example)
+
+  topic Topic @relation(fields: [topicId], references: [id], onDelete: Cascade)
+
+  @@map("theory_lessons")
+}
+
+// ---------------------------------------------------------------------------
+// Practice, attempts & the repetition system
+// ---------------------------------------------------------------------------
+
+enum SessionMode {
+  QUICK
+  TOPIC
+  MISTAKES
+  WEAK_SPOTS
+  LESSON
+  EXAM
+}
+
+model PracticeSession {
+  id           String      @id @default(cuid())
+  studentId    String
+  mode         SessionMode
+  topicIds     String // JSON string[] of Topic.id
+  startedAt    DateTime    @default(now())
+  completedAt  DateTime?
+  xpEarned     Int         @default(0)
+  correctCount Int         @default(0)
+  totalCount   Int         @default(0)
+
+  student     StudentProfile @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  attempts    Attempt[]
+  examResult  ExamResult?
+
+  @@map("practice_sessions")
+}
+
+model Attempt {
+  id          String   @id @default(cuid())
+  studentId   String
+  questionId  String
+  sessionId   String
+  isCorrect   Boolean
+  answer      String // JSON of the given answer (option ids / hotspot id)
+  timeMs      Int
+  answeredAt  DateTime @default(now())
+
+  student  StudentProfile  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  question Question        @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  session  PracticeSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+
+  @@index([studentId, questionId])
+  @@map("attempts")
+}
+
+// Aggregated, denormalized per (student, topic) statistics. Recomputed
+// incrementally on every Attempt — see src/lib/mastery.ts. Kept separate
+// from raw Attempts so mastery reads never have to scan attempt history.
+model Mastery {
+  id              String   @id @default(cuid())
+  studentId       String
+  topicId         String
+  level           Int      @default(0) // 0..5, see mastery.ts for the promotion/demotion rule
+  totalAttempts   Int      @default(0)
+  correctAttempts Int      @default(0)
+  // last N outcomes as a compact string of "1"/"0", newest last — powers the
+  // "recent performance" + "structural regression" signals without a table scan.
+  recentOutcomes  String   @default("")
+  confidence      Float    @default(0) // 0..1, see mastery.ts
+  lastAttemptAt   DateTime?
+  updatedAt       DateTime @updatedAt
+
+  student StudentProfile @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  topic   Topic          @relation(fields: [topicId], references: [id], onDelete: Cascade)
+
+  @@unique([studentId, topicId])
+  @@map("masteries")
+}
+
+enum MarkReason {
+  MISTAKE
+  SAVED
+}
+
+// Both "answered wrong, resurface later" and "bookmarked as difficult" live
+// here so "Mijn fouten" and a future "saved questions" view share one model.
+model QuestionMark {
+  id         String     @id @default(cuid())
+  studentId  String
+  questionId String
+  reason     MarkReason
+  createdAt  DateTime   @default(now())
+  resolvedAt DateTime? // set once answered correctly again (MISTAKE only)
+
+  student  StudentProfile @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  question Question       @relation(fields: [questionId], references: [id], onDelete: Cascade)
+
+  @@unique([studentId, questionId, reason])
+  @@map("question_marks")
+}
+
+// ---------------------------------------------------------------------------
+// Gamification: XP, badges, daily goals
+// ---------------------------------------------------------------------------
+
+model XpEvent {
+  id        String   @id @default(cuid())
+  studentId String
+  amount    Int
+  reason    String // "session" | "daily_goal" | "exam" | "badge" | ...
+  createdAt DateTime @default(now())
+
+  student StudentProfile @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@index([studentId, createdAt])
+  @@map("xp_events")
+}
+
+model Badge {
+  id          String @id @default(cuid())
+  code        String @unique
+  name        String
+  description String
+  icon        String
+  rarity      String @default("common") // common | rare | epic
+
+  users UserBadge[]
+
+  @@map("badges")
+}
+
+model UserBadge {
+  id        String   @id @default(cuid())
+  studentId String
+  badgeId   String
+  earnedAt  DateTime @default(now())
+
+  student StudentProfile @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  badge   Badge          @relation(fields: [badgeId], references: [id], onDelete: Cascade)
+
+  @@unique([studentId, badgeId])
+  @@map("user_badges")
+}
+
+model DailyGoal {
+  id          String    @id @default(cuid())
+  studentId   String
+  date        String // YYYY-MM-DD in student's timezone
+  goalType    String // "answer_questions" | "complete_sessions" | "practice_minutes"
+  target      Int
+  progress    Int       @default(0)
+  completedAt DateTime?
+
+  student StudentProfile @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@unique([studentId, date])
+  @@map("daily_goals")
+}
+
+// ---------------------------------------------------------------------------
+// Exams
+// ---------------------------------------------------------------------------
+
+model ExamResult {
+  id          String   @id @default(cuid())
+  studentId   String
+  sessionId   String   @unique
+  scorePct    Float
+  passed      Boolean
+  totalCount  Int
+  correctCount Int
+  breakdown   String // JSON: { topicId: { correct, total } }
+  createdAt   DateTime @default(now())
+
+  student StudentProfile  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  session PracticeSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+
+  @@map("exam_results")
+}

@@ -1,0 +1,149 @@
+# Rijklaar — theorie-app voor Nederlandse rijscholen
+
+Een MVP-implementatie van het P² Studios productbrief: een Duolingo-achtige theorie-app voor
+het Nederlandse rijbewijs-B examen, met een apart rijschooldashboard voor instructeurs.
+
+> **"Rijklaar"** is een placeholder-merknaam, niet vastgelegd in het brief — makkelijk aan te
+> passen (zoek/vervang, plus `metadata.title` in `src/app/layout.tsx`).
+
+## Snel starten
+
+```bash
+npm install
+cp .env.example .env          # standaard werkt dit direct met SQLite, geen setup nodig
+npm run db:migrate            # maakt prisma/dev.db aan en past het schema toe
+npm run db:seed               # vult onderwerpen, vragen, badges en demo-accounts
+npm run dev                   # http://localhost:3000
+```
+
+### Demo-accounts (uit de seed, wachtwoord voor iedereen: zie hieronder)
+
+| Rol | E-mail | Wachtwoord | Notitie |
+|---|---|---|---|
+| Rijschoolhouder | `instructeur@rijschooldeboer.nl` | `demo1234` | Rijschool "De Boer", code `DB4K7P` |
+| Leerling (gekoppeld) | `lucas@example.com` | `demo1234` | Gekoppeld aan Rijschool De Boer |
+| Leerling (gekoppeld) | `fenna@example.com` | `demo1234` | Gekoppeld aan Rijschool De Boer |
+| Leerling (zelfstandig) | `noah@example.com` | `demo1234` | Geen rijschool |
+
+Nieuwe leerlingen kunnen zich ook gewoon registreren via `/registreren` en daarbij de code
+`DB4K7P` invullen om zich aan de demo-rijschool te koppelen.
+
+## Techstack — en waarom
+
+- **Next.js 16 (App Router) + TypeScript** — één codebase voor de leerling-app, het
+  rijschooldashboard én de API, met React Server Components voor snelle, SEO-vrije
+  server-rendered data-fetching en Route Handlers voor de interactieve delen.
+- **Prisma + SQLite (dev)** — het schema is expliciet geschreven zonder SQLite-specifieke
+  aannames; in productie is het een kwestie van `provider = "postgresql"` +
+  `DATABASE_URL` aanpassen (zie `prisma/schema.prisma`).
+- **NextAuth (Auth.js) v5** — credentials-provider (e-mail/wachtwoord) werkt volledig;
+  Google- en Apple-providers zijn bedraad maar staan uit totdat er echte OAuth-credentials
+  in `.env` staan (zie §"Wat is bewust niet afgemaakt").
+- **Tailwind CSS v4** — eigen designtokens (kleuren, radius, schaduwen) in
+  `src/app/globals.css`, geen kant-en-klare component-library. De stijl is bewust *niet*
+  Duolingo-groen: een rustige, iets serieuzere "verkeerseducatie"-blauw/amber-palet.
+- **Framer Motion** — subtiele micro-animaties (level-up confetti, pop-ins).
+- **Eigen SVG-scenes** (`src/components/scenes`) in plaats van stockfoto's of een externe
+  asset-pipeline: een herbruikbare kruispunt-scene (auto's/fietsers/voetgangers op vaste
+  "sloten") en een handgetekende verkeersbordenset. Consistente stijl, geen losse
+  illustraties nodig, en makkelijk uit te breiden met nieuwe scenario's.
+
+## Wat is er gebouwd (MVP-kern uit §47 van het brief)
+
+- Leerling-accounts (e-mail/wachtwoord; Google/Apple UI-klaar, zie hieronder)
+- Rijschool-accounts met unieke rijschoolcode, seat-based licentie (`License.seats`)
+- Leerlingen koppelen/loskoppelen via code, nooit aan 2 scholen tegelijk (schema-constraint)
+- Contentmodel: Categorie (rijbewijs B, uitbreidbaar naar A/AM/C/D/E) → Onderwerp →
+  Subonderwerp → Vraag, volledig los van de app-code (zie `prisma/seed.ts`)
+- Korte oefensessies (8 vragen), snel/onderwerp/combinatie/fouten/zwakke-punten-modi
+- 3 interactieve vraagtypes: **single choice**, **multiple choice**, **hotspot**
+  (kruispunt-scene en bordenrij) — zie `src/lib/questions/types.ts`
+- Foutenregistratie ("Mijn fouten") + "bewaar voor later" bookmarks
+- Een lichtgewicht spaced-repetition-achtige selectie (nooit/lang-niet-geziene vragen
+  krijgen voorrang) — zie `src/lib/practice.ts`
+- Mastery-algoritme per onderwerp (0-5), bewust conservatief — zie §"Mastery-algoritme"
+- XP, account-levels, dagelijkse streak (géén levens/harten, nooit bestraffend)
+- Dagelijkse doelen, badges, vieringsanimatie (confetti) bij mijlpalen
+- Profiel met granulaire privacy-instellingen (los in te stellen: leaderboard, XP, streak,
+  badges, mastery zichtbaar voor vrienden)
+- Vrienden via vriendschapscode, verzoeken accepteren/weigeren
+- Landelijk dagelijks scoreboard (reset vanzelf — het is gewoon "XP sinds middernacht",
+  geen aparte reset-job nodig)
+- Examenmodus: apart, rustiger UI, geen tussentijdse feedback, pas-percentage o.b.v.
+  CBR-achtige 88%-drempel, en een **expliciet onderscheid** tussen "dit examen gehaald"
+  en "klaar voor het echte examen" (zie `src/lib/readiness.ts`)
+- Rijschooldashboard: leerlingoverzicht (activiteit, sterk/zwak onderwerp, examens) +
+  leerlingdetail (mastery per onderwerp, examenhistorie, recente sessies)
+
+## Mastery-algoritme (bewust simpel, zie brief §16/§37)
+
+`src/lib/mastery.ts` berekent per (leerling, onderwerp) een confidence-score uit drie
+signalen — **volume** (hoeveel vragen al beantwoord), **moeilijkheidsgewogen accuracy**, en
+**recente prestaties** (laatste 12 antwoorden wegen zwaarder) — en leidt daar een level
+(0-5) uit af. Onder de 5 beantwoorde vragen toont de UI altijd expliciet **"Nog onvoldoende
+gegevens"** in plaats van een geraden niveau (zie het rijschooldashboard-screenshot-gedrag:
+een leerling zonder activiteit toont dit voor élk onderwerp, nooit een verzonnen getal).
+
+Het level wordt bij elk antwoord **opnieuw berekend** uit de volledige recente historie —
+niet met losse ophoog/verlaag-regels — dus een leerling die na een sterke periode weer
+structureel fouten maakt, zakt vanzelf terug. Dit is nadrukkelijk een verklaarbare
+heuristiek, geen gekalibreerd psychometrisch model — precies zoals het brief vraagt
+("mag niet doen alsof het intelligent is als het dat niet is").
+
+## Wat is bewust niet afgemaakt (zie brief §47 "daarna uitbreiden")
+
+Deze dingen zijn *ontworpen om niet in de weg te zitten* bij latere uitbreiding, maar zijn
+nu niet gebouwd:
+
+- **Google/Apple-login**: providers staan al in `src/lib/auth.ts`, maar zonder
+  `AUTH_GOOGLE_ID`/`AUTH_APPLE_ID` in `.env` blijven de knoppen bewust uitgeschakeld i.p.v.
+  een nep-flow te tonen.
+- **Contentbeheer-UI**: vragen/lessen zitten in een los, uitbreidbaar schema (zie §40 van
+  het brief), maar er is geen CMS-scherm — content wordt nu via `prisma/seed.ts` beheerd.
+  De 26 seed-vragen zijn geschreven om de app te demonstreren, **niet geverifieerd door
+  een CBR-gecertificeerde content-editor** — dat is een randvoorwaarde voor een echte
+  lancering (brief §42).
+- **Extra vraagtypes** (volgorde bepalen, sleepvragen, afstand beoordelen): het schema
+  (`QuestionType`) is uitbreidbaar, maar alleen single/multiple/hotspot zijn gebouwd.
+  Genoeg om eentonigheid te voorkomen (brief §19), niet de volledige lijst.
+  Theorie-lessen (`TheoryLesson`) zitten in het schema en de seed (2 voorbeelden), maar
+  hebben nog geen eigen leesscherm — alleen de bijbehorende oefensessie (`mode: LESSON`
+  in `src/lib/practice.ts`) is bedraad.
+- **Pushmeldingen**: functioneel niet gebouwd (vereist een mobiele shell/service worker +
+  een notificatie-provider); het datamodel houdt al bij wat je zou willen weten
+  (streak, laatste activiteit, XP-verschil) om zulke meldingen later te voeden.
+- **Cosmetische beloningen / titels**: `StudentProfile.activeTitle` bestaat en wordt getoond
+  op het profiel, maar er is geen "unlock"-systeem gebouwd.
+- **Challenges tussen vrienden** (brief §5): het datamodel (`Challenge`,
+  `ChallengeParticipant`) staat al klaar, maar er is geen UI voor.
+- **Licentie-/betaalflow**: `License` heeft een `plan`/`status`/`seats`, seat-limiet wordt
+  al gehandhaafd bij het koppelen van een leerling — maar er zit geen betaalprovider achter.
+
+## Bekende beperkingen
+
+- **SQLite in dev**: prima voor lokaal draaien en demo's; voor productie/meerdere
+  gelijktijdige schrijvers is Postgres nodig (schema is al provider-neutraal geschreven).
+- **Sessietoestand leeft client-side**: als je een oefensessie ververst (F5) halverwege,
+  gaat de voortgang van die sessie verloren (de server heeft de losse antwoorden al wel
+  opgeslagen). Nieuwe sessie starten lost dit meteen op.
+- **Dag-grenzen gebruiken de serverklok (UTC)**, niet de tijdzone van de leerling — voor
+  de streak en het dagelijkse scoreboard. `StudentProfile.timezone` staat al in het schema
+  om dit later per leerling correct te maken.
+- **Vragenbank is klein** (26 vragen, bewust illustratief) — genoeg om elke flow te testen,
+  te weinig om herhaling te voorkomen bij langdurig gebruik. Contentuitbreiding raakt geen
+  enkele code, alleen `prisma/seed.ts` (of een toekomstige CMS).
+
+## Projectstructuur
+
+```
+prisma/schema.prisma       Volledig datamodel (zie inline comments per model)
+prisma/seed.ts             Onderwerpen, vragen, badges, demo-accounts
+src/lib/                   Server-side logica: auth, mastery, gamification, practice-selectie,
+                            leaderboard, exam-readiness — bewust gescheiden van de UI
+src/app/api/                Route handlers (sessies starten/beantwoorden/afronden, vrienden,
+                            profiel, registratie)
+src/app/app/                Leerling-app (bottom-nav shell, guard via requireStudent())
+src/app/school/              Rijschooldashboard (guard via requireInstructor())
+src/components/scenes/      Herbruikbare SVG-illustraties (kruispunt, verkeersborden)
+src/components/practice/    De kern-leerloop: vraagkaart, sessie-runner, resultatenscherm
+```
