@@ -10,7 +10,7 @@ export const LESSON_PRACTICE_SIZE = 4;
 // that would otherwise swamp the "a bit of everything" pools. Still fully
 // reachable via mode: "TOPIC" with one of these ids (see OefenenClient's
 // dedicated buttons), just excluded from QUICK/EXAM/WEAK_SPOTS.
-const RECOGNITION_TOPIC_SLUGS = ["bord-naar-betekenis", "betekenis-naar-bord"];
+export const RECOGNITION_TOPIC_SLUGS = ["bord-naar-betekenis", "betekenis-naar-bord"];
 
 function shuffle<T>(arr: T[]): T[] {
   const copy = [...arr];

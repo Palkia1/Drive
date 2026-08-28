@@ -4,6 +4,9 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
+import { Mail, Lock } from "lucide-react";
+import { AuthShell } from "@/components/ui/AuthShell";
+import { IconInput } from "@/components/ui/IconInput";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -27,62 +30,64 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="flex-1 flex items-center justify-center px-6 py-12">
-      <div className="w-full max-w-sm">
-        <Link href="/" className="font-extrabold text-lg tracking-tight" style={{ color: "var(--brand-600)" }}>
-          Rijklaar
-        </Link>
-        <h1 className="mt-6 text-2xl font-bold">Welkom terug</h1>
-        <p className="mt-1 text-sm" style={{ color: "var(--foreground-muted)" }}>
-          Log in om verder te oefenen.
-        </p>
-
-        <form onSubmit={onSubmit} className="mt-6 space-y-3">
-          <input
-            type="email"
-            required
-            placeholder="E-mailadres"
-            className="input"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-          <input
-            type="password"
-            required
-            placeholder="Wachtwoord"
-            className="input"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-          {error && (
-            <p className="text-sm font-medium" style={{ color: "var(--danger-500)" }}>
-              {error}
-            </p>
-          )}
-          <button type="submit" disabled={loading} className="btn-primary w-full">
-            {loading ? "Bezig..." : "Inloggen"}
-          </button>
-        </form>
-
-        <div className="mt-4 space-y-2">
-          <button type="button" disabled className="btn-secondary w-full opacity-60 cursor-not-allowed">
-            Doorgaan met Google
-          </button>
-          <button type="button" disabled className="btn-secondary w-full opacity-60 cursor-not-allowed">
-            Doorgaan met Apple
-          </button>
-          <p className="text-xs text-center" style={{ color: "var(--foreground-muted)" }}>
-            Google/Apple-login is voorbereid maar nog niet actief in deze omgeving.
+    <AuthShell title="Welkom terug" subtitle="Log in om verder te oefenen.">
+      <form onSubmit={onSubmit} className="mt-5 space-y-3">
+        <IconInput icon={Mail} type="email" required placeholder="E-mailadres" value={email} onChange={(e) => setEmail(e.target.value)} />
+        <IconInput
+          icon={Lock}
+          type="password"
+          required
+          placeholder="Wachtwoord"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />
+        {error && (
+          <p className="text-sm font-medium" style={{ color: "var(--danger-500)" }}>
+            {error}
           </p>
-        </div>
+        )}
+        <button type="submit" disabled={loading} className="btn-primary w-full">
+          {loading ? "Bezig..." : "Inloggen"}
+        </button>
+      </form>
 
-        <p className="mt-8 text-sm text-center" style={{ color: "var(--foreground-muted)" }}>
-          Nog geen account?{" "}
-          <Link href="/registreren" className="font-semibold" style={{ color: "var(--brand-600)" }}>
-            Registreer gratis
-          </Link>
+      <div className="mt-5">
+        <div className="flex items-center gap-3">
+          <span className="flex-1 h-px" style={{ background: "var(--border)" }} />
+          <span className="text-xs font-semibold" style={{ color: "var(--foreground-muted)" }}>
+            Of ga verder met
+          </span>
+          <span className="flex-1 h-px" style={{ background: "var(--border)" }} />
+        </div>
+        <div className="mt-3 flex items-center justify-center gap-3">
+          <SocialCircle label="Google">G</SocialCircle>
+          <SocialCircle label="Apple">A</SocialCircle>
+        </div>
+        <p className="text-xs text-center mt-2" style={{ color: "var(--foreground-muted)" }}>
+          Nog niet actief in deze omgeving.
         </p>
       </div>
-    </div>
+
+      <p className="mt-6 text-sm text-center" style={{ color: "var(--foreground-muted)" }}>
+        Nog geen account?{" "}
+        <Link href="/registreren" className="font-semibold" style={{ color: "var(--brand-600)" }}>
+          Registreer gratis
+        </Link>
+      </p>
+    </AuthShell>
+  );
+}
+
+function SocialCircle({ children, label }: { children: React.ReactNode; label: string }) {
+  return (
+    <button
+      type="button"
+      disabled
+      aria-label={label}
+      className="w-11 h-11 rounded-full flex items-center justify-center font-bold text-sm opacity-60 cursor-not-allowed"
+      style={{ background: "var(--surface-muted)", color: "var(--foreground-muted)", boxShadow: "inset 0 0 0 1.5px var(--border)" }}
+    >
+      {children}
+    </button>
   );
 }

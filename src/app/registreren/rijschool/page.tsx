@@ -4,6 +4,9 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
+import { Building2, User, Mail, Lock } from "lucide-react";
+import { AuthShell } from "@/components/ui/AuthShell";
+import { IconInput } from "@/components/ui/IconInput";
 
 export default function RegisterSchoolPage() {
   const router = useRouter();
@@ -43,56 +46,46 @@ export default function RegisterSchoolPage() {
   }
 
   return (
-    <div className="flex-1 flex items-center justify-center px-6 py-12">
-      <div className="w-full max-w-sm">
-        <Link href="/" className="font-extrabold text-lg tracking-tight" style={{ color: "var(--brand-600)" }}>
-          Rijklaar
+    <AuthShell title="Registreer je rijschool" subtitle="Je krijgt direct een unieke rijschoolcode om aan leerlingen te geven.">
+      <form onSubmit={onSubmit} className="mt-5 space-y-3">
+        <IconInput icon={Building2} required placeholder="Naam rijschool" value={schoolName} onChange={(e) => setSchoolName(e.target.value)} />
+        <IconInput icon={User} required placeholder="Jouw naam" value={ownerName} onChange={(e) => setOwnerName(e.target.value)} />
+        <IconInput icon={Mail} type="email" required placeholder="E-mailadres" value={email} onChange={(e) => setEmail(e.target.value)} />
+        <IconInput
+          icon={Lock}
+          type="password"
+          required
+          minLength={8}
+          placeholder="Wachtwoord (min. 8 tekens)"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />
+        <label className="block text-sm font-medium" style={{ color: "var(--foreground-muted)" }}>
+          Aantal leerlingplekken (later aan te passen)
+          <select className="input mt-1" value={seats} onChange={(e) => setSeats(Number(e.target.value))}>
+            {[10, 25, 50, 100].map((n) => (
+              <option key={n} value={n}>
+                {n} leerlingen
+              </option>
+            ))}
+          </select>
+        </label>
+        {error && (
+          <p className="text-sm font-medium" style={{ color: "var(--danger-500)" }}>
+            {error}
+          </p>
+        )}
+        <button type="submit" disabled={loading} className="btn-primary w-full">
+          {loading ? "Bezig..." : "Rijschool aanmaken"}
+        </button>
+      </form>
+
+      <p className="mt-6 text-sm text-center" style={{ color: "var(--foreground-muted)" }}>
+        Ben je een leerling?{" "}
+        <Link href="/registreren" className="font-semibold" style={{ color: "var(--brand-600)" }}>
+          Registreer hier
         </Link>
-        <h1 className="mt-6 text-2xl font-bold">Registreer je rijschool</h1>
-        <p className="mt-1 text-sm" style={{ color: "var(--foreground-muted)" }}>
-          Je krijgt direct een unieke rijschoolcode om aan leerlingen te geven.
-        </p>
-
-        <form onSubmit={onSubmit} className="mt-6 space-y-3">
-          <input required placeholder="Naam rijschool" className="input" value={schoolName} onChange={(e) => setSchoolName(e.target.value)} />
-          <input required placeholder="Jouw naam" className="input" value={ownerName} onChange={(e) => setOwnerName(e.target.value)} />
-          <input type="email" required placeholder="E-mailadres" className="input" value={email} onChange={(e) => setEmail(e.target.value)} />
-          <input
-            type="password"
-            required
-            minLength={8}
-            placeholder="Wachtwoord (min. 8 tekens)"
-            className="input"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-          <label className="block text-sm font-medium" style={{ color: "var(--foreground-muted)" }}>
-            Aantal leerlingplekken (later aan te passen)
-            <select className="input mt-1" value={seats} onChange={(e) => setSeats(Number(e.target.value))}>
-              {[10, 25, 50, 100].map((n) => (
-                <option key={n} value={n}>
-                  {n} leerlingen
-                </option>
-              ))}
-            </select>
-          </label>
-          {error && (
-            <p className="text-sm font-medium" style={{ color: "var(--danger-500)" }}>
-              {error}
-            </p>
-          )}
-          <button type="submit" disabled={loading} className="btn-primary w-full">
-            {loading ? "Bezig..." : "Rijschool aanmaken"}
-          </button>
-        </form>
-
-        <p className="mt-8 text-sm text-center" style={{ color: "var(--foreground-muted)" }}>
-          Ben je een leerling?{" "}
-          <Link href="/registreren" className="font-semibold" style={{ color: "var(--brand-600)" }}>
-            Registreer hier
-          </Link>
-        </p>
-      </div>
-    </div>
+      </p>
+    </AuthShell>
   );
 }
