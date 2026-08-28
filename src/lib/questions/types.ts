@@ -56,18 +56,10 @@ export type QuestionScene =
   | SignStripHotspotScene;
 
 /**
- * A sign id is either an official RVV code (see signCatalogue.ts), optionally
- * with a number suffix for parametrized signs (e.g. "A1-50", "C18-250"), or
- * one of a handful of legacy J-category (waarschuwing) placeholders kept
- * around until that category gets its own sourced pass — see SignIcon.tsx.
- * A plain `string` (rather than a giant literal union) is the right type
- * here precisely because of the numeric suffixes: no finite union could
- * express "any A1 code with any speed number" without losing that check.
+ * A sign id is an official RVV code (see signCatalogue.ts), optionally with a
+ * number suffix for parametrized signs (e.g. "A1-50"). A plain `string`
+ * (rather than a giant literal union) is the right type here precisely
+ * because of those numeric suffixes: no finite union could express "any A1
+ * code with any speed number" without losing that check.
  */
 export type SignId = string;
-
-export const LEGACY_WARNING_SIGN_IDS = [
-  "warningChildren",
-  "warningSlipperyRoad",
-  "warningRoadNarrows",
-] as const;

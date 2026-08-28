@@ -1,22 +1,27 @@
 import { baseCodeOf, numberOf } from "@/lib/questions/signCatalogue";
+import { REAL_SIGN_FILES } from "@/lib/questions/realSigns.generated";
 
 /**
  * Renders a Dutch traffic sign from its RVV code (see signCatalogue.ts for
- * the sourced code → name list). The pictograms below are hand-drawn by us,
- * not traced from official artwork — we tried to fetch reference SVGs from
- * Wikimedia Commons (the RVV designs are public domain, being government-
- * prescribed) but hit that host's rate limit on the shared dev proxy. So:
- * codes and names are sourced and correct; the drawings are our best-effort
- * and — like the seed questions — need a driving-instructor review pass
- * before this is exam-accurate. Every question that shows a sign renders it
- * through this one component, so at least the visual language stays
- * identical across the whole app.
+ * the sourced code → name list).
  *
- * Covers categories A, B, C, D, E, G (what a real theory exam draws from).
- * J (waarschuwing) is a follow-up — three old ad-hoc J icons are kept working
- * unchanged at the bottom of `render()` until that pass happens.
+ * Where real artwork exists (public/signs/, tracked in realSigns.generated.ts
+ * — regenerate with `npm run signs:manifest`), that's what renders: an
+ * <img> straight from the static file. For the remaining codes we fall back
+ * to a hand-drawn approximation below — not traced from official artwork,
+ * so treat those specific shapes as illustrative pending an instructor
+ * review pass, same caveat as the seed questions. Every question that shows
+ * a sign renders it through this one component, so the visual language
+ * (real or hand-drawn) stays consistent across the whole app.
  */
 export function SignIcon({ id, size = 56 }: { id: string; size?: number }) {
+  const ext = REAL_SIGN_FILES[id];
+  if (ext) {
+    return (
+      // eslint-disable-next-line @next/next/no-img-element -- fixed-size icon from a huge, sparsely-used static set; next/image's optimizer overhead isn't worth it here.
+      <img src={`/signs/${id}.${ext}`} width={size} height={size} alt={id} style={{ display: "block" }} />
+    );
+  }
   return (
     <svg width={size} height={size} viewBox="0 0 64 64" role="img" aria-label={id}>
       {render(id)}
@@ -753,33 +758,9 @@ function render(rawId: string) {
         </InfoSquare>
       );
 
-    // --- legacy J placeholders (unchanged, pending a sourced J-category pass) ---
-    case "warningChildren":
-      return (
-        <g>
-          <polygon points="32,6 60,56 4,56" fill={yellow} stroke={red} strokeWidth="5" strokeLinejoin="round" />
-          <circle cx="24" cy="34" r="4.5" fill={black} />
-          <circle cx="38" cy="30" r="5.5" fill={black} />
-          <path d="M18 48 q6 -12 12 -2 M30 48 q8 -16 16 -4" stroke={black} strokeWidth="3" fill="none" strokeLinecap="round" />
-        </g>
-      );
-    case "warningSlipperyRoad":
-      return (
-        <g>
-          <polygon points="32,6 60,56 4,56" fill={yellow} stroke={red} strokeWidth="5" strokeLinejoin="round" />
-          <path d="M14 44 q9 -18 18 0 q9 -18 18 0" stroke={black} strokeWidth="3.5" fill="none" strokeLinecap="round" />
-        </g>
-      );
-    case "warningRoadNarrows":
-      return (
-        <g>
-          <polygon points="32,6 60,56 4,56" fill={yellow} stroke={red} strokeWidth="5" strokeLinejoin="round" />
-          <path d="M12 46 L26 30 L38 30 L52 46 M26 30 L32 40 L38 30" stroke={black} strokeWidth="3" fill="none" strokeLinejoin="round" strokeLinecap="round" />
-        </g>
-      );
-
-    // A couple of one-off signs from categories outside this pass's scope
-    // (F, L) that existing seed questions already relied on.
+    // Hand-drawn fallbacks for codes with no real art yet (or, for F1, kept
+    // as a defensive fallback even though real art exists — SignIcon always
+    // checks REAL_SIGN_FILES first, so this only runs if that file goes missing).
     case "F1": // Verbod motorvoertuigen in te halen
       return (
         <ProhibitionCircle>
@@ -791,7 +772,7 @@ function render(rawId: string) {
           </g>
         </ProhibitionCircle>
       );
-    case "pedestrianCrossing": // L2, Voetgangersoversteekplaats
+    case "L2": // Voetgangersoversteekplaats
       return (
         <g>
           <rect x="6" y="6" width="52" height="52" rx="6" fill={blue} />
@@ -801,6 +782,29 @@ function render(rawId: string) {
       );
 
     default:
+      // A handful of catalogue codes (e.g. J12/J13) have neither real art nor
+      // a hand-drawn case yet. Rather than guess a pictogram, show an honest
+      // "not illustrated yet" placeholder shaped like its real category.
+      if (code.startsWith("J")) {
+        return (
+          <g>
+            <polygon points="32,8 58,54 6,54" fill={yellow} stroke={red} strokeWidth="5" strokeLinejoin="round" />
+            <text x="32" y="46" textAnchor="middle" fontSize="22" fontWeight="800" fill={black} fontFamily="sans-serif">
+              ?
+            </text>
+          </g>
+        );
+      }
+      if (code.startsWith("L")) {
+        return (
+          <g>
+            <rect x="6" y="6" width="52" height="52" rx="8" fill={blue} />
+            <text x="32" y="42" textAnchor="middle" fontSize="24" fontWeight="800" fill={white} fontFamily="sans-serif">
+              ?
+            </text>
+          </g>
+        );
+      }
       return <circle cx="32" cy="32" r="28" fill="#ccc" />;
   }
 }

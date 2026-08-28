@@ -210,7 +210,7 @@ const QUESTIONS: SeedQuestion[] = [
         { id: "a", label: "Geslotenverklaring / geen toegang", signId: "C1" },
         { id: "b", label: "Verboden in te halen (motorvoertuigen)", signId: "F1" },
         { id: "c", label: "Verplicht rechtdoor", signId: "D4" },
-        { id: "d", label: "Voetgangersoversteekplaats", signId: "pedestrianCrossing" },
+        { id: "d", label: "Voetgangersoversteekplaats", signId: "L2" },
       ],
       correctOptionIds: ["a", "b"],
     },

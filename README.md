@@ -93,20 +93,26 @@ heuristiek, geen gekalibreerd psychometrisch model — precies zoals het brief v
 
 ## Verkeersbordencatalogus
 
-`src/lib/questions/signCatalogue.ts` bevat 67 officiële RVV 1990-borden (categorieën
-A/B/C/D/E/G — precies wat een echt CBR-theorie-examen gebruikt; J/F/H/K/L zijn een
-vervolgstap). De **codes en namen zijn gecontroleerd** tegen de OpenStreetMap NL-
-bordenreferentie (die kaart-tagging voedt en dus overeen moet komen met de wettelijke
-bijlage), niet uit het geheugen gegokt. De **tekeningen** in `SignIcon.tsx` zijn wél
-zelfgemaakt: een poging om de officiële vectorbestanden van Wikimedia Commons te gebruiken
-(publiek domein, want wettelijk voorgeschreven ontwerpen) liep tegen een rate-limit van
-Wikimedia op de gedeelde dev-proxy aan. Dus: codes/namen zijn betrouwbaar, de pictogrammen
-zijn een eerste versie die nog een instructeur-controle nodig heeft, zoals de rest van de
-content (zie hieronder). Bekijk ze op `/app/borden` (ingelogd als leerling) of via de link
-onderaan het profielscherm.
+`src/lib/questions/signCatalogue.ts` bevat 128 officiële RVV 1990-borden (categorieën
+A/B/C/D/E/F/G/H/J/L). De **codes en namen zijn gecontroleerd** tegen de OpenStreetMap
+NL-bordenreferentie (die kaart-tagging voedt en dus overeen moet komen met de wettelijke
+bijlage, aangevuld met itheorie.nl voor een paar L-codes die daar ontbraken), niet uit het
+geheugen gegokt.
 
-Nummerborden (snelheid, afmetingen) zijn geparametriseerd in plaats van uitgeschreven, bv.
-`"A1-50"` voor een 50 km/h-bord — zie `baseCodeOf`/`numberOf` in hetzelfde bestand.
+Voor de **tekeningen** geldt: 110 van de 128 borden renderen nu echte, door de gebruiker
+aangeleverde vectorbestanden (`public/signs/*.svg`/`.png`) in plaats van een eigen
+benadering — een eerdere poging om die vanaf Wikimedia Commons te scrapen liep tegen een
+rate-limit op de gedeelde dev-proxy aan, dus zijn ze via Google Drive en een directe
+upload aangeleverd. `SignIcon.tsx` rendert automatisch de echte artwork zodra die
+bestaat (zie `realSigns.generated.ts`, gegenereerd met `npm run signs:manifest` — opnieuw
+draaien na het toevoegen van bestanden aan `public/signs/`) en valt voor de resterende
+~18 borden terug op een zelfgetekende, illustratieve versie die nog een instructeur-controle
+nodig heeft. Op `/app/borden` (link onderaan het profielscherm) is dit meteen zichtbaar:
+borden met een blauw randje hebben echte artwork, de rest is de tijdelijke tekening.
+
+Nummerborden (snelheid) zijn geparametriseerd, bv. `"A1-50"` voor een 50 km/h-bord — zie
+`baseCodeOf`/`numberOf` in `signCatalogue.ts`. Categorie K (milieuzones) en een handvol
+zeldzame J/L-varianten zijn nog niet toegevoegd.
 
 ## Wat is bewust niet afgemaakt (zie brief §47 "daarna uitbreiden")
 
@@ -136,9 +142,9 @@ nu niet gebouwd:
   `ChallengeParticipant`) staat al klaar, maar er is geen UI voor.
 - **Licentie-/betaalflow**: `License` heeft een `plan`/`status`/`seats`, seat-limiet wordt
   al gehandhaafd bij het koppelen van een leerling — maar er zit geen betaalprovider achter.
-- **Verkeersbordencategorie J (waarschuwing, ~40 borden)** en de kleine F/H/K/L-categorieën
-  zijn nog niet toegevoegd aan de bordencatalogus (zie hierboven) — drie oude J-iconen
-  (kinderen, slipgevaar, wegversmalling) blijven ongewijzigd werken tot die pas gedaan is.
+- **Categorie K (milieuzones)** en een handvol zeldzame J/L-varianten zitten nog niet in de
+  bordencatalogus (zie hierboven) — de rest van J/L/F/H is inmiddels wel toegevoegd, met
+  echte artwork voor het merendeel.
 
 ## Bekende beperkingen
 
