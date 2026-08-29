@@ -81,22 +81,22 @@ const QUESTIONS: SeedQuestion[] = [
     subtopic: "gelijkwaardige-kruispunten",
     type: "HOTSPOT",
     difficulty: 2,
-    prompt: "Wie heeft hier voorrang?",
+    prompt: "Jij rijdt de rode auto en nadert dit kruispunt vanuit het westen. Er staan geen borden. Wie mag als eerste rijden?",
     explanation:
-      "Op een kruispunt zonder verkeersborden of verkeerslichten geldt: bestuurders van rechts hebben voorrang.",
+      "Op een kruispunt zonder verkeersborden of verkeerslichten geldt: bestuurders van rechts hebben voorrang. Jij kijkt naar rechts en ziet de blauwe auto — die moet je voor laten gaan.",
     scene: {
       kind: "HOTSPOT",
       sceneId: "intersection",
       hasRightOfWaySign: null,
       actors: [
         { slot: "south", kind: "car", color: "var(--sign-blue)", facing: "straight" },
-        { slot: "west", kind: "car", color: "var(--sign-red)", facing: "straight" },
+        { slot: "west", kind: "car", color: "var(--sign-red)", facing: "straight", self: true },
       ],
-      // West-bound (red) driver looks to their right and sees the
+      // West-bound (red, "jij") driver looks to their right and sees the
       // south-bound (blue) car approaching — red must give way, so blue has
       // priority. (Previously set to "west" — backwards.)
       correctSlot: "south",
-      question: "Wie heeft hier voorrang?",
+      question: "Wie mag als eerste rijden?",
     },
   },
   {
@@ -159,16 +159,16 @@ const QUESTIONS: SeedQuestion[] = [
     topic: "voorrang",
     type: "HOTSPOT",
     difficulty: 3,
-    prompt: "Jij komt van de zijweg zonder bord, de ander rijdt op de voorrangsweg. Wie mag als eerst rijden?",
+    prompt: "Jij rijdt de rode auto en komt van de zijweg zonder bord. De blauwe auto rijdt op de voorrangsweg. Wie mag als eerst rijden?",
     explanation:
-      "Het bord 'voorrangsweg' geeft je voorrang op alle kruisende wegen, ongeacht de richting waaruit het andere verkeer komt.",
+      "Het bord 'voorrangsweg' (bij de blauwe auto's weg) geeft voorrang op alle kruisende wegen, ongeacht de richting waaruit het andere verkeer komt.",
     scene: {
       kind: "HOTSPOT",
       sceneId: "intersection",
-      hasRightOfWaySign: "priority-road",
+      hasRightOfWaySign: { kind: "priority-road", slot: "north" },
       actors: [
         { slot: "north", kind: "car", color: "var(--sign-blue)", facing: "straight" },
-        { slot: "east", kind: "car", color: "var(--sign-red)", facing: "straight" },
+        { slot: "east", kind: "car", color: "var(--sign-red)", facing: "straight", self: true },
       ],
       correctSlot: "north",
       question: "Wie mag als eerst rijden?",
@@ -179,15 +179,15 @@ const QUESTIONS: SeedQuestion[] = [
     subtopic: "voorrangsborden",
     type: "HOTSPOT",
     difficulty: 2,
-    prompt: "Jij nadert dit kruispunt en ziet het bord 'verleen voorrang'. De ander heeft geen bord. Wie mag als eerst rijden?",
+    prompt: "Jij rijdt de rode auto en ziet het bord 'verleen voorrang'. De blauwe auto heeft geen bord. Wie mag als eerst rijden?",
     explanation:
       "Bord B6 ('verleen voorrang') verplicht je voorrang te geven aan bestuurders op de kruisende weg — je hoeft niet per se te stoppen, maar wel voorrang te verlenen.",
     scene: {
       kind: "HOTSPOT",
       sceneId: "intersection",
-      hasRightOfWaySign: "give-way",
+      hasRightOfWaySign: { kind: "give-way", slot: "south" },
       actors: [
-        { slot: "south", kind: "car", color: "var(--sign-red)", facing: "straight" },
+        { slot: "south", kind: "car", color: "var(--sign-red)", facing: "straight", self: true },
         { slot: "east", kind: "car", color: "var(--sign-blue)", facing: "straight" },
       ],
       correctSlot: "east",
@@ -199,15 +199,15 @@ const QUESTIONS: SeedQuestion[] = [
     subtopic: "voorrangsborden",
     type: "HOTSPOT",
     difficulty: 2,
-    prompt: "Jij nadert dit kruispunt en moet stoppen voor een STOP-bord. De ander heeft geen bord. Wie mag als eerst rijden?",
+    prompt: "Jij rijdt de rode auto en moet stoppen voor een STOP-bord. De blauwe auto heeft geen bord. Wie mag als eerst rijden?",
     explanation:
       "Bord B7 (STOP) verplicht je te stoppen bij de stopstreep én voorrang te verlenen aan bestuurders op de kruisende weg — zelfs als er niemand aankomt.",
     scene: {
       kind: "HOTSPOT",
       sceneId: "intersection",
-      hasRightOfWaySign: "stop",
+      hasRightOfWaySign: { kind: "stop", slot: "west" },
       actors: [
-        { slot: "west", kind: "car", color: "var(--sign-red)", facing: "straight" },
+        { slot: "west", kind: "car", color: "var(--sign-red)", facing: "straight", self: true },
         { slot: "north", kind: "car", color: "var(--sign-blue)", facing: "straight" },
       ],
       correctSlot: "north",

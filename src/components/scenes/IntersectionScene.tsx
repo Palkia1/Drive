@@ -18,6 +18,26 @@ const SLOT_ROTATION: Record<IntersectionSlot, number> = {
   west: 90,
 };
 
+// Beside the road each slot's traffic approaches on (not on the pavement
+// itself), on the right-hand side of that direction of travel — same
+// convention Dutch signs are actually posted under.
+const SIGN_POS: Record<IntersectionSlot, { x: number; y: number }> = {
+  north: { x: 98, y: 42 },
+  south: { x: 202, y: 258 },
+  east: { x: 258, y: 202 },
+  west: { x: 42, y: 98 },
+};
+
+// Where the "JIJ" label sits relative to its actor — pushed further out
+// from the intersection center (not just "up") so it never overlaps the
+// crossing or the other actor, whichever arm the learner is on.
+const LABEL_OFFSET: Record<IntersectionSlot, { dx: number; dy: number }> = {
+  north: { dx: 0, dy: -26 },
+  south: { dx: 0, dy: 26 },
+  east: { dx: 26, dy: 0 },
+  west: { dx: -26, dy: 0 },
+};
+
 const SIGN_FOR_KIND = {
   "priority-road": "B1",
   "give-way": "B6",
@@ -33,7 +53,7 @@ export function IntersectionScene({
   onSelect,
 }: {
   actors: IntersectionActor[];
-  hasRightOfWaySign?: "priority-road" | "give-way" | "stop" | null;
+  hasRightOfWaySign?: { kind: "priority-road" | "give-way" | "stop"; slot: IntersectionSlot } | null;
   selectedSlot?: IntersectionSlot | null;
   correctSlot: IntersectionSlot;
   disabled?: boolean;
@@ -68,8 +88,10 @@ export function IntersectionScene({
         </g>
 
         {hasRightOfWaySign && (
-          <g transform="translate(178,18)">
-            <SignIcon id={SIGN_FOR_KIND[hasRightOfWaySign]} size={30} />
+          <g transform={`translate(${SIGN_POS[hasRightOfWaySign.slot].x},${SIGN_POS[hasRightOfWaySign.slot].y})`}>
+            <g transform="translate(-15,-15)">
+              <SignIcon id={SIGN_FOR_KIND[hasRightOfWaySign.kind]} size={30} />
+            </g>
           </g>
         )}
 
@@ -78,6 +100,7 @@ export function IntersectionScene({
           const rotation = SLOT_ROTATION[actor.slot];
           const isSelected = selectedSlot === actor.slot;
           const outcome = disabled && isSelected ? (actor.slot === correctSlot ? "correct" : "incorrect") : null;
+          const labelOffset = LABEL_OFFSET[actor.slot];
 
           return (
             <g key={actor.slot} transform={`translate(${pos.x} ${pos.y})`}>
@@ -93,6 +116,22 @@ export function IntersectionScene({
               <g transform={`rotate(${rotation})`}>
                 <Actor kind={actor.kind} color={actor.color} shadowFilterId={shadowFilterId} />
               </g>
+              {actor.self && (
+                <g transform={`translate(${labelOffset.dx},${labelOffset.dy})`}>
+                  <rect x="-16" y="-9" width="32" height="18" rx="9" fill="var(--gold-500)" />
+                  <text
+                    x="0"
+                    y="4"
+                    textAnchor="middle"
+                    fontSize="11"
+                    fontWeight="800"
+                    fill="white"
+                    fontFamily="sans-serif"
+                  >
+                    JIJ
+                  </text>
+                </g>
+              )}
               <circle
                 r="30"
                 fill="transparent"

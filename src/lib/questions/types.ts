@@ -32,12 +32,19 @@ export type IntersectionActor = {
   color?: string;
   /** direction of travel, used to orient the sprite / arrow */
   facing: "straight" | "left" | "right";
+  /** Marks which actor represents the learner ("jij") — rendered with a
+   * label so it's never ambiguous whose point of view the question is
+   * asked from. At most one actor per scene should set this. */
+  self?: boolean;
 };
 
 export type IntersectionHotspotScene = {
   kind: "HOTSPOT";
   sceneId: "intersection";
-  hasRightOfWaySign?: "priority-road" | "give-way" | "stop" | null;
+  /** The sign, and which road (slot) it's posted on — rendered beside that
+   * specific approach rather than at a fixed screen position, so it's
+   * unambiguous which direction of traffic it governs. */
+  hasRightOfWaySign?: { kind: "priority-road" | "give-way" | "stop"; slot: IntersectionSlot } | null;
   actors: IntersectionActor[];
   correctSlot: IntersectionSlot;
   question: string;
