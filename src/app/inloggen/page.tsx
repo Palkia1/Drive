@@ -7,6 +7,8 @@ import { signIn } from "next-auth/react";
 import { Mail, Lock } from "lucide-react";
 import { AuthShell } from "@/components/ui/AuthShell";
 import { IconInput } from "@/components/ui/IconInput";
+import { GoogleLogo } from "@/components/icons/GoogleLogo";
+import { AppleLogo } from "@/components/icons/AppleLogo";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -60,8 +62,12 @@ export default function LoginPage() {
           <span className="flex-1 h-px" style={{ background: "var(--border)" }} />
         </div>
         <div className="mt-3 flex items-center justify-center gap-3">
-          <SocialCircle label="Google">G</SocialCircle>
-          <SocialCircle label="Apple">A</SocialCircle>
+          <SocialCircle label="Google">
+            <GoogleLogo size={20} />
+          </SocialCircle>
+          <SocialCircle label="Apple">
+            <AppleLogo size={20} />
+          </SocialCircle>
         </div>
         <p className="text-xs text-center mt-2" style={{ color: "var(--foreground-muted)" }}>
           Nog niet actief in deze omgeving.
@@ -84,7 +90,7 @@ function SocialCircle({ children, label }: { children: React.ReactNode; label: s
       type="button"
       disabled
       aria-label={label}
-      className="w-11 h-11 rounded-full flex items-center justify-center font-bold text-sm opacity-60 cursor-not-allowed"
+      className="w-11 h-11 rounded-full flex items-center justify-center opacity-60 cursor-not-allowed"
       style={{ background: "var(--surface-muted)", color: "var(--foreground-muted)", boxShadow: "inset 0 0 0 1.5px var(--border)" }}
     >
       {children}
