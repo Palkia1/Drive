@@ -11,9 +11,12 @@ export const XP_DAILY_GOAL = 30;
 export const XP_EXAM_CORRECT = 15;
 export const XP_EXAM_COMPLETE = 50;
 
-/** XP required to go from `level` to `level + 1`. Arithmetic progression — each level takes a bit more than the last. */
+/** XP required to go from `level` to `level + 1`. Arithmetic progression —
+ * each level takes a bit more than the last. (Previously 100 + 25/level,
+ * which leveled up almost every session — steepened so early levels still
+ * come quickly but progression actually means something over time.) */
 function xpForLevel(level: number) {
-  return 100 + (level - 1) * 25;
+  return 200 + (level - 1) * 60;
 }
 
 export function levelForTotalXp(totalXp: number) {
