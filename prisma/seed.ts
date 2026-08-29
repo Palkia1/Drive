@@ -92,7 +92,10 @@ const QUESTIONS: SeedQuestion[] = [
         { slot: "south", kind: "car", color: "var(--sign-blue)", facing: "straight" },
         { slot: "west", kind: "car", color: "var(--sign-red)", facing: "straight" },
       ],
-      correctSlot: "west",
+      // West-bound (red) driver looks to their right and sees the
+      // south-bound (blue) car approaching — red must give way, so blue has
+      // priority. (Previously set to "west" — backwards.)
+      correctSlot: "south",
       question: "Wie heeft hier voorrang?",
     },
   },
@@ -166,6 +169,46 @@ const QUESTIONS: SeedQuestion[] = [
       actors: [
         { slot: "north", kind: "car", color: "var(--sign-blue)", facing: "straight" },
         { slot: "east", kind: "car", color: "var(--sign-red)", facing: "straight" },
+      ],
+      correctSlot: "north",
+      question: "Wie mag als eerst rijden?",
+    },
+  },
+  {
+    topic: "voorrang",
+    subtopic: "voorrangsborden",
+    type: "HOTSPOT",
+    difficulty: 2,
+    prompt: "Jij nadert dit kruispunt en ziet het bord 'verleen voorrang'. De ander heeft geen bord. Wie mag als eerst rijden?",
+    explanation:
+      "Bord B6 ('verleen voorrang') verplicht je voorrang te geven aan bestuurders op de kruisende weg — je hoeft niet per se te stoppen, maar wel voorrang te verlenen.",
+    scene: {
+      kind: "HOTSPOT",
+      sceneId: "intersection",
+      hasRightOfWaySign: "give-way",
+      actors: [
+        { slot: "south", kind: "car", color: "var(--sign-red)", facing: "straight" },
+        { slot: "east", kind: "car", color: "var(--sign-blue)", facing: "straight" },
+      ],
+      correctSlot: "east",
+      question: "Wie mag als eerst rijden?",
+    },
+  },
+  {
+    topic: "voorrang",
+    subtopic: "voorrangsborden",
+    type: "HOTSPOT",
+    difficulty: 2,
+    prompt: "Jij nadert dit kruispunt en moet stoppen voor een STOP-bord. De ander heeft geen bord. Wie mag als eerst rijden?",
+    explanation:
+      "Bord B7 (STOP) verplicht je te stoppen bij de stopstreep én voorrang te verlenen aan bestuurders op de kruisende weg — zelfs als er niemand aankomt.",
+    scene: {
+      kind: "HOTSPOT",
+      sceneId: "intersection",
+      hasRightOfWaySign: "stop",
+      actors: [
+        { slot: "west", kind: "car", color: "var(--sign-red)", facing: "straight" },
+        { slot: "north", kind: "car", color: "var(--sign-blue)", facing: "straight" },
       ],
       correctSlot: "north",
       question: "Wie mag als eerst rijden?",

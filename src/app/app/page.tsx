@@ -9,13 +9,7 @@ import { ProgressBar } from "@/components/ui/ProgressBar";
 import { TopicIcon, getTopicColor } from "@/components/topics/TopicIcon";
 import { ArrowRight, Target, Star, PartyPopper, CircleAlert, Hourglass } from "lucide-react";
 import { StreakFlameIcon } from "@/components/icons/StreakFlameIcon";
-
-function greeting() {
-  const hour = new Date().getHours();
-  if (hour < 12) return "Goedemorgen";
-  if (hour < 18) return "Goedemiddag";
-  return "Goedenavond";
-}
+import { Greeting } from "@/components/ui/Greeting";
 
 export default async function HomePage() {
   const { student } = await requireStudent();
@@ -64,7 +58,9 @@ export default async function HomePage() {
         </div>
       </div>
 
-      <h1 className="text-3xl font-extrabold tracking-tight">{greeting()}!</h1>
+      <h1 className="text-3xl font-extrabold tracking-tight">
+        <Greeting />!
+      </h1>
 
       <Link
         href={recHref}

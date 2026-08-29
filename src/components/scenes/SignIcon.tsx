@@ -17,9 +17,15 @@ import { REAL_SIGN_FILES } from "@/lib/questions/realSigns.generated";
 export function SignIcon({ id, size = 56 }: { id: string; size?: number }) {
   const ext = REAL_SIGN_FILES[id];
   if (ext) {
+    // SVG's <image>, not HTML's <img> — SignIcon gets nested inside other
+    // SVG scenes (IntersectionScene's priority sign), where an <img> is
+    // invalid markup and silently fails to paint. A bare top-level <svg>
+    // still behaves like a normal inline image in HTML contexts (buttons,
+    // option rows), so this one shape works everywhere.
     return (
-      // eslint-disable-next-line @next/next/no-img-element -- fixed-size icon from a huge, sparsely-used static set; next/image's optimizer overhead isn't worth it here.
-      <img src={`/signs/${id}.${ext}`} width={size} height={size} alt={id} style={{ display: "block" }} />
+      <svg width={size} height={size} viewBox="0 0 1 1" role="img" aria-label={id}>
+        <image href={`/signs/${id}.${ext}`} width="1" height="1" preserveAspectRatio="xMidYMid meet" />
+      </svg>
     );
   }
   return (
@@ -813,9 +819,12 @@ function render(rawId: string) {
       );
 
     default:
-      // A handful of catalogue codes (e.g. J12/J13) have neither real art nor
-      // a hand-drawn case yet. Rather than guess a pictogram, show an honest
-      // "not illustrated yet" placeholder shaped like its real category.
+      // A handful of catalogue codes have neither real art nor a hand-drawn
+      // case yet. Rather than guess a pictogram, show an honest "not
+      // illustrated yet" placeholder shaped like its real category — this
+      // matters most as a multiple-choice option sitting next to three
+      // properly-drawn siblings, where a blank/generic shape reads as "this
+      // option is broken" rather than "this sign isn't drawn yet".
       if (code.startsWith("J")) {
         return (
           <g>
@@ -836,6 +845,14 @@ function render(rawId: string) {
           </g>
         );
       }
-      return <circle cx="32" cy="32" r="28" fill="#ccc" />;
+      // Every other category (B, C, D, E, ...) — same idea, generic shape.
+      return (
+        <g>
+          <circle cx="32" cy="32" r="27" fill={white} stroke={black} strokeWidth="4" />
+          <text x="32" y="41" textAnchor="middle" fontSize="24" fontWeight="800" fill={black} fontFamily="sans-serif">
+            ?
+          </text>
+        </g>
+      );
   }
 }
