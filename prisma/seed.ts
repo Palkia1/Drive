@@ -615,7 +615,7 @@ const BADGES = [
 // Seed run
 // ---------------------------------------------------------------------------
 
-async function main() {
+export async function main() {
   console.log("Seeding category + topics...");
   const category = await prisma.category.upsert({
     where: { code: "B" },
@@ -741,11 +741,18 @@ async function main() {
   console.log("Done.");
 }
 
-main()
-  .catch((e) => {
-    console.error(e);
-    process.exit(1);
-  })
-  .finally(async () => {
-    await prisma.$disconnect();
-  });
+// Only auto-run when this file is the actual entrypoint (`tsx prisma/seed.ts`,
+// i.e. `npm run db:seed`) — not when `main` is imported elsewhere (the
+// one-time /api/admin/seed route uses the same logic against production).
+import { fileURLToPath } from "url";
+
+if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) {
+  main()
+    .catch((e) => {
+      console.error(e);
+      process.exit(1);
+    })
+    .finally(async () => {
+      await prisma.$disconnect();
+    });
+}
