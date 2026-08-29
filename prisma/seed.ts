@@ -693,6 +693,12 @@ export async function main() {
 
   const allQuestions: SeedQuestion[] = [...QUESTIONS, ...generateSignQuestions()];
   console.log(`Seeding ${allQuestions.length} questions (${QUESTIONS.length} curated + ${allQuestions.length - QUESTIONS.length} generated sign-recognition)...`);
+  // Questions have no natural unique key to upsert on, so re-running this
+  // (e.g. re-seeding production after a content fix) would otherwise pile up
+  // duplicates — clear the slate first. Attempts/marks cascade-delete with
+  // their question; per-topic Mastery is keyed by topic, not question, so it
+  // survives a reseed untouched.
+  await prisma.question.deleteMany({});
   for (const q of allQuestions) {
     const topicId = topicBySlug.get(q.topic);
     if (!topicId) throw new Error(`Unknown topic ${q.topic}`);
