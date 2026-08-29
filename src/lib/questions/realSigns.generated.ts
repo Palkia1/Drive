@@ -141,6 +141,7 @@ export const REAL_SIGN_FILES: Record<string, "svg" | "png" | "webp"> = {
   "L10": "svg",
   "L11": "svg",
   "L12": "svg",
+  "L2": "webp",
   "L8": "svg",
   "L9": "svg",
 };

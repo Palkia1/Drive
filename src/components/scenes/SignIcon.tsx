@@ -802,6 +802,13 @@ function render(rawId: string) {
           <rect x="6" y="6" width="52" height="52" rx="6" fill={blue} />
           <polygon points="32,14 50,44 14,44" fill={white} />
           <PicPedestrian />
+          {/* Zebra-crossing stripes at the base of the triangle, under the
+             pedestrian's feet — the detail that made this read as generic
+             "pedestrian" rather than specifically a crosswalk sign. */}
+          <rect x="19" y="41" width="4" height="3" fill={black} />
+          <rect x="26" y="41" width="4" height="3" fill={black} />
+          <rect x="33" y="41" width="4" height="3" fill={black} />
+          <rect x="40" y="41" width="4" height="3" fill={black} />
         </g>
       );
 
