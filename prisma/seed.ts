@@ -229,7 +229,7 @@ const QUESTIONS: SeedQuestion[] = [
     subtopic: "rotondes",
     type: "HOTSPOT",
     difficulty: 2,
-    prompt: "Je nadert deze rotonde. Er staat geen bord dat de rotonde regelt, en er rijdt al een auto op de rotonde. Wie mag als eerste rijden?",
+    prompt: "Je nadert deze rotonde. Wie mag als eerste rijden?",
     explanation:
       "Verkeer dat al op de rotonde rijdt heeft altijd voorrang op verkeer dat de rotonde op wil rijden — ook zonder bord.",
     scene: {
@@ -250,7 +250,7 @@ const QUESTIONS: SeedQuestion[] = [
     subtopic: "rotondes",
     type: "HOTSPOT",
     difficulty: 3,
-    prompt: "Je nadert deze rotonde. Bij de fietsoversteek liggen haaientanden. Een fietser steekt over. Wie heeft voorrang?",
+    prompt: "Je nadert deze rotonde. Wie heeft voorrang?",
     explanation:
       "Haaientanden bij de fietsoversteek van een rotonde betekenen dat de fietser op het fietspad voorrang heeft op het verkeer dat de rotonde op- of afrijdt.",
     scene: {
@@ -290,7 +290,7 @@ const QUESTIONS: SeedQuestion[] = [
     topic: "voorrang",
     type: "HOTSPOT",
     difficulty: 2,
-    prompt: "Je nadert deze T-splitsing. Er staan geen borden. Een auto komt van rechts uit de zijstraat. Wie mag als eerste rijden?",
+    prompt: "Je nadert deze T-splitsing. Er staan geen borden. Wie mag als eerste rijden?",
     explanation:
       "Zonder borden geldt voorrang van rechts. De bestuurder die van rechts komt — hier de auto uit de zijstraat — heeft voorrang.",
     scene: {
@@ -309,7 +309,7 @@ const QUESTIONS: SeedQuestion[] = [
     topic: "voorrang",
     type: "HOTSPOT",
     difficulty: 2,
-    prompt: "Je nadert dit kruispunt vanaf de zijweg. Er staat geen bord, maar wel haaientanden voor je. Wie mag als eerste rijden?",
+    prompt: "Je nadert dit kruispunt vanaf de zijweg. Wie mag als eerste rijden?",
     explanation:
       "Haaientanden op het wegdek betekenen dat je voorrang moet verlenen aan het verkeer op de kruisende weg — ook zonder bord.",
     scene: {
@@ -349,7 +349,7 @@ const QUESTIONS: SeedQuestion[] = [
     subtopic: "rotondes",
     type: "HOTSPOT",
     difficulty: 2,
-    prompt: "Je nadert deze rotonde. Een vrachtwagen rijdt al op de rotonde. Wie mag als eerste rijden?",
+    prompt: "Je nadert deze rotonde. Wie mag als eerste rijden?",
     explanation:
       "Verkeer dat al op de rotonde rijdt heeft altijd voorrang op verkeer dat de rotonde op wil rijden — ook een vrachtwagen.",
     scene: {
@@ -381,6 +381,26 @@ const QUESTIONS: SeedQuestion[] = [
         { id: "d", label: "Alleen stoppen als er een politieagent aanwezig is" },
       ],
       correctOptionId: "b",
+    },
+  },
+  {
+    topic: "voorrang",
+    type: "HOTSPOT",
+    difficulty: 2,
+    prompt: "Je nadert dit kruispunt. Wie mag rijden?",
+    explanation:
+      "Bij rood licht moet jij altijd stoppen, ongeacht de voorrangssituatie. De andere bestuurder wordt niet door een licht tegengehouden en mag doorrijden.",
+    scene: {
+      kind: "HOTSPOT",
+      sceneId: "location",
+      location: "gelijkwaardige-kruising",
+      trafficLight: { slot: "north", state: "red" },
+      actors: [
+        { id: "you", slot: "north", kind: "car", color: "var(--sign-red)", self: true },
+        { id: "other-car", slot: "east", kind: "car", color: "var(--sign-blue)" },
+      ],
+      correctSlot: "other-car",
+      question: "Wie mag rijden?",
     },
   },
 

@@ -76,13 +76,22 @@ function outwardVector(bearingDeg: number) {
   return { x: Math.sin(rad), y: -Math.cos(rad) };
 }
 
+// Quarter of an approach arm's total width (228, per eenbaansrotonde.svg) —
+// puts an approaching actor in its own lane instead of straddling the
+// centerline, same right-hand-lane convention as every other location.
+const ROUNDABOUT_LANE_OFFSET = 57;
+
 function ringActorGeometry(slot: LocationSlot, position: "approaching" | "on-ring"): SlotGeometry {
   const bearing = SLOT_BEARING[slot];
   if (position === "approaching") {
     const out = outwardVector(bearing);
+    const px = ROUNDABOUT_CENTER.x + out.x * ROUNDABOUT_APPROACH_RADIUS;
+    const py = ROUNDABOUT_CENTER.y + out.y * ROUNDABOUT_APPROACH_RADIUS;
+    // Right-hand lane offset, perpendicular to the inward direction of travel.
+    const lateral = { x: -out.y, y: out.x };
     return {
-      x: ROUNDABOUT_CENTER.x + out.x * ROUNDABOUT_APPROACH_RADIUS,
-      y: ROUNDABOUT_CENTER.y + out.y * ROUNDABOUT_APPROACH_RADIUS,
+      x: px - lateral.x * ROUNDABOUT_LANE_OFFSET,
+      y: py - lateral.y * ROUNDABOUT_LANE_OFFSET,
       rotation: bearing + 180,
     };
   }
@@ -101,7 +110,12 @@ const SIGN_FOR_KIND = {
   stop: "B7",
 } as const;
 
-const ACTOR_SCALE = 3.4; // TrafficActor is sized for a 300-unit canvas; these are 1024
+// TrafficActor is sized for a 300-unit canvas; these backgrounds are 1024,
+// a straight 3.4× scale — but the narrowest lanes here (roundabout arms/ring,
+// ~110-114 wide) are much tighter relative to road width than the old hand-
+// drawn scenes, so a car at 3.4× (width ~88) or truck (~116) would overflow
+// them. 2.0× keeps every vehicle comfortably inside its own lane everywhere.
+const ACTOR_SCALE = 2.0;
 
 export function LocationScene({
   location,
@@ -142,8 +156,8 @@ export function LocationScene({
             const pos = markerPos[hasRightOfWaySign.slot]!;
             return (
               <g transform={`translate(${pos.x},${pos.y})`}>
-                <g transform="translate(-51,-51)">
-                  <SignIcon id={SIGN_FOR_KIND[hasRightOfWaySign.kind]} size={102} />
+                <g transform="translate(-36,-36)">
+                  <SignIcon id={SIGN_FOR_KIND[hasRightOfWaySign.kind]} size={72} />
                 </g>
               </g>
             );
@@ -153,7 +167,7 @@ export function LocationScene({
           markerPos[trafficLight.slot] &&
           (() => {
             const pos = markerPos[trafficLight.slot]!;
-            const size = 130;
+            const size = 90;
             return (
               <image
                 href="/scenes/stoplicht-rood-losse-ringen.svg"
@@ -174,17 +188,17 @@ export function LocationScene({
           const isSelected = selectedSlot === actor.id;
           const outcome = disabled && isSelected ? (actor.id === correctSlot ? "correct" : "incorrect") : null;
           const out = outwardVector(SLOT_BEARING[actor.slot]);
-          const labelDx = out.x * 90;
-          const labelDy = out.y * 90;
+          const labelDx = out.x * 58;
+          const labelDy = out.y * 58;
 
           return (
             <g key={actor.id} transform={`translate(${geometry.x} ${geometry.y})`}>
               {outcome && (
                 <circle
-                  r="100"
+                  r="62"
                   fill="none"
                   stroke={outcome === "correct" ? "var(--success-500)" : "var(--danger-500)"}
-                  strokeWidth="12"
+                  strokeWidth="8"
                   className="animate-pop-in"
                 />
               )}
@@ -193,7 +207,7 @@ export function LocationScene({
               </g>
               {actor.self && <SelfLabel dx={labelDx} dy={labelDy} scale={ACTOR_SCALE} />}
               <circle
-                r="90"
+                r="55"
                 fill="transparent"
                 className={disabled ? "" : "cursor-pointer"}
                 onClick={() => !disabled && onSelect(actor.id)}
