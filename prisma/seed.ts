@@ -81,7 +81,7 @@ const QUESTIONS: SeedQuestion[] = [
     subtopic: "gelijkwaardige-kruispunten",
     type: "HOTSPOT",
     difficulty: 2,
-    prompt: "Jij rijdt de rode auto en nadert dit kruispunt vanuit het westen. Er staan geen borden. Wie mag als eerste rijden?",
+    prompt: "Je nadert dit kruispunt. Er staan geen borden. Wie mag als eerste rijden?",
     explanation:
       "Op een kruispunt zonder verkeersborden of verkeerslichten geldt: bestuurders van rechts hebben voorrang. Jij kijkt naar rechts en ziet de blauwe auto — die moet je voor laten gaan.",
     scene: {
@@ -159,7 +159,7 @@ const QUESTIONS: SeedQuestion[] = [
     topic: "voorrang",
     type: "HOTSPOT",
     difficulty: 3,
-    prompt: "Jij rijdt de rode auto en komt van de zijweg zonder bord. De blauwe auto rijdt op de voorrangsweg. Wie mag als eerst rijden?",
+    prompt: "Je komt van de zijweg zonder bord. De andere auto rijdt op de voorrangsweg. Wie mag als eerst rijden?",
     explanation:
       "Het bord 'voorrangsweg' (bij de blauwe auto's weg) geeft voorrang op alle kruisende wegen, ongeacht de richting waaruit het andere verkeer komt.",
     scene: {
@@ -179,7 +179,7 @@ const QUESTIONS: SeedQuestion[] = [
     subtopic: "voorrangsborden",
     type: "HOTSPOT",
     difficulty: 2,
-    prompt: "Jij rijdt de rode auto en ziet het bord 'verleen voorrang'. De blauwe auto heeft geen bord. Wie mag als eerst rijden?",
+    prompt: "Je ziet het bord 'verleen voorrang'. De andere auto heeft geen bord. Wie mag als eerst rijden?",
     explanation:
       "Bord B6 ('verleen voorrang') verplicht je voorrang te geven aan bestuurders op de kruisende weg — je hoeft niet per se te stoppen, maar wel voorrang te verlenen.",
     scene: {
@@ -199,7 +199,7 @@ const QUESTIONS: SeedQuestion[] = [
     subtopic: "voorrangsborden",
     type: "HOTSPOT",
     difficulty: 2,
-    prompt: "Jij rijdt de rode auto en moet stoppen voor een STOP-bord. De blauwe auto heeft geen bord. Wie mag als eerst rijden?",
+    prompt: "Je moet stoppen voor een STOP-bord. De andere auto heeft geen bord. Wie mag als eerst rijden?",
     explanation:
       "Bord B7 (STOP) verplicht je te stoppen bij de stopstreep én voorrang te verlenen aan bestuurders op de kruisende weg — zelfs als er niemand aankomt.",
     scene: {
@@ -613,14 +613,15 @@ const QUESTIONS: SeedQuestion[] = [
     type: "SINGLE_CHOICE",
     difficulty: 2,
     prompt: "Wat betekent 'aangepaste snelheid'?",
-    explanation: "Snelheid aanpassen aan de omstandigheden.",
+    explanation:
+      "Aangepaste snelheid betekent dat je niet zomaar de maximumsnelheid aanhoudt, maar je snelheid afstemt op zicht, weer, wegdek en verkeersdrukte — soms moet je dus trager rijden dan het bord toestaat.",
     scene: {
       kind: "SINGLE_CHOICE",
       options: [
-        { id: "a", label: "Altijd 30 km/u" },
-        { id: "b", label: "Snelheid aanpassen aan de omstandigheden" },
-        { id: "c", label: "Altijd 20 km/u onder de limiet" },
-        { id: "d", label: "Alleen langzaam rijden" },
+        { id: "a", label: "Altijd de volledige maximumsnelheid rijden" },
+        { id: "b", label: "Je snelheid afstemmen op zicht, weer, wegdek en drukte, ook als dat onder de maximumsnelheid is" },
+        { id: "c", label: "Altijd precies 20 km/u onder de limiet rijden" },
+        { id: "d", label: "Zo hard mogelijk rijden zolang het veilig aanvoelt" },
       ],
       correctOptionId: "b",
     },
@@ -6537,7 +6538,7 @@ const QUESTIONS: SeedQuestion[] = [
       kind: "SINGLE_CHOICE",
       options: [
         { id: "a", label: "Ik heb altijd voorrang op de trein" },
-        { id: "b", label: "Ik verleen altijd voorrang aan de trein", signId: "andreaskruis" },
+        { id: "b", label: "Ik verleen altijd voorrang aan de trein" },
         { id: "c", label: "Voorrang hangt af van wie er het eerst is" },
         { id: "d", label: "Alleen bij twee sporen moet ik voorrang verlenen" },
       ],

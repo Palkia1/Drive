@@ -4,11 +4,18 @@ import { useId } from "react";
 import type { IntersectionActor, IntersectionSlot } from "@/lib/questions/types";
 import { SignIcon } from "./SignIcon";
 
+// Each road carries two lanes (right-hand/Dutch traffic), so an actor sits
+// offset from the road's centerline into its own lane — not straddling the
+// middle line. An actor at a given slot is heading *toward* the
+// intersection, so it belongs in the lane that's on the right-hand side of
+// its own direction of travel (e.g. a car approaching from the south, i.e.
+// heading north, keeps to the east half of the vertical road).
+const LANE_OFFSET = 20;
 const SLOT_POS: Record<IntersectionSlot, { x: number; y: number }> = {
-  north: { x: 150, y: 55 },
-  east: { x: 245, y: 150 },
-  south: { x: 150, y: 245 },
-  west: { x: 55, y: 150 },
+  north: { x: 150 - LANE_OFFSET, y: 55 },
+  east: { x: 245, y: 150 - LANE_OFFSET },
+  south: { x: 150 + LANE_OFFSET, y: 245 },
+  west: { x: 55, y: 150 + LANE_OFFSET },
 };
 
 const SLOT_ROTATION: Record<IntersectionSlot, number> = {
