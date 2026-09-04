@@ -18,6 +18,12 @@ export function checkAnswer(scene: QuestionScene, answer: SubmittedAnswer): bool
   if (scene.kind === "HOTSPOT" && scene.sceneId === "intersection" && answer.kind === "HOTSPOT_SLOT") {
     return answer.slot === scene.correctSlot;
   }
+  if (scene.kind === "HOTSPOT" && scene.sceneId === "traffic-light-intersection" && answer.kind === "HOTSPOT_SLOT") {
+    return answer.slot === scene.correctSlot;
+  }
+  if (scene.kind === "HOTSPOT" && scene.sceneId === "roundabout" && answer.kind === "HOTSPOT_SLOT") {
+    return answer.slot === scene.correctSlot;
+  }
   if (scene.kind === "HOTSPOT" && scene.sceneId === "sign-strip" && answer.kind === "HOTSPOT_SIGN") {
     return answer.signId === scene.correctSignId;
   }

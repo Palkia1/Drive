@@ -58,11 +58,61 @@ export type SignStripHotspotScene = {
   correctSignId: SignId;
 };
 
+export type TrafficLightState = "red" | "orange" | "green";
+
+/** Same 4-arm layout and actors as IntersectionHotspotScene, but governed by
+ * traffic lights instead of (or alongside) signs — a light overrides the
+ * normal right-of-way rules for whoever it's facing. */
+export type TrafficLightHotspotScene = {
+  kind: "HOTSPOT";
+  sceneId: "traffic-light-intersection";
+  trafficLights: Partial<Record<IntersectionSlot, TrafficLightState>>;
+  actors: IntersectionActor[];
+  correctSlot: IntersectionSlot;
+  question: string;
+};
+
+/** A roundabout with a configurable number of arms — generic enough to
+ * render a standard 4-arm rotonde or, e.g., a 5-arm one, without new code
+ * per layout. Arm 0 points north; others are spaced evenly clockwise. */
+export type RoundaboutActor = {
+  /** Unique within the scene — doubles as the answer "slot" id, since a
+   * roundabout doesn't have a small fixed set of named slots like a
+   * 4-way intersection does. */
+  id: string;
+  /** Which arm this actor is approaching from / crossing near. */
+  arm: number;
+  /** "approaching": still on the arm, not yet on the ring.
+   * "on-ring": already circulating. */
+  position: "approaching" | "on-ring";
+  kind: "car" | "cyclist" | "pedestrian" | "truck";
+  color?: string;
+  self?: boolean;
+};
+
+export type RoundaboutHotspotScene = {
+  kind: "HOTSPOT";
+  sceneId: "roundabout";
+  /** Number of roads meeting the roundabout (3-6 is realistic). */
+  armCount: number;
+  /** Visual only — how many concentric lanes the ring itself is drawn with. */
+  ringLanes?: number;
+  /** Arm indices where haaientanden (shark-teeth priority markings) are
+   * painted at the cycle-path crossing — changes whether a cyclist on the
+   * ring has priority over entering/exiting traffic at that arm. */
+  sharkTeethArms?: number[];
+  actors: RoundaboutActor[];
+  correctSlot: string;
+  question: string;
+};
+
 export type QuestionScene =
   | SingleChoiceScene
   | MultipleChoiceScene
   | IntersectionHotspotScene
-  | SignStripHotspotScene;
+  | SignStripHotspotScene
+  | TrafficLightHotspotScene
+  | RoundaboutHotspotScene;
 
 /**
  * A sign id is an official RVV code (see signCatalogue.ts), optionally with a

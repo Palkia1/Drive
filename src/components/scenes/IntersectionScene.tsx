@@ -1,7 +1,7 @@
 "use client";
 
 import { useId } from "react";
-import type { IntersectionActor, IntersectionSlot } from "@/lib/questions/types";
+import type { IntersectionActor, IntersectionSlot, TrafficLightState } from "@/lib/questions/types";
 import { SignIcon } from "./SignIcon";
 
 // Each road carries two lanes (right-hand/Dutch traffic), so an actor sits
@@ -54,6 +54,7 @@ const SIGN_FOR_KIND = {
 export function IntersectionScene({
   actors,
   hasRightOfWaySign,
+  trafficLights,
   selectedSlot,
   correctSlot,
   disabled,
@@ -61,6 +62,9 @@ export function IntersectionScene({
 }: {
   actors: IntersectionActor[];
   hasRightOfWaySign?: { kind: "priority-road" | "give-way" | "stop"; slot: IntersectionSlot } | null;
+  /** Per-slot traffic-light state — mutually exclusive with hasRightOfWaySign
+   * in practice (a scene uses one or the other), but nothing stops both. */
+  trafficLights?: Partial<Record<IntersectionSlot, TrafficLightState>>;
   selectedSlot?: IntersectionSlot | null;
   correctSlot: IntersectionSlot;
   disabled?: boolean;
@@ -101,6 +105,13 @@ export function IntersectionScene({
             </g>
           </g>
         )}
+
+        {trafficLights &&
+          (Object.entries(trafficLights) as [IntersectionSlot, TrafficLightState][]).map(([slot, state]) => (
+            <g key={slot} transform={`translate(${SIGN_POS[slot].x},${SIGN_POS[slot].y})`}>
+              <TrafficLightPole state={state} />
+            </g>
+          ))}
 
         {actors.map((actor) => {
           const pos = SLOT_POS[actor.slot];
@@ -150,6 +161,27 @@ export function IntersectionScene({
         })}
       </svg>
     </div>
+  );
+}
+
+/** A small traffic-light pole: a dark housing with 3 stacked lenses, the
+ * active color lit and the other two dimmed — same visual grammar as a
+ * real signal head, simplified to a single-aspect pole per approach. */
+export function TrafficLightPole({ state }: { state: TrafficLightState }) {
+  const lensColor = (c: TrafficLightState) => {
+    if (state !== c) return "rgba(255,255,255,0.15)";
+    if (c === "red") return "var(--danger-500)";
+    if (c === "orange") return "var(--gold-500)";
+    return "var(--success-500)";
+  };
+  return (
+    <g transform="translate(-7,-26)">
+      <rect x="0" y="0" width="14" height="34" rx="4" fill="var(--sign-black)" />
+      <circle cx="7" cy="8" r="4" fill={lensColor("red")} />
+      <circle cx="7" cy="17" r="4" fill={lensColor("orange")} />
+      <circle cx="7" cy="26" r="4" fill={lensColor("green")} />
+      <rect x="5" y="34" width="4" height="10" fill="var(--sign-black)" />
+    </g>
   );
 }
 

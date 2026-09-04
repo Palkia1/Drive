@@ -12,8 +12,10 @@ import bcrypt from "bcryptjs";
 import type {
   IntersectionHotspotScene,
   MultipleChoiceScene,
+  RoundaboutHotspotScene,
   SignStripHotspotScene,
   SingleChoiceScene,
+  TrafficLightHotspotScene,
 } from "../src/lib/questions/types";
 import { generateSignQuestions } from "../src/lib/questions/generateSignQuestions";
 
@@ -71,7 +73,13 @@ type SeedQuestion = {
   difficulty: number;
   prompt: string;
   explanation: string;
-  scene: SingleChoiceScene | MultipleChoiceScene | IntersectionHotspotScene | SignStripHotspotScene;
+  scene:
+    | SingleChoiceScene
+    | MultipleChoiceScene
+    | IntersectionHotspotScene
+    | SignStripHotspotScene
+    | TrafficLightHotspotScene
+    | RoundaboutHotspotScene;
 };
 
 const QUESTIONS: SeedQuestion[] = [
@@ -212,6 +220,68 @@ const QUESTIONS: SeedQuestion[] = [
       ],
       correctSlot: "north",
       question: "Wie mag als eerst rijden?",
+    },
+  },
+  {
+    topic: "voorrang",
+    subtopic: "rotondes",
+    type: "HOTSPOT",
+    difficulty: 2,
+    prompt: "Je nadert deze rotonde. Er staat geen bord dat de rotonde regelt, en er rijdt al een auto op de rotonde. Wie mag als eerste rijden?",
+    explanation:
+      "Verkeer dat al op de rotonde rijdt heeft altijd voorrang op verkeer dat de rotonde op wil rijden — ook zonder bord.",
+    scene: {
+      kind: "HOTSPOT",
+      sceneId: "roundabout",
+      armCount: 4,
+      ringLanes: 1,
+      actors: [
+        { id: "you", arm: 0, position: "approaching", kind: "car", color: "var(--sign-red)", self: true },
+        { id: "ring-car", arm: 0, position: "on-ring", kind: "car", color: "var(--sign-blue)" },
+      ],
+      correctSlot: "ring-car",
+      question: "Wie mag als eerste rijden?",
+    },
+  },
+  {
+    topic: "voorrang",
+    subtopic: "rotondes",
+    type: "HOTSPOT",
+    difficulty: 3,
+    prompt: "Je nadert deze rotonde. Bij de fietsoversteek liggen haaientanden. Een fietser steekt over. Wie heeft voorrang?",
+    explanation:
+      "Haaientanden bij de fietsoversteek van een rotonde betekenen dat de fietser op het fietspad voorrang heeft op het verkeer dat de rotonde op- of afrijdt.",
+    scene: {
+      kind: "HOTSPOT",
+      sceneId: "roundabout",
+      armCount: 4,
+      ringLanes: 1,
+      sharkTeethArms: [0],
+      actors: [
+        { id: "you", arm: 0, position: "approaching", kind: "car", color: "var(--sign-red)", self: true },
+        { id: "cyclist", arm: 0, position: "on-ring", kind: "cyclist", color: "var(--sign-blue)" },
+      ],
+      correctSlot: "cyclist",
+      question: "Wie heeft voorrang?",
+    },
+  },
+  {
+    topic: "voorrang",
+    type: "HOTSPOT",
+    difficulty: 2,
+    prompt: "Je nadert dit kruispunt. Voor jou staat het verkeerslicht op groen. Voor de andere auto staat het licht op rood. Wie mag rijden?",
+    explanation:
+      "Een verkeerslicht gaat altijd vóór de normale voorrangsregels, zoals voorrang van rechts. Bij groen mag jij rijden; de bestuurder met rood moet wachten, ook als die normaal gesproken voorrang zou hebben.",
+    scene: {
+      kind: "HOTSPOT",
+      sceneId: "traffic-light-intersection",
+      trafficLights: { north: "green", east: "red" },
+      actors: [
+        { slot: "north", kind: "car", color: "var(--sign-red)", facing: "straight", self: true },
+        { slot: "east", kind: "car", color: "var(--sign-blue)", facing: "straight" },
+      ],
+      correctSlot: "north",
+      question: "Wie mag rijden?",
     },
   },
 

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Check, X, Bookmark, Star } from "lucide-react";
 import { IntersectionScene } from "@/components/scenes/IntersectionScene";
+import { RoundaboutScene } from "@/components/scenes/RoundaboutScene";
 import { SignStripScene } from "@/components/scenes/SignStripScene";
 import { SignIcon } from "@/components/scenes/SignIcon";
 import type { QuestionScene } from "@/lib/questions/types";
@@ -162,6 +163,36 @@ export function QuestionCard({
           actors={scene.actors}
           hasRightOfWaySign={scene.hasRightOfWaySign}
           selectedSlot={selectedSlot as never}
+          correctSlot={scene.correctSlot}
+          disabled={locked}
+          onSelect={(slot) => {
+            setSelectedSlot(slot);
+            submit({ kind: "HOTSPOT_SLOT", slot });
+          }}
+        />
+      )}
+
+      {scene.kind === "HOTSPOT" && scene.sceneId === "traffic-light-intersection" && (
+        <IntersectionScene
+          actors={scene.actors}
+          trafficLights={scene.trafficLights}
+          selectedSlot={selectedSlot as never}
+          correctSlot={scene.correctSlot}
+          disabled={locked}
+          onSelect={(slot) => {
+            setSelectedSlot(slot);
+            submit({ kind: "HOTSPOT_SLOT", slot });
+          }}
+        />
+      )}
+
+      {scene.kind === "HOTSPOT" && scene.sceneId === "roundabout" && (
+        <RoundaboutScene
+          armCount={scene.armCount}
+          ringLanes={scene.ringLanes}
+          sharkTeethArms={scene.sharkTeethArms}
+          actors={scene.actors}
+          selectedSlot={selectedSlot}
           correctSlot={scene.correctSlot}
           disabled={locked}
           onSelect={(slot) => {
