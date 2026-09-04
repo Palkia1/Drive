@@ -1,7 +1,7 @@
 "use client";
 
 import { useId } from "react";
-import type { LocationActor, LocationId, LocationSlot, TrafficLightState } from "@/lib/questions/types";
+import type { LocationActor, LocationId, LocationSlot, SignId, TrafficLightState } from "@/lib/questions/types";
 import { SignIcon } from "./SignIcon";
 import { TrafficActor, SelfLabel } from "./TrafficActor";
 
@@ -104,12 +104,6 @@ function ringActorGeometry(slot: LocationSlot, position: "approaching" | "on-rin
   };
 }
 
-const SIGN_FOR_KIND = {
-  "priority-road": "B1",
-  "give-way": "B6",
-  stop: "B7",
-} as const;
-
 // TrafficActor is sized for a 300-unit canvas; these backgrounds are 1024,
 // a straight 3.4× scale — but the narrowest lanes here (roundabout arms/ring,
 // ~110-114 wide) are much tighter relative to road width than the old hand-
@@ -119,22 +113,26 @@ const ACTOR_SCALE = 2.0;
 
 export function LocationScene({
   location,
-  hasRightOfWaySign,
+  signs,
   trafficLight,
-  actors,
+  actors = [],
   selectedSlot,
   correctSlot,
   disabled,
   onSelect,
 }: {
   location: LocationId;
-  hasRightOfWaySign?: { kind: "priority-road" | "give-way" | "stop"; slot: LocationSlot } | null;
+  /** Any real catalogue sign(s) planted beside a specific approach —
+   * modular per question (e.g. a zone-30 sign at the "north" approach). */
+  signs?: { signId: SignId; slot: LocationSlot }[];
   trafficLight?: { slot: LocationSlot; state: TrafficLightState } | null;
-  actors: LocationActor[];
+  /** Omit for a static illustration (no interactive hotspots) — e.g. a
+   * SINGLE_CHOICE prompt image showing a sign in its road context. */
+  actors?: LocationActor[];
   selectedSlot?: string | null;
-  correctSlot: string;
+  correctSlot?: string;
   disabled?: boolean;
-  onSelect: (slot: string) => void;
+  onSelect?: (slot: string) => void;
 }) {
   const shadowFilterId = useId();
   const markerPos = MARKER_POS[location];
@@ -150,18 +148,17 @@ export function LocationScene({
 
         <image href={`/scenes/${location}.svg`} x="0" y="0" width="1024" height="1024" />
 
-        {hasRightOfWaySign &&
-          markerPos[hasRightOfWaySign.slot] &&
-          (() => {
-            const pos = markerPos[hasRightOfWaySign.slot]!;
-            return (
-              <g transform={`translate(${pos.x},${pos.y})`}>
-                <g transform="translate(-36,-36)">
-                  <SignIcon id={SIGN_FOR_KIND[hasRightOfWaySign.kind]} size={72} />
-                </g>
+        {signs?.map((s) => {
+          const pos = markerPos[s.slot];
+          if (!pos) return null;
+          return (
+            <g key={`${s.slot}-${s.signId}`} transform={`translate(${pos.x},${pos.y})`}>
+              <g transform="translate(-36,-36)">
+                <SignIcon id={s.signId} size={72} />
               </g>
-            );
-          })()}
+            </g>
+          );
+        })}
 
         {trafficLight &&
           markerPos[trafficLight.slot] &&
@@ -210,7 +207,7 @@ export function LocationScene({
                 r="55"
                 fill="transparent"
                 className={disabled ? "" : "cursor-pointer"}
-                onClick={() => !disabled && onSelect(actor.id)}
+                onClick={() => !disabled && onSelect?.(actor.id)}
               />
             </g>
           );

@@ -41,6 +41,11 @@ model User {
   student     StudentProfile?
   ownedSchool DrivingSchool?
 
+  // Self-service flag: any account can grant itself beta-tester status from
+  // Instellingen, unlocking the content-feedback portal (see QuestionReview).
+  isBetaTester    Boolean          @default(false)
+  questionReviews QuestionReview[]
+
   @@map("users")
 }
 
@@ -140,10 +145,10 @@ model StudentProfile {
   timezone       String    @default("Europe/Amsterdam")
 
   // Privacy: what friends / leaderboard are allowed to see.
-  showOnLeaderboard      Boolean @default(true)
-  shareXpWithFriends     Boolean @default(true)
-  shareStreakWithFriends Boolean @default(true)
-  shareBadgesWithFriends Boolean @default(true)
+  showOnLeaderboard       Boolean @default(true)
+  shareXpWithFriends      Boolean @default(true)
+  shareStreakWithFriends  Boolean @default(true)
+  shareBadgesWithFriends  Boolean @default(true)
   shareMasteryWithFriends Boolean @default(true)
 
   activeTitle String? // cosmetic reward, e.g. "Voorrangskenner"
@@ -199,7 +204,7 @@ model Friendship {
 model Challenge {
   id        String   @id @default(cuid())
   creatorId String
-  metric    String   // "xp" | "topic_accuracy"
+  metric    String // "xp" | "topic_accuracy"
   topicId   String?
   label     String
   startsAt  DateTime @default(now())
@@ -246,14 +251,14 @@ model Category {
 }
 
 model Topic {
-  id         String  @id @default(cuid())
+  id         String @id @default(cuid())
   categoryId String
-  slug       String  @unique
+  slug       String @unique
   name       String
-  icon       String  @default("road-sign")
-  order      Int     @default(0)
+  icon       String @default("road-sign")
+  order      Int    @default(0)
 
-  category   Category    @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  category   Category       @relation(fields: [categoryId], references: [id], onDelete: Cascade)
   subtopics  Subtopic[]
   questions  Question[]
   lessons    TheoryLesson[]
@@ -293,32 +298,59 @@ enum QuestionStatus {
 // any app release. `scene` holds type-specific data (see src/lib/questions
 // /types.ts for the shape per QuestionType).
 model Question {
-  id          String         @id @default(cuid())
-  topicId     String
-  subtopicId  String?
+  id                String         @id @default(cuid())
+  topicId           String
+  subtopicId        String?
   // Extra topics this question also counts toward for mastery, beyond the
   // required `topicId` — JSON string[] of Topic.id, e.g. a question that's
   // really about both voorrang and weggebruikers. Null/empty for the common
   // single-topic case; see recomputeMasteryAfterAttempt's caller in the
   // answer route for how both get credited.
   secondaryTopicIds String?
-  type        QuestionType   @default(SINGLE_CHOICE)
-  status      QuestionStatus @default(PUBLISHED)
-  difficulty  Int            @default(2) // 1 (easy) .. 5 (hard)
-  prompt      String
-  explanation String?
-  scene       String // JSON: options / hotspot targets / svg scene description
-  version     Int            @default(1)
-  createdAt   DateTime       @default(now())
-  updatedAt   DateTime       @updatedAt
+  type              QuestionType   @default(SINGLE_CHOICE)
+  status            QuestionStatus @default(PUBLISHED)
+  difficulty        Int            @default(2) // 1 (easy) .. 5 (hard)
+  prompt            String
+  explanation       String?
+  scene             String // JSON: options / hotspot targets / svg scene description
+  version           Int            @default(1)
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
 
   topic    Topic     @relation(fields: [topicId], references: [id], onDelete: Cascade)
   subtopic Subtopic? @relation(fields: [subtopicId], references: [id])
 
   attempts Attempt[]
   marks    QuestionMark[]
+  reviews  QuestionReview[]
 
   @@map("questions")
+}
+
+// Audit trail of beta-tester content review — separate from the Question row
+// itself so "who reviewed what, when, and what they said" survives even
+// though edits/discards also apply directly to the live question (see
+// /api/beta/questions/[id]/review).
+model QuestionReview {
+  id         String               @id @default(cuid())
+  questionId String
+  testerId   String
+  action     QuestionReviewAction
+  note       String?
+  createdAt  DateTime             @default(now())
+
+  question Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  tester   User     @relation(fields: [testerId], references: [id], onDelete: Cascade)
+
+  @@index([questionId])
+  @@map("question_reviews")
+}
+
+enum QuestionReviewAction {
+  APPROVED
+  EDITED_PROMPT
+  EDITED_ANSWERS
+  DISCARDED
 }
 
 model TheoryLesson {
@@ -358,22 +390,22 @@ model PracticeSession {
   correctCount Int         @default(0)
   totalCount   Int         @default(0)
 
-  student     StudentProfile @relation(fields: [studentId], references: [id], onDelete: Cascade)
-  attempts    Attempt[]
-  examResult  ExamResult?
+  student    StudentProfile @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  attempts   Attempt[]
+  examResult ExamResult?
 
   @@map("practice_sessions")
 }
 
 model Attempt {
-  id          String   @id @default(cuid())
-  studentId   String
-  questionId  String
-  sessionId   String
-  isCorrect   Boolean
-  answer      String // JSON of the given answer (option ids / hotspot id)
-  timeMs      Int
-  answeredAt  DateTime @default(now())
+  id         String   @id @default(cuid())
+  studentId  String
+  questionId String
+  sessionId  String
+  isCorrect  Boolean
+  answer     String // JSON of the given answer (option ids / hotspot id)
+  timeMs     Int
+  answeredAt DateTime @default(now())
 
   student  StudentProfile  @relation(fields: [studentId], references: [id], onDelete: Cascade)
   question Question        @relation(fields: [questionId], references: [id], onDelete: Cascade)
@@ -387,18 +419,18 @@ model Attempt {
 // incrementally on every Attempt — see src/lib/mastery.ts. Kept separate
 // from raw Attempts so mastery reads never have to scan attempt history.
 model Mastery {
-  id              String   @id @default(cuid())
+  id              String    @id @default(cuid())
   studentId       String
   topicId         String
-  level           Int      @default(0) // 0..5, see mastery.ts for the promotion/demotion rule
-  totalAttempts   Int      @default(0)
-  correctAttempts Int      @default(0)
+  level           Int       @default(0) // 0..5, see mastery.ts for the promotion/demotion rule
+  totalAttempts   Int       @default(0)
+  correctAttempts Int       @default(0)
   // last N outcomes as a compact string of "1"/"0", newest last — powers the
   // "recent performance" + "structural regression" signals without a table scan.
-  recentOutcomes  String   @default("")
-  confidence      Float    @default(0) // 0..1, see mastery.ts
+  recentOutcomes  String    @default("")
+  confidence      Float     @default(0) // 0..1, see mastery.ts
   lastAttemptAt   DateTime?
-  updatedAt       DateTime @updatedAt
+  updatedAt       DateTime  @updatedAt
 
   student StudentProfile @relation(fields: [studentId], references: [id], onDelete: Cascade)
   topic   Topic          @relation(fields: [topicId], references: [id], onDelete: Cascade)
@@ -507,15 +539,15 @@ model DailyGoal {
 // ---------------------------------------------------------------------------
 
 model ExamResult {
-  id          String   @id @default(cuid())
-  studentId   String
-  sessionId   String   @unique
-  scorePct    Float
-  passed      Boolean
-  totalCount  Int
+  id           String   @id @default(cuid())
+  studentId    String
+  sessionId    String   @unique
+  scorePct     Float
+  passed       Boolean
+  totalCount   Int
   correctCount Int
-  breakdown   String // JSON: { topicId: { correct, total } }
-  createdAt   DateTime @default(now())
+  breakdown    String // JSON: { topicId: { correct, total } }
+  createdAt    DateTime @default(now())
 
   student StudentProfile  @relation(fields: [studentId], references: [id], onDelete: Cascade)
   session PracticeSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)

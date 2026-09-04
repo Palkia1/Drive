@@ -6,6 +6,7 @@ import { getRecentActivity } from "@/lib/activity";
 import { MasteryBar } from "@/components/ui/MasteryBar";
 import { ActivityWidget } from "@/components/profile/ActivityWidget";
 import { PrivacyToggles } from "@/components/profile/PrivacyToggles";
+import { BetaTesterToggle } from "@/components/profile/BetaTesterToggle";
 import { SignOutButton } from "@/components/profile/SignOutButton";
 import { BadgeIcon } from "@/components/profile/BadgeIcon";
 import { ThemeToggleButton } from "@/components/ui/skiper-ui/skiper26";
@@ -148,6 +149,15 @@ export default async function ProfielPage() {
                   shareMasteryWithFriends: student.shareMasteryWithFriends,
                 }}
               />
+            </div>
+          </div>
+
+          <div>
+            <p className="text-xs font-bold uppercase tracking-wide mb-1.5 px-1" style={{ color: "var(--foreground-muted)" }}>
+              Ontwikkeling
+            </p>
+            <div className="card p-4">
+              <BetaTesterToggle initial={student.user.isBetaTester} />
             </div>
           </div>
         </div>

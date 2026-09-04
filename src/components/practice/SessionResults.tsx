@@ -31,18 +31,22 @@ export function SessionResults({
   onRestartSameConfig: () => void;
 }) {
   const router = useRouter();
-  const streakMilestone = Boolean(result.streak && result.streak.streak > 0 && result.streak.streak % 7 === 0);
-  const celebrate = result.xp.leveledUp || result.badges.length > 0 || streakMilestone || (isExamPassed(result));
   const isExam = Boolean(result.examResult);
-  // Every finished practice session gets a small confetti moment — exams stay
-  // calmer by design, and a real milestone (level-up, badge, streak, pass)
-  // still gets the bigger burst instead of stacking two.
-  const lightCelebrate = !isExam && !celebrate;
+  const scorePct = result.totalCount > 0 ? (result.correctCount / result.totalCount) * 100 : 0;
+  const perfectScore = result.totalCount > 0 && result.correctCount === result.totalCount;
+  const streakMilestone = Boolean(result.streak && result.streak.streak > 0 && result.streak.streak % 7 === 0);
+  // A perfect score always earns the big rain; a real milestone (level-up,
+  // badge, streak, exam pass) does too, whatever the score.
+  const bigCelebrate = perfectScore || result.xp.leveledUp || result.badges.length > 0 || streakMilestone || isExamPassed(result);
+  // A solid (but not perfect) score gets a small confetti moment — exams stay
+  // calmer by design and skip this tier, only ever getting the big burst on
+  // a pass.
+  const smallCelebrate = !isExam && !bigCelebrate && scorePct >= 60;
 
   return (
     <div className="relative">
-      {celebrate && <Confetti />}
-      {lightCelebrate && <Confetti count={14} />}
+      {bigCelebrate && <Confetti big />}
+      {smallCelebrate && <Confetti />}
       <div className="card p-6 text-center animate-pop-in">
         {isExam ? (
           <>

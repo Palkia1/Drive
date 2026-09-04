@@ -103,6 +103,11 @@ export function QuestionCard({
           <img src={scene.promptImageUrl} alt="" width={104} height={104} />
         </div>
       )}
+      {scene.kind === "SINGLE_CHOICE" && scene.promptLocationScene && (
+        <div className="relative mb-4">
+          <LocationScene location={scene.promptLocationScene.location} signs={scene.promptLocationScene.signs} />
+        </div>
+      )}
       <p className="relative text-lg font-semibold leading-snug mb-4">{question.prompt}</p>
 
       {scene.kind === "SINGLE_CHOICE" && (
@@ -214,7 +219,7 @@ export function QuestionCard({
       {scene.kind === "HOTSPOT" && scene.sceneId === "location" && (
         <LocationScene
           location={scene.location}
-          hasRightOfWaySign={scene.hasRightOfWaySign}
+          signs={scene.signs}
           trafficLight={scene.trafficLight}
           actors={scene.actors}
           selectedSlot={selectedSlot}

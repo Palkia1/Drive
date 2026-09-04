@@ -15,7 +15,7 @@ export async function requireStudent() {
 
   const student = await prisma.studentProfile.findUnique({
     where: { userId: session.user.id },
-    include: { drivingSchool: true, user: { select: { emailVerified: true } } },
+    include: { drivingSchool: true, user: { select: { emailVerified: true, isBetaTester: true } } },
   });
   if (!student) redirect("/inloggen");
   return { user: session.user, student };
@@ -33,4 +33,26 @@ export async function requireInstructor() {
   });
   if (!school) redirect("/inloggen");
   return { user: session.user, school };
+}
+
+/** For the /app/beta page — any account can self-grant isBetaTester from
+ * Instellingen, so this only checks the flag, not the STUDENT/INSTRUCTOR
+ * role. Redirects a signed-in non-tester back to /app. */
+export async function requireBetaTester() {
+  const user = await getBetaTester();
+  if (!user) redirect("/app");
+  return user;
+}
+
+/** For /api/beta/* routes — same check as requireBetaTester, but returns
+ * null instead of redirecting so the route can reply with a JSON 401/403. */
+export async function getBetaTester() {
+  const session = await auth();
+  if (!session?.user) return null;
+  const user = await prisma.user.findUnique({
+    where: { id: session.user.id },
+    select: { id: true, isBetaTester: true, name: true },
+  });
+  if (!user?.isBetaTester) return null;
+  return user;
 }

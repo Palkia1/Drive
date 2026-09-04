@@ -1398,6 +1398,28 @@ const QUESTIONS: SeedQuestion[] = [
   {
     topic: "snelheid",
     type: "SINGLE_CHOICE",
+    difficulty: 1,
+    prompt: "Je rijdt deze straat in. Wat is hier de maximumsnelheid?",
+    explanation:
+      "Het bord bij de straatingang geeft het begin van een 30 km/u-zone aan — die snelheid geldt voor de hele zone, niet alleen ter hoogte van het bord zelf.",
+    scene: {
+      kind: "SINGLE_CHOICE",
+      promptLocationScene: {
+        location: "straat-van-rechts-stedelijk",
+        signs: [{ signId: "A1-30zb", slot: "north" }],
+      },
+      options: [
+        { id: "a", label: "30 km/u" },
+        { id: "b", label: "50 km/u" },
+        { id: "c", label: "15 km/u" },
+        { id: "d", label: "Geen limiet, het is een woonerf" },
+      ],
+      correctOptionId: "a",
+    },
+  },
+  {
+    topic: "snelheid",
+    type: "SINGLE_CHOICE",
     difficulty: 2,
     prompt: "Je rijdt dit bord voorbij. Wat betekent het?",
     explanation:

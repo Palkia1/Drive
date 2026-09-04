@@ -17,6 +17,13 @@ export type SingleChoiceScene = {
    * traffic-light asset from public/scenes/) — separate from promptSignId
    * because it isn't an RVV catalogue sign. */
   promptImageUrl?: string;
+  /** optional real location background (see LocationId) with one or more
+   * signs planted on it, shown large above the prompt — a modular
+   * alternative to promptSignId's isolated icon for questions where the
+   * sign matters in its road context (e.g. a zone-30 sign at a street
+   * entrance) rather than in the abstract. Non-interactive: no actors, no
+   * hotspot. */
+  promptLocationScene?: { location: LocationId; signs: { signId: SignId; slot: LocationSlot }[] };
   options: ChoiceOption[];
   correctOptionId: string;
 };
@@ -137,10 +144,13 @@ export type LocationHotspotScene = {
   kind: "HOTSPOT";
   sceneId: "location";
   location: LocationId;
-  /** Overlay a priority sign beside a specific approach — for locations
-   * whose background doesn't already bake priority into the road markings
-   * (e.g. "gelijkwaardige-kruising", which is intentionally sign-free art). */
-  hasRightOfWaySign?: { kind: "priority-road" | "give-way" | "stop"; slot: LocationSlot } | null;
+  /** Overlay one or more real catalogue signs beside specific approaches —
+   * modular per question: any sign code, any slot, any count. Covers both
+   * priority signs (for locations whose background doesn't already bake
+   * priority into the road markings, e.g. "gelijkwaardige-kruising", which
+   * is intentionally sign-free art) and any other contextual sign
+   * (speed-zone signs, warning signs, ...). */
+  signs?: { signId: SignId; slot: LocationSlot }[];
   /** Overlay the traffic-light asset beside a specific approach. */
   trafficLight?: { slot: LocationSlot; state: TrafficLightState } | null;
   actors: LocationActor[];
