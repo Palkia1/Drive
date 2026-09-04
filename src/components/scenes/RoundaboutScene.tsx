@@ -4,7 +4,7 @@ import { useId } from "react";
 import type { RoundaboutActor } from "@/lib/questions/types";
 
 const CENTER = { x: 150, y: 150 };
-const LANE_WIDTH = 16;
+const LANE_WIDTH = 28;
 const OUTER_RADIUS = 85;
 const ARM_HALF_WIDTH = 35;
 const APPROACH_RADIUS = 128;
@@ -100,7 +100,7 @@ export function RoundaboutScene({
           const bearing = armBearing(arm, armCount);
           return (
             <g key={`teeth-${arm}`} transform={`translate(${CENTER.x} ${CENTER.y}) rotate(${bearing})`}>
-              <SharkTeeth y={-(OUTER_RADIUS + 3)} width={ARM_HALF_WIDTH * 2 - 6} />
+              <SharkTeeth y={-(OUTER_RADIUS + 3)} halfWidth={ARM_HALF_WIDTH} />
             </g>
           );
         })}
@@ -169,11 +169,24 @@ export function RoundaboutScene({
   );
 }
 
-function SharkTeeth({ y, width }: { y: number; width: number }) {
-  const count = 5;
+// Real haaientanden are painted per weghelft (each direction's own lane),
+// not as one row spanning the full road — so this draws two independent
+// rows, one on each side of the centerline, with a gap between them.
+function SharkTeeth({ y, halfWidth }: { y: number; halfWidth: number }) {
+  return (
+    <>
+      <SharkTeethRow y={y} xStart={-halfWidth + 4} xEnd={-4} />
+      <SharkTeethRow y={y} xStart={4} xEnd={halfWidth - 4} />
+    </>
+  );
+}
+
+function SharkTeethRow({ y, xStart, xEnd }: { y: number; xStart: number; xEnd: number }) {
+  const width = xEnd - xStart;
+  const count = 3;
   const step = width / count;
   const teeth = Array.from({ length: count }, (_, i) => {
-    const cx = -width / 2 + step * i + step / 2;
+    const cx = xStart + step * i + step / 2;
     return `M${cx - step * 0.35},${y + 6} L${cx},${y} L${cx + step * 0.35},${y + 6} Z`;
   }).join(" ");
   return <path d={teeth} fill="white" stroke="rgba(0,0,0,0.15)" strokeWidth="0.5" />;
