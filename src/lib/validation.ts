@@ -13,6 +13,15 @@ export const registerStudentSchema = z.object({
     .or(z.literal("")),
 });
 
+export const forgotPasswordSchema = z.object({
+  email: z.string().trim().toLowerCase().email("Ongeldig e-mailadres"),
+});
+
+export const resetPasswordSchema = z.object({
+  token: z.string().min(1),
+  password: z.string().min(8, "Wachtwoord moet minimaal 8 tekens zijn"),
+});
+
 export const registerSchoolSchema = z.object({
   schoolName: z.string().trim().min(2, "Vul de naam van je rijschool in").max(120),
   ownerName: z.string().trim().min(2, "Vul je naam in").max(80),

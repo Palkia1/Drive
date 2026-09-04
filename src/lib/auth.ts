@@ -5,6 +5,7 @@ import Apple from "next-auth/providers/apple";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/db";
+import { checkRateLimit, clientIp } from "@/lib/rateLimit";
 
 // Google/Apple only get wired up when real credentials are configured — in
 // dev those env vars are empty, so only email/password is offered. This
@@ -33,10 +34,18 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         email: { label: "E-mail", type: "email" },
         password: { label: "Wachtwoord", type: "password" },
       },
-      async authorize(credentials) {
+      async authorize(credentials, request) {
         const email = credentials?.email as string | undefined;
         const password = credentials?.password as string | undefined;
         if (!email || !password) return null;
+
+        // Both by IP and by the targeted account, so a distributed attempt
+        // against one account is still caught even from many IPs.
+        const [ipAllowed, emailAllowed] = await Promise.all([
+          checkRateLimit(`login:${clientIp(request)}`, 20),
+          checkRateLimit(`login-email:${email.toLowerCase()}`, 10),
+        ]);
+        if (!ipAllowed || !emailAllowed) return null;
 
         const user = await prisma.user.findUnique({ where: { email: email.toLowerCase() } });
         if (!user?.passwordHash) return null;

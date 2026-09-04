@@ -10,6 +10,7 @@ import { TopicIcon, getTopicColor } from "@/components/topics/TopicIcon";
 import { ArrowRight, Target, Star, PartyPopper, CircleAlert, Hourglass } from "lucide-react";
 import { StreakFlameIcon } from "@/components/icons/StreakFlameIcon";
 import { Greeting } from "@/components/ui/Greeting";
+import { EmailVerificationBanner } from "@/components/ui/EmailVerificationBanner";
 
 export default async function HomePage() {
   const { student } = await requireStudent();
@@ -30,6 +31,7 @@ export default async function HomePage() {
 
   return (
     <div className="space-y-6">
+      {!student.user.emailVerified && <EmailVerificationBanner />}
       {/* Compacte identiteitsregel: naam + level links, streak + xp rechts — elk stukje data precies één keer (de rest staat al in de topbar). */}
       <div className="flex items-center justify-between">
         <div className="flex min-w-0 items-center gap-2.5">

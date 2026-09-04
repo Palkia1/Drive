@@ -3,8 +3,16 @@ import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/db";
 import { registerStudentSchema } from "@/lib/validation";
 import { generateFriendCode, generateUsername } from "@/lib/codes";
+import { checkRateLimit, clientIp } from "@/lib/rateLimit";
+import { createVerificationToken } from "@/lib/verificationTokens";
+import { sendEmail } from "@/lib/email";
 
 export async function POST(req: Request) {
+  const allowed = await checkRateLimit(`register:${clientIp(req)}`, 10);
+  if (!allowed) {
+    return NextResponse.json({ error: "Te veel pogingen. Probeer het over een minuut opnieuw." }, { status: 429 });
+  }
+
   const body = await req.json().catch(() => null);
   const parsed = registerStudentSchema.safeParse(body);
   if (!parsed.success) {
@@ -50,6 +58,17 @@ export async function POST(req: Request) {
     },
     select: { id: true },
   });
+
+  // Best-effort — registration succeeds either way, verification is
+  // non-blocking (see EmailVerificationBanner).
+  const verifyToken = await createVerificationToken("verify", email);
+  const verifyUrl = `${new URL(req.url).origin}/verifieer/${verifyToken}`;
+  await sendEmail(
+    email,
+    "Bevestig je e-mailadres — Rijklaar",
+    `<p>Welkom bij Rijklaar! Bevestig je e-mailadres via de link hieronder.</p>
+     <p><a href="${verifyUrl}">${verifyUrl}</a></p>`
+  ).catch(() => {});
 
   return NextResponse.json({ ok: true, userId: user.id });
 }

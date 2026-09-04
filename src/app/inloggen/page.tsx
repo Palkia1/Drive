@@ -51,6 +51,9 @@ export default function LoginPage() {
         <button type="submit" disabled={loading} className="btn-primary w-full">
           {loading ? "Bezig..." : "Inloggen"}
         </button>
+        <Link href="/wachtwoord-vergeten" className="block text-sm text-center" style={{ color: "var(--foreground-muted)" }}>
+          Wachtwoord vergeten?
+        </Link>
       </form>
 
       <div className="mt-5">

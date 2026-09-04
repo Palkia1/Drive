@@ -446,6 +446,21 @@ model XpEvent {
   @@map("xp_events")
 }
 
+// Fixed-window rate limiting for public auth endpoints (register, forgot-
+// password, reset-password, login) — a DB table rather than in-memory
+// because Vercel serverless functions don't share memory across instances.
+// `key` is "<route>:<ip-or-email>", `windowStart` is the current window
+// floored to WINDOW_MS (see src/lib/rateLimit.ts) — one upsert per request.
+model RateLimitAttempt {
+  id          String   @id @default(cuid())
+  key         String
+  windowStart DateTime
+  count       Int      @default(1)
+
+  @@unique([key, windowStart])
+  @@map("rate_limit_attempts")
+}
+
 model Badge {
   id          String @id @default(cuid())
   code        String @unique

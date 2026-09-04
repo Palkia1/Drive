@@ -15,7 +15,7 @@ export async function requireStudent() {
 
   const student = await prisma.studentProfile.findUnique({
     where: { userId: session.user.id },
-    include: { drivingSchool: true },
+    include: { drivingSchool: true, user: { select: { emailVerified: true } } },
   });
   if (!student) redirect("/inloggen");
   return { user: session.user, student };
