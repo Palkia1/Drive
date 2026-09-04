@@ -11,6 +11,7 @@ import { PrismaClient, QuestionType } from "@prisma/client";
 import bcrypt from "bcryptjs";
 import type {
   IntersectionHotspotScene,
+  LocationHotspotScene,
   MultipleChoiceScene,
   RoundaboutHotspotScene,
   SignStripHotspotScene,
@@ -79,7 +80,8 @@ type SeedQuestion = {
     | IntersectionHotspotScene
     | SignStripHotspotScene
     | TrafficLightHotspotScene
-    | RoundaboutHotspotScene;
+    | RoundaboutHotspotScene
+    | LocationHotspotScene;
 };
 
 const QUESTIONS: SeedQuestion[] = [
@@ -282,6 +284,103 @@ const QUESTIONS: SeedQuestion[] = [
       ],
       correctSlot: "north",
       question: "Wie mag rijden?",
+    },
+  },
+  {
+    topic: "voorrang",
+    type: "HOTSPOT",
+    difficulty: 2,
+    prompt: "Je nadert deze T-splitsing. Er staan geen borden. Een auto komt van rechts uit de zijstraat. Wie mag als eerste rijden?",
+    explanation:
+      "Zonder borden geldt voorrang van rechts. De bestuurder die van rechts komt — hier de auto uit de zijstraat — heeft voorrang.",
+    scene: {
+      kind: "HOTSPOT",
+      sceneId: "location",
+      location: "straat-van-rechts-stedelijk",
+      actors: [
+        { id: "you", slot: "south", kind: "car", color: "var(--sign-red)", self: true },
+        { id: "side-street-car", slot: "east", kind: "car", color: "var(--sign-blue)" },
+      ],
+      correctSlot: "side-street-car",
+      question: "Wie mag als eerste rijden?",
+    },
+  },
+  {
+    topic: "voorrang",
+    type: "HOTSPOT",
+    difficulty: 2,
+    prompt: "Je nadert dit kruispunt vanaf de zijweg. Er staat geen bord, maar wel haaientanden voor je. Wie mag als eerste rijden?",
+    explanation:
+      "Haaientanden op het wegdek betekenen dat je voorrang moet verlenen aan het verkeer op de kruisende weg — ook zonder bord.",
+    scene: {
+      kind: "HOTSPOT",
+      sceneId: "location",
+      location: "doorgaande-weg-twee-zijwegen-zonder-naad",
+      actors: [
+        { id: "you", slot: "north", kind: "car", color: "var(--sign-red)", self: true },
+        { id: "through-road-car", slot: "west", kind: "car", color: "var(--sign-blue)" },
+      ],
+      correctSlot: "through-road-car",
+      question: "Wie mag als eerste rijden?",
+    },
+  },
+  {
+    topic: "voorrang",
+    subtopic: "gelijkwaardige-kruispunten",
+    type: "HOTSPOT",
+    difficulty: 2,
+    prompt: "Je nadert dit kruispunt. Er staan geen borden of verkeerslichten. Wie mag als eerste rijden?",
+    explanation:
+      "Op een kruispunt zonder verkeersborden of verkeerslichten geldt: bestuurders van rechts hebben voorrang. Kijk naar rechts — de andere auto komt daarvandaan.",
+    scene: {
+      kind: "HOTSPOT",
+      sceneId: "location",
+      location: "gelijkwaardige-kruising",
+      actors: [
+        { id: "you", slot: "north", kind: "car", color: "var(--sign-red)", self: true },
+        { id: "other-car", slot: "east", kind: "car", color: "var(--sign-blue)" },
+      ],
+      correctSlot: "you",
+      question: "Wie mag als eerste rijden?",
+    },
+  },
+  {
+    topic: "voorrang",
+    subtopic: "rotondes",
+    type: "HOTSPOT",
+    difficulty: 2,
+    prompt: "Je nadert deze rotonde. Een vrachtwagen rijdt al op de rotonde. Wie mag als eerste rijden?",
+    explanation:
+      "Verkeer dat al op de rotonde rijdt heeft altijd voorrang op verkeer dat de rotonde op wil rijden — ook een vrachtwagen.",
+    scene: {
+      kind: "HOTSPOT",
+      sceneId: "location",
+      location: "eenbaansrotonde",
+      actors: [
+        { id: "you", slot: "west", position: "approaching", kind: "car", color: "var(--sign-red)", self: true },
+        { id: "ring-truck", slot: "west", position: "on-ring", kind: "truck", color: "var(--sign-blue)" },
+      ],
+      correctSlot: "ring-truck",
+      question: "Wie mag als eerste rijden?",
+    },
+  },
+  {
+    topic: "voorrang",
+    type: "SINGLE_CHOICE",
+    difficulty: 1,
+    prompt: "Voor jou staat dit verkeerslicht. Wat moet je doen?",
+    explanation:
+      "Rood licht betekent altijd stoppen, ook als de weg leeg lijkt. Je mag pas verder rijden als het licht op groen springt.",
+    scene: {
+      kind: "SINGLE_CHOICE",
+      promptImageUrl: "/scenes/stoplicht-rood-losse-ringen.svg",
+      options: [
+        { id: "a", label: "Doorrijden als de weg vrij lijkt" },
+        { id: "b", label: "Stoppen en wachten tot het licht op groen springt" },
+        { id: "c", label: "Voorzichtig doorrijden, maar wel voorrang verlenen" },
+        { id: "d", label: "Alleen stoppen als er een politieagent aanwezig is" },
+      ],
+      correctOptionId: "b",
     },
   },
 

@@ -3,6 +3,7 @@
 import { useId } from "react";
 import type { IntersectionActor, IntersectionSlot, TrafficLightState } from "@/lib/questions/types";
 import { SignIcon } from "./SignIcon";
+import { TrafficActor, SelfLabel, TrafficLightPole } from "./TrafficActor";
 
 // Each road carries two lanes (right-hand/Dutch traffic), so an actor sits
 // offset from the road's centerline into its own lane — not straddling the
@@ -132,26 +133,9 @@ export function IntersectionScene({
                 />
               )}
               <g transform={`rotate(${rotation})`}>
-                <Actor kind={actor.kind} color={actor.color} shadowFilterId={shadowFilterId} />
+                <TrafficActor kind={actor.kind} color={actor.color} shadowFilterId={shadowFilterId} />
               </g>
-              {actor.self && (
-                <g transform={`translate(${labelOffset.dx},${labelOffset.dy})`}>
-                  {/* Darkened from --gold-500 — plain gold under white text
-                     doesn't clear WCAG AA (4.5:1); this shade does. */}
-                  <rect x="-16" y="-9" width="32" height="18" rx="9" fill="color-mix(in srgb, var(--gold-500) 62%, black)" />
-                  <text
-                    x="0"
-                    y="4"
-                    textAnchor="middle"
-                    fontSize="11"
-                    fontWeight="800"
-                    fill="white"
-                    fontFamily="sans-serif"
-                  >
-                    JIJ
-                  </text>
-                </g>
-              )}
+              {actor.self && <SelfLabel dx={labelOffset.dx} dy={labelOffset.dy} />}
               <circle
                 r="30"
                 fill="transparent"
@@ -166,61 +150,3 @@ export function IntersectionScene({
   );
 }
 
-/** A small traffic-light pole: a dark housing with 3 stacked lenses, the
- * active color lit and the other two dimmed — same visual grammar as a
- * real signal head, simplified to a single-aspect pole per approach. */
-export function TrafficLightPole({ state }: { state: TrafficLightState }) {
-  const lensColor = (c: TrafficLightState) => {
-    if (state !== c) return "rgba(255,255,255,0.15)";
-    if (c === "red") return "var(--danger-500)";
-    if (c === "orange") return "var(--gold-500)";
-    return "var(--success-500)";
-  };
-  return (
-    <g transform="translate(-7,-26)">
-      <rect x="0" y="0" width="14" height="34" rx="4" fill="var(--sign-black)" />
-      <circle cx="7" cy="8" r="4" fill={lensColor("red")} />
-      <circle cx="7" cy="17" r="4" fill={lensColor("orange")} />
-      <circle cx="7" cy="26" r="4" fill={lensColor("green")} />
-      <rect x="5" y="34" width="4" height="10" fill="var(--sign-black)" />
-    </g>
-  );
-}
-
-function Actor({ kind, color, shadowFilterId }: { kind: IntersectionActor["kind"]; color?: string; shadowFilterId: string }) {
-  const fill = color ?? "var(--sign-blue)";
-  if (kind === "pedestrian") {
-    return (
-      <g>
-        <ellipse cy="11" rx="6" ry="2.2" fill="rgba(0,0,0,0.18)" filter={`url(#${shadowFilterId})`} />
-        <circle cy="-14" r="5" fill="var(--sign-black)" />
-        <path d="M0 -9 v14 M0 -2 l-8 8 M0 -2 l8 8 M-6 -3 h12" stroke="var(--sign-black)" strokeWidth="3.2" strokeLinecap="round" fill="none" />
-      </g>
-    );
-  }
-  if (kind === "cyclist") {
-    return (
-      <g>
-        <ellipse cy="14" rx="10" ry="2.4" fill="rgba(0,0,0,0.18)" filter={`url(#${shadowFilterId})`} />
-        <circle cy="6" r="7" fill="none" stroke={fill} strokeWidth="3" />
-        <circle cy="-8" r="4" fill="var(--sign-black)" />
-        <path d="M0 6 L-3 -6 L6 -6 M0 6 L6 -2" stroke={fill} strokeWidth="3" fill="none" strokeLinecap="round" />
-      </g>
-    );
-  }
-  // Cars/trucks: a flat body + a soft top-highlight and bottom-shade overlay
-  // (instead of an SVG <linearGradient>, which would need a fresh id per
-  // instance) for a light 2.5D "premium automotive" read, plus a grounding
-  // drop-shadow — still schematic/iconographic, not photorealistic.
-  const w = kind === "truck" ? 34 : 26;
-  const h = kind === "truck" ? 58 : 46;
-  return (
-    <g>
-      <ellipse cy={h / 2 + 3} rx={w / 2 + 1} ry="4" fill="rgba(0,0,0,0.22)" filter={`url(#${shadowFilterId})`} />
-      <rect x={-w / 2} y={-h / 2} width={w} height={h} rx="9" fill={fill} stroke="rgba(0,0,0,0.22)" strokeWidth="1.25" />
-      <rect x={-w / 2} y={-h / 2} width={w} height={h * 0.4} rx="9" fill="rgba(255,255,255,0.22)" />
-      <rect x={-w / 2} y={h / 2 - h * 0.22} width={w} height={h * 0.22} fill="rgba(0,0,0,0.14)" />
-      <rect x={-w / 2 + 4} y={-h / 2 + 8} width={w - 8} height={h * 0.26} rx="4" fill="rgba(255,255,255,0.6)" />
-    </g>
-  );
-}

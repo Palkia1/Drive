@@ -13,6 +13,10 @@ export type SingleChoiceScene = {
   kind: "SINGLE_CHOICE";
   /** optional sign shown large above the prompt, e.g. for "wat betekent dit bord?" questions */
   promptSignId?: SignId;
+  /** optional non-sign illustration shown large above the prompt (e.g. a
+   * traffic-light asset from public/scenes/) — separate from promptSignId
+   * because it isn't an RVV catalogue sign. */
+  promptImageUrl?: string;
   options: ChoiceOption[];
   correctOptionId: string;
 };
@@ -106,13 +110,52 @@ export type RoundaboutHotspotScene = {
   question: string;
 };
 
+/** One of a fixed set of real, illustrated road layouts (public/scenes/) —
+ * unlike IntersectionHotspotScene/RoundaboutHotspotScene, which draw a
+ * schematic layout in code, these are traced from provided artwork, so the
+ * set of locations and each one's valid slots is fixed rather than
+ * parametric. */
+export type LocationId =
+  | "gelijkwaardige-kruising"
+  | "doorgaande-weg-twee-zijwegen-zonder-naad"
+  | "straat-van-rechts-stedelijk"
+  | "eenbaansrotonde";
+
+export type LocationSlot = "north" | "east" | "south" | "west";
+
+export type LocationActor = {
+  id: string;
+  slot: LocationSlot;
+  /** Roundabout only ("eenbaansrotonde") — ignored elsewhere. */
+  position?: "approaching" | "on-ring";
+  kind: "car" | "cyclist" | "pedestrian" | "truck";
+  color?: string;
+  self?: boolean;
+};
+
+export type LocationHotspotScene = {
+  kind: "HOTSPOT";
+  sceneId: "location";
+  location: LocationId;
+  /** Overlay a priority sign beside a specific approach — for locations
+   * whose background doesn't already bake priority into the road markings
+   * (e.g. "gelijkwaardige-kruising", which is intentionally sign-free art). */
+  hasRightOfWaySign?: { kind: "priority-road" | "give-way" | "stop"; slot: LocationSlot } | null;
+  /** Overlay the traffic-light asset beside a specific approach. */
+  trafficLight?: { slot: LocationSlot; state: TrafficLightState } | null;
+  actors: LocationActor[];
+  correctSlot: string;
+  question: string;
+};
+
 export type QuestionScene =
   | SingleChoiceScene
   | MultipleChoiceScene
   | IntersectionHotspotScene
   | SignStripHotspotScene
   | TrafficLightHotspotScene
-  | RoundaboutHotspotScene;
+  | RoundaboutHotspotScene
+  | LocationHotspotScene;
 
 /**
  * A sign id is an official RVV code (see signCatalogue.ts), optionally with a

@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Check, X, Bookmark, Star } from "lucide-react";
 import { IntersectionScene } from "@/components/scenes/IntersectionScene";
 import { RoundaboutScene } from "@/components/scenes/RoundaboutScene";
+import { LocationScene } from "@/components/scenes/LocationScene";
 import { SignStripScene } from "@/components/scenes/SignStripScene";
 import { SignIcon } from "@/components/scenes/SignIcon";
 import type { QuestionScene } from "@/lib/questions/types";
@@ -92,6 +93,14 @@ export function QuestionCard({
       {scene.kind === "SINGLE_CHOICE" && scene.promptSignId && (
         <div className="relative flex justify-center mb-4">
           <SignIcon id={scene.promptSignId} size={104} />
+        </div>
+      )}
+      {scene.kind === "SINGLE_CHOICE" && scene.promptImageUrl && (
+        <div className="relative flex justify-center mb-4">
+          {/* eslint-disable-next-line @next/next/no-img-element -- a small,
+             fixed set of pre-sized local SVG assets, not user content or
+             anything worth Next's remote-image optimization pipeline for. */}
+          <img src={scene.promptImageUrl} alt="" width={104} height={104} />
         </div>
       )}
       <p className="relative text-lg font-semibold leading-snug mb-4">{question.prompt}</p>
@@ -191,6 +200,22 @@ export function QuestionCard({
           armCount={scene.armCount}
           ringLanes={scene.ringLanes}
           sharkTeethArms={scene.sharkTeethArms}
+          actors={scene.actors}
+          selectedSlot={selectedSlot}
+          correctSlot={scene.correctSlot}
+          disabled={locked}
+          onSelect={(slot) => {
+            setSelectedSlot(slot);
+            submit({ kind: "HOTSPOT_SLOT", slot });
+          }}
+        />
+      )}
+
+      {scene.kind === "HOTSPOT" && scene.sceneId === "location" && (
+        <LocationScene
+          location={scene.location}
+          hasRightOfWaySign={scene.hasRightOfWaySign}
+          trafficLight={scene.trafficLight}
           actors={scene.actors}
           selectedSlot={selectedSlot}
           correctSlot={scene.correctSlot}

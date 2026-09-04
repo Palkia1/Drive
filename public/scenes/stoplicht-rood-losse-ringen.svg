@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024" role="img" aria-labelledby="title description">
+  <title id="title">Rood verkeerslicht met transparante achtergrond</title>
+  <desc id="description">Eenvoudige modulaire vectorillustratie van een frontaal verkeerslicht. De rode lamp brandt; de gele en groene lamp zijn uitgeschakeld. De achtergrond is volledig transparant.</desc>
+
+  <!-- Geen achtergrondvlak: alles buiten het verkeerslicht blijft transparant. -->
+
+  <g id="support">
+    <rect x="470" y="716" width="84" height="218" rx="18" fill="#7f898e"/>
+    <rect x="485" y="716" width="20" height="218" rx="10" fill="#9da5a9" opacity=".55"/>
+    <rect x="402" y="916" width="220" height="52" rx="22" fill="#687278"/>
+    <rect x="430" y="930" width="164" height="14" rx="7" fill="#8f989c" opacity=".55"/>
+  </g>
+
+  <g id="housing">
+    <rect x="300" y="54" width="424" height="690" rx="60" fill="#41494f"/>
+    <rect x="326" y="80" width="372" height="638" rx="42" fill="#30383d"/>
+    <path d="M355 104q0-12 12-12h290q12 0 12 12v18H355z" fill="#596168" opacity=".65"/>
+  </g>
+
+  <g id="signal-lenses">
+    <g id="red-light-on">
+      <circle cx="512" cy="228" r="96" fill="#20282d"/>
+      <circle cx="512" cy="228" r="86" fill="#c9343b"/>
+      <circle cx="512" cy="228" r="74" fill="#ef4d4f"/>
+      <circle cx="486" cy="201" r="24" fill="#ffaaa0" opacity=".58"/>
+      <circle cx="512" cy="228" r="74" fill="none" stroke="#ff6c68" stroke-width="6" opacity=".7"/>
+    </g>
+
+    <g id="amber-light-off">
+      <circle cx="512" cy="418" r="96" fill="#20282d"/>
+      <circle cx="512" cy="418" r="82" fill="#66583d"/>
+      <circle cx="487" cy="393" r="19" fill="#928469" opacity=".35"/>
+    </g>
+
+    <g id="green-light-off">
+      <circle cx="512" cy="608" r="96" fill="#20282d"/>
+      <circle cx="512" cy="608" r="82" fill="#3e5b49"/>
+      <circle cx="487" cy="583" r="19" fill="#78917e" opacity=".28"/>
+    </g>
+  </g>
+</svg>

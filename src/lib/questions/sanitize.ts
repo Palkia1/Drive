@@ -8,7 +8,12 @@ export function toClientScene(scene: QuestionScene): QuestionScene {
     case "MULTIPLE_CHOICE":
       return { ...scene, correctOptionIds: [] };
     case "HOTSPOT":
-      if (scene.sceneId === "intersection" || scene.sceneId === "traffic-light-intersection" || scene.sceneId === "roundabout") {
+      if (
+        scene.sceneId === "intersection" ||
+        scene.sceneId === "traffic-light-intersection" ||
+        scene.sceneId === "roundabout" ||
+        scene.sceneId === "location"
+      ) {
         return { ...scene, correctSlot: undefined as never };
       }
       return { ...scene, correctSignId: undefined as never };

@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" role="img" aria-labelledby="title desc">
+  <title id="title">Modulaire gelijkwaardige kruising</title>
+  <desc id="desc">Vierkante illustratie in loodrecht bovenaanzicht van een lege gelijkwaardige kruising met onderbroken middenstrepen, afgeronde stoepen en groene bermen.</desc>
+
+  <defs>
+    <!-- Herbruikbare omgevingsmodule -->
+    <symbol id="grass-tuft" viewBox="-12 -12 24 24">
+      <path d="M0 10C-1 2-5-4-10-8M0 10C1 1 5-5 10-9M0 10C0 0-1-7 1-12" fill="none" stroke="#659951" stroke-width="3" stroke-linecap="round"/>
+    </symbol>
+  </defs>
+
+  <!-- LAAG 1: ondergrond -->
+  <g id="module-background" data-module="background">
+    <rect width="1024" height="1024" fill="#596168"/>
+  </g>
+
+  <!-- LAAG 2: twee gelijkwaardige wegen -->
+  <g id="module-roads" data-module="roads" fill="#596168">
+    <rect x="356" width="312" height="1024"/>
+    <rect y="356" width="1024" height="312"/>
+  </g>
+
+  <!-- LAAG 3: stoepen met echt afgeronde hoeken aan het kruispunt -->
+  <g id="module-sidewalks" data-module="sidewalks" fill="#D8DADB">
+    <path d="M0 0H356V318A38 38 0 0 1 318 356H0Z"/>
+    <path d="M668 0H1024V356H706A38 38 0 0 1 668 318Z"/>
+    <path d="M0 668H318A38 38 0 0 1 356 706V1024H0Z"/>
+    <path d="M1024 668H706A38 38 0 0 0 668 706V1024H1024Z"/>
+  </g>
+
+  <!-- LAAG 4: groene bermen; onafhankelijk vervangbaar -->
+  <g id="module-green-verges" data-module="green-verges" fill="#9FC77D" stroke="#B8BDC0" stroke-width="5">
+    <path d="M0 0H316V288Q316 316 288 316H0Z"/>
+    <path d="M708 0H1024V316H736Q708 316 708 288Z"/>
+    <path d="M0 708H288Q316 708 316 736V1024H0Z"/>
+    <path d="M736 708H1024V1024H708V736Q708 708 736 708Z"/>
+    <path d="M0 0H225L0 225Z" fill="#ADD18C" stroke="none" opacity=".55"/>
+    <path d="M1024 1024H800L1024 800Z" fill="#ADD18C" stroke="none" opacity=".45"/>
+  </g>
+
+  <!-- LAAG 5: afgeronde stoepranden -->
+  <g id="module-curbs" data-module="curbs" fill="none" stroke="#41494F" stroke-width="7" stroke-linecap="round">
+    <path d="M356 0V318A38 38 0 0 1 318 356H0"/>
+    <path d="M668 0V318A38 38 0 0 0 706 356H1024"/>
+    <path d="M0 668H318A38 38 0 0 1 356 706V1024"/>
+    <path d="M1024 668H706A38 38 0 0 0 668 706V1024"/>
+  </g>
+
+  <!-- LAAG 6: middenstrepen stoppen voor het kruispunt -->
+  <g id="module-road-markings" data-module="road-markings" fill="none" stroke="#F7F5ED" stroke-width="10" stroke-linecap="butt" stroke-dasharray="48 32">
+    <path d="M512 0V316"/>
+    <path d="M512 708V1024"/>
+    <path d="M0 512H316"/>
+    <path d="M708 512H1024"/>
+  </g>
+
+  <!-- LAAG 7: rustige grasdetails, zonder bloemen -->
+  <g id="module-landscape-details" data-module="landscape-details" opacity=".9">
+    <use href="#grass-tuft" x="92" y="102" width="24" height="24"/>
+    <use href="#grass-tuft" x="257" y="204" width="24" height="24" transform="rotate(18 269 216)"/>
+    <use href="#grass-tuft" x="780" y="110" width="24" height="24" transform="rotate(-14 792 122)"/>
+    <use href="#grass-tuft" x="909" y="264" width="24" height="24"/>
+    <use href="#grass-tuft" x="125" y="826" width="24" height="24" transform="rotate(-12 137 838)"/>
+    <use href="#grass-tuft" x="251" y="934" width="24" height="24"/>
+    <use href="#grass-tuft" x="782" y="877" width="24" height="24" transform="rotate(15 794 889)"/>
+    <use href="#grass-tuft" x="910" y="754" width="24" height="24"/>
+  </g>
+
+  <!-- Lege modulaire invoeglagen voor volgende verkeerssituaties -->
+  <g id="module-traffic-signs" data-module="traffic-signs"/>
+  <g id="module-road-users" data-module="road-users"/>
+  <g id="module-learning-overlay" data-module="learning-overlay"/>
+</svg>
