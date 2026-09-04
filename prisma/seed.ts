@@ -1376,6 +1376,101 @@ const QUESTIONS: SeedQuestion[] = [
       correctOptionId: "b",
     },
   },
+  {
+    topic: "snelheid",
+    type: "SINGLE_CHOICE",
+    difficulty: 1,
+    prompt: "Je rijdt dit bord voorbij. Wat is vanaf hier de maximumsnelheid?",
+    explanation:
+      "Dit bord geeft het begin van een 30 km/u-zone aan. Vanaf hier tot het eindebord geldt overal in de zone maximaal 30 km/u.",
+    scene: {
+      kind: "SINGLE_CHOICE",
+      promptSignId: "A1-30zb",
+      options: [
+        { id: "a", label: "15 km/u" },
+        { id: "b", label: "30 km/u" },
+        { id: "c", label: "50 km/u" },
+        { id: "d", label: "Zoveel als veilig aanvoelt" },
+      ],
+      correctOptionId: "b",
+    },
+  },
+  {
+    topic: "snelheid",
+    type: "SINGLE_CHOICE",
+    difficulty: 2,
+    prompt: "Je rijdt dit bord voorbij. Wat betekent het?",
+    explanation:
+      "Dit bord geeft het einde van de 30 km/u-zone aan; vanaf hier geldt weer de normale maximumsnelheid voor dit type weg.",
+    scene: {
+      kind: "SINGLE_CHOICE",
+      promptSignId: "A1-30ze",
+      options: [
+        { id: "a", label: "De 30 km/u-zone eindigt hier" },
+        { id: "b", label: "Er begint hier een nieuwe 30 km/u-zone" },
+        { id: "c", label: "Je moet hier stoppen" },
+        { id: "d", label: "Vrachtverkeer is verboden" },
+      ],
+      correctOptionId: "a",
+    },
+  },
+  {
+    topic: "snelheid",
+    type: "SINGLE_CHOICE",
+    difficulty: 1,
+    prompt: "Je rijdt dit bord voorbij, buiten de bebouwde kom. Wat is vanaf hier de maximumsnelheid?",
+    explanation:
+      "Dit bord geeft het begin van een 60 km/u-zone aan. Vanaf hier tot het eindebord geldt overal in de zone maximaal 60 km/u.",
+    scene: {
+      kind: "SINGLE_CHOICE",
+      promptSignId: "A1-60zb",
+      options: [
+        { id: "a", label: "50 km/u" },
+        { id: "b", label: "60 km/u" },
+        { id: "c", label: "80 km/u" },
+        { id: "d", label: "100 km/u" },
+      ],
+      correctOptionId: "b",
+    },
+  },
+  {
+    topic: "snelheid",
+    type: "SINGLE_CHOICE",
+    difficulty: 2,
+    prompt: "Je rijdt dit bord voorbij. Wat betekent het?",
+    explanation:
+      "Dit bord geeft aan dat de eerder ingestelde maximumsnelheid (hier 50) hier eindigt; de normale snelheidslimiet voor dit type weg geldt weer.",
+    scene: {
+      kind: "SINGLE_CHOICE",
+      promptSignId: "A2-50",
+      options: [
+        { id: "a", label: "Vanaf hier geldt maximaal 50 km/u" },
+        { id: "b", label: "De eerder ingestelde snelheidsbeperking eindigt hier" },
+        { id: "c", label: "Je moet minimaal 50 km/u rijden" },
+        { id: "d", label: "Adviessnelheid 50 km/u" },
+      ],
+      correctOptionId: "b",
+    },
+  },
+  {
+    topic: "snelheid",
+    type: "SINGLE_CHOICE",
+    difficulty: 2,
+    prompt: "Je nadert een scherpe bocht met dit bord. Ben je verplicht deze snelheid aan te houden?",
+    explanation:
+      "Een adviessnelheid is geen verplichting, maar wel een sterke aanbeveling — bijvoorbeeld voor een bocht die scherper is dan hij lijkt.",
+    scene: {
+      kind: "SINGLE_CHOICE",
+      promptSignId: "A4",
+      options: [
+        { id: "a", label: "Ja, dit is een verplichte maximumsnelheid" },
+        { id: "b", label: "Nee, het is een advies, geen verplichting" },
+        { id: "c", label: "Alleen verplicht voor vrachtverkeer" },
+        { id: "d", label: "Alleen verplicht bij regen" },
+      ],
+      correctOptionId: "b",
+    },
+  },
   // ---- Plaats op de weg -------------------------------------------------------
   {
     topic: "plaats-op-de-weg",
@@ -2260,6 +2355,24 @@ const QUESTIONS: SeedQuestion[] = [
         { id: "d", label: "Alleen je auto" },
       ],
       correctOptionId: "b",
+    },
+  },
+  {
+    topic: "plaats-op-de-weg",
+    type: "SINGLE_CHOICE",
+    difficulty: 2,
+    prompt: "Mag je met de auto een weg op waar dit bord staat?",
+    explanation: "Dit bord sluit motorvoertuigen op meer dan twee wielen — waaronder een auto — uit van de weg.",
+    scene: {
+      kind: "SINGLE_CHOICE",
+      promptSignId: "C6",
+      options: [
+        { id: "a", label: "Nee, auto's mogen deze weg niet op" },
+        { id: "b", label: "Ja, alleen bromfietsen mogen er niet op" },
+        { id: "c", label: "Ja, mits je stapvoets rijdt" },
+        { id: "d", label: "Alleen als je een vergunning hebt" },
+      ],
+      correctOptionId: "a",
     },
   },
   // ---- Inhalen -------------------------------------------------------
