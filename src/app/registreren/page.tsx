@@ -7,6 +7,7 @@ import { signIn } from "next-auth/react";
 import { User, Mail, Lock, KeyRound } from "lucide-react";
 import { AuthShell } from "@/components/ui/AuthShell";
 import { IconInput } from "@/components/ui/IconInput";
+import { captureEvent } from "@/lib/analytics";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -40,6 +41,7 @@ export default function RegisterPage() {
       router.push("/inloggen");
       return;
     }
+    captureEvent("signup", { hasSchoolCode: Boolean(schoolCode) });
     router.push("/app");
     router.refresh();
   }

@@ -7,6 +7,7 @@ import { ProgressBar } from "@/components/ui/ProgressBar";
 import { QuestionCard, type ClientQuestion } from "@/components/practice/QuestionCard";
 import { SessionResults, type SessionCompleteResult } from "@/components/practice/SessionResults";
 import type { SubmittedAnswer } from "@/lib/answers";
+import { captureEvent } from "@/lib/analytics";
 
 type Phase = "loading" | "running" | "completing" | "done" | "error";
 
@@ -62,7 +63,14 @@ function SessieRunner() {
     startSession();
   }, [startSession]);
 
-  async function handleAnswered(_answer: SubmittedAnswer, _isCorrect: boolean) {
+  async function handleAnswered(_answer: SubmittedAnswer, isCorrect: boolean) {
+    const question = questions[index];
+    captureEvent("question_answered", {
+      topicId: question?.topicId,
+      difficulty: question?.difficulty,
+      correct: isCorrect,
+      mode,
+    });
     if (index + 1 < questions.length) {
       setIndex((i) => i + 1);
     } else {
@@ -76,6 +84,12 @@ function SessieRunner() {
     const data = await res.json();
     setResult({ ...data, masterySnapshot });
     setPhase("done");
+    captureEvent(mode === "EXAM" ? "exam_completed" : "session_completed", {
+      mode,
+      questionCount: questions.length,
+      correctCount: data.correctCount,
+      xpEarned: data.xpEarned,
+    });
   }
 
   if (phase === "loading") {

@@ -74,6 +74,10 @@ De `android/`-map wordt gewoon meegecommit (standaard bij Capacitor) — alleen 
   hoog-contrast palet met "3D-pressed" knoppen (duolingo-achtige gamification-stijl),
   met een eigen kleur per onderwerp (`src/components/topics/TopicIcon.tsx`).
 - **Framer Motion** — subtiele micro-animaties (level-up confetti, pop-ins).
+- **Sentry + PostHog (optioneel)** — error-tracking en product-analytics, allebei uit tenzij
+  `NEXT_PUBLIC_SENTRY_DSN`/`NEXT_PUBLIC_POSTHOG_KEY` in `.env` staan (zelfde
+  aan/uit-conventie als de OAuth-providers hierboven). PostHog krijgt custom events op
+  vraag-beantwoorden, sessie/examen-afronding en registratie (`src/lib/analytics.ts`).
 - **Eigen SVG-scenes** (`src/components/scenes`) in plaats van stockfoto's of een externe
   asset-pipeline: een herbruikbare kruispunt-scene (auto's/fietsers/voetgangers op vaste
   "sloten") en een handgetekende verkeersbordenset. Consistente stijl, geen losse
