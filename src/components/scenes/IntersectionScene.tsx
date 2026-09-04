@@ -136,7 +136,9 @@ export function IntersectionScene({
               </g>
               {actor.self && (
                 <g transform={`translate(${labelOffset.dx},${labelOffset.dy})`}>
-                  <rect x="-16" y="-9" width="32" height="18" rx="9" fill="var(--gold-500)" />
+                  {/* Darkened from --gold-500 — plain gold under white text
+                     doesn't clear WCAG AA (4.5:1); this shade does. */}
+                  <rect x="-16" y="-9" width="32" height="18" rx="9" fill="color-mix(in srgb, var(--gold-500) 62%, black)" />
                   <text
                     x="0"
                     y="4"

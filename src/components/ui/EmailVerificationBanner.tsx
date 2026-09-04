@@ -28,7 +28,9 @@ export function EmailVerificationBanner() {
         onClick={resend}
         disabled={status === "sending" || status === "sent"}
         className="font-semibold shrink-0"
-        style={{ color: "var(--gold-600)" }}
+        // --gold-600 alone (2.63:1) doesn't clear WCAG AA on this light
+        // background; darkened further so the text itself is legible.
+        style={{ color: "color-mix(in srgb, var(--gold-500) 62%, black)" }}
       >
         {status === "sent" ? "Verstuurd" : status === "sending" ? "Bezig..." : "Verstuur opnieuw"}
       </button>

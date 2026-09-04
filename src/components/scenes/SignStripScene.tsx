@@ -18,7 +18,7 @@ export function SignStripScene({
 }) {
   return (
     <div className="flex items-center justify-center gap-3 flex-wrap py-4">
-      {signs.map((sign) => {
+      {signs.map((sign, index) => {
         const isSelected = selected === sign;
         const outcome = disabled && isSelected ? (sign === correctSignId ? "correct" : "incorrect") : null;
         return (
@@ -27,6 +27,11 @@ export function SignStripScene({
             type="button"
             disabled={disabled}
             onClick={() => onSelect(sign)}
+            // Deliberately generic (position only, not the sign's code or
+            // name) — recognizing the sign visually is the point of these
+            // questions, so a descriptive label would hand a screen-reader
+            // user the answer that a sighted user still has to work out.
+            aria-label={`Verkeersbord, optie ${index + 1} van ${signs.length}`}
             className="rounded-2xl p-3 transition active:scale-95 disabled:pointer-events-none"
             style={{
               background: "var(--surface-muted)",

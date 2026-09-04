@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { Providers } from "./providers";
 import "./globals.css";
@@ -17,6 +17,15 @@ export const metadata: Metadata = {
   title: "Rijklaar — theorie leren voor rijbewijs B",
   description:
     "Een moderne theorie-app voor rijscholen: korte oefensessies, interactieve verkeerssituaties en persoonlijke coaching richting je theorie-examen.",
+  manifest: "/manifest.json",
+  icons: {
+    icon: "/icon-192.png",
+    apple: "/icon-192.png",
+  },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#2f7dff",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

@@ -219,7 +219,14 @@ export function QuestionCard({
         <div
           className="absolute inset-x-0 bottom-0 px-5 py-4 flex items-center gap-3 font-extrabold animate-pop-in"
           style={{
-            background: result === "correct" ? "var(--success-500)" : "var(--danger-500)",
+            // Darkened from the plain -500 tokens specifically because
+            // white text sits directly on top — --success-500/--danger-500
+            // alone don't clear WCAG AA (4.5:1) for text, only for the
+            // fills/borders they're used as elsewhere.
+            background:
+              result === "correct"
+                ? "color-mix(in srgb, var(--success-500) 70%, black)"
+                : "color-mix(in srgb, var(--danger-500) 84%, black)",
             color: "white",
           }}
         >

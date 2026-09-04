@@ -78,6 +78,16 @@ De `android/`-map wordt gewoon meegecommit (standaard bij Capacitor) — alleen 
   `NEXT_PUBLIC_SENTRY_DSN`/`NEXT_PUBLIC_POSTHOG_KEY` in `.env` staan (zelfde
   aan/uit-conventie als de OAuth-providers hierboven). PostHog krijgt custom events op
   vraag-beantwoorden, sessie/examen-afronding en registratie (`src/lib/analytics.ts`).
+- **Resend (optioneel)** — wachtwoord-reset en e-mailverificatie versturen echte e-mail zodra
+  `RESEND_API_KEY` in `.env` staat; zonder key wordt de link alleen naar de server-console
+  gelogd, zodat de flow lokaal getest kan worden zonder een echt account (`src/lib/email.ts`).
+- **Vitest + Playwright** — `npm test` draait unit tests voor de kernlogica (antwoord-check,
+  XP-curve, mastery-berekening — puur, geen database nodig). `npx playwright test` draait een
+  end-to-end smoke test (registreren → sessie → resultaat, zie `e2e/README.md` voor de
+  vereiste seed-stap) tegen een lopende server.
+- **PWA-manifest** (`public/manifest.json`) — maakt de web-app "installeerbaar" (Add to Home
+  Screen) los van de Capacitor/Android-shell; geen service worker/offline-modus (nog niet
+  gebouwd, zie hieronder).
 - **Eigen SVG-scenes** (`src/components/scenes`) in plaats van stockfoto's of een externe
   asset-pipeline: een herbruikbare kruispunt-scene (auto's/fietsers/voetgangers op vaste
   "sloten") en een handgetekende verkeersbordenset. Consistente stijl, geen losse
@@ -195,6 +205,9 @@ nu niet gebouwd:
 - **Pushmeldingen**: functioneel niet gebouwd (vereist een mobiele shell/service worker +
   een notificatie-provider); het datamodel houdt al bij wat je zou willen weten
   (streak, laatste activiteit, XP-verschil) om zulke meldingen later te voeden.
+- **Offline-modus**: er is een PWA-manifest (installeerbaar), maar geen service worker —
+  zonder netwerk laadt de app niet. Bewust uitgesteld: volledige offline-oefensessies vereisen
+  een lokale antwoorden-wachtrij + sync-conflictafhandeling, een apart project op zich.
 - **Cosmetische beloningen / titels**: `StudentProfile.activeTitle` bestaat en wordt getoond
   op het profiel, maar er is geen "unlock"-systeem gebouwd.
 - **Challenges tussen vrienden** (brief §5): het datamodel (`Challenge`,
