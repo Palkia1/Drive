@@ -24,6 +24,15 @@ export type SingleChoiceScene = {
    * entrance) rather than in the abstract. Non-interactive: no actors, no
    * hotspot. */
   promptLocationScene?: { location: LocationId; signs: { signId: SignId; slot: LocationSlot }[] };
+  /** optional tile-composed background (see GridHotspotScene) shown large
+   * above the prompt, with optional signs planted on it — mirrors
+   * promptLocationScene exactly, for a non-interactive illustration built
+   * from the modular tile set instead of a fixed whole-scene background. */
+  promptGridScene?: {
+    gridSize: { cols: number; rows: number };
+    tiles: GridTile[];
+    signs?: { signId: SignId; cell: GridCell; bearing: Bearing }[];
+  };
   options: ChoiceOption[];
   correctOptionId: string;
 };
@@ -158,6 +167,77 @@ export type LocationHotspotScene = {
   question: string;
 };
 
+/** A cell address on a GridHotspotScene's tile grid, 0-indexed from the
+ * top-left (col grows right, row grows down). */
+export type GridCell = { col: number; row: number };
+
+/** Compass bearing, 0 = north, clockwise — same convention as bearingMath.ts
+ * and every other scene's position bearing (LocationScene's SLOT_BEARING,
+ * RoundaboutScene's arm bearings). */
+export type Bearing = 0 | 90 | 180 | 270;
+
+/** A small, fixed, reusable set of road-tile illustrations (see
+ * public/tiles/ once real art exists, src/lib/questions/priority.ts's
+ * companion Fase-2 manifest) — the modular building blocks a GridHotspotScene
+ * composes into a full road layout. Each is drawn once at canonical
+ * rotation 0 and rotated by the renderer, never hand-drawn 4 times. */
+export type TileKind =
+  | "grass"
+  | "straight"
+  | "corner"
+  | "t-junction"
+  | "crossroad"
+  | "roundabout-center"
+  | "narrow-residential"
+  | "wide-curve";
+
+export type TileRotation = 0 | 90 | 180 | 270;
+
+export type GridTile = { cell: GridCell; kind: TileKind; rotation: TileRotation };
+
+export type GridActor = {
+  id: string;
+  kind: "car" | "cyclist" | "pedestrian" | "truck";
+  color?: string;
+  position: { cell: GridCell; bearing: Bearing; stage: "approaching" | "entering" | "on-ring" };
+  /** Needed for the afslaand-verkeer priority rule (a turning actor yields
+   * to oncoming traffic regardless of position bearing) — RoundaboutActor
+   * and LocationActor never got this field; GridActor needs it since grid
+   * scenes are expected to cover turning-traffic scenarios. */
+  facing?: "straight" | "left" | "right";
+  self?: boolean;
+};
+
+/** A tile-composed scene: a small grid of reusable road tiles with actors
+ * placed by cell + bearing (see bearingMath.ts) instead of a per-background
+ * hardcoded slot table — unlike LocationHotspotScene's fixed illustrations,
+ * a new road layout here is a new combination of existing tiles, not a new
+ * drawing. `correctSlot` is produced by `resolvePriority` (see
+ * src/lib/questions/priority.ts) from the declared `priorityRule` at
+ * authoring time — never hand-typed directly, except through that module's
+ * `explicit` escape hatch. */
+export type GridHotspotScene = {
+  kind: "HOTSPOT";
+  sceneId: "grid";
+  gridSize: { cols: number; rows: number };
+  tiles: GridTile[];
+  /** Signs planted at a cell edge — mirrors LocationHotspotScene's `signs`,
+   * addressed by cell + bearing instead of a named slot. */
+  signs?: { signId: SignId; cell: GridCell; bearing: Bearing }[];
+  actors: GridActor[];
+  /** The declared traffic-priority rule (see priority.ts's PriorityRule) —
+   * kept on the scene, not just used transiently at seed time, so the
+   * beta-review portal can show *why* `correctSlot` is what it is, and so
+   * it can be re-derived and cross-checked at any point, not only once at
+   * authoring time. Typed as `unknown` here (rather than importing
+   * PriorityRule) to keep this schema module free of a dependency on the
+   * rule-resolution module; callers that need to resolve it import
+   * PriorityRule from priority.ts and cast/validate there. */
+  priorityRule: unknown;
+  correctSlot: string;
+  question: string;
+};
+
 export type QuestionScene =
   | SingleChoiceScene
   | MultipleChoiceScene
@@ -165,7 +245,8 @@ export type QuestionScene =
   | SignStripHotspotScene
   | TrafficLightHotspotScene
   | RoundaboutHotspotScene
-  | LocationHotspotScene;
+  | LocationHotspotScene
+  | GridHotspotScene;
 
 /**
  * A sign id is an official RVV code (see signCatalogue.ts), optionally with a

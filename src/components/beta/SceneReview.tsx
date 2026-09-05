@@ -5,6 +5,7 @@ import { SignIcon } from "@/components/scenes/SignIcon";
 import { IntersectionScene } from "@/components/scenes/IntersectionScene";
 import { RoundaboutScene } from "@/components/scenes/RoundaboutScene";
 import { LocationScene } from "@/components/scenes/LocationScene";
+import { GridScene } from "@/components/scenes/GridScene";
 import { SignStripScene } from "@/components/scenes/SignStripScene";
 import type { QuestionScene } from "@/lib/questions/types";
 
@@ -30,6 +31,9 @@ export function SceneReview({ scene }: { scene: QuestionScene }) {
         )}
         {scene.kind === "SINGLE_CHOICE" && scene.promptLocationScene && (
           <LocationScene location={scene.promptLocationScene.location} signs={scene.promptLocationScene.signs} />
+        )}
+        {scene.kind === "SINGLE_CHOICE" && scene.promptGridScene && (
+          <GridScene gridSize={scene.promptGridScene.gridSize} tiles={scene.promptGridScene.tiles} signs={scene.promptGridScene.signs} />
         )}
         <div className="space-y-1.5">
           {scene.options.map((opt) => {
@@ -96,6 +100,19 @@ export function SceneReview({ scene }: { scene: QuestionScene }) {
           location={scene.location}
           signs={scene.signs}
           trafficLight={scene.trafficLight}
+          actors={scene.actors}
+          selectedSlot={scene.correctSlot}
+          correctSlot={scene.correctSlot}
+          disabled
+          onSelect={() => {}}
+        />
+      );
+    case "grid":
+      return (
+        <GridScene
+          gridSize={scene.gridSize}
+          tiles={scene.tiles}
+          signs={scene.signs}
           actors={scene.actors}
           selectedSlot={scene.correctSlot}
           correctSlot={scene.correctSlot}

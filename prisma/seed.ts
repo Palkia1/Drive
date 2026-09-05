@@ -10,6 +10,7 @@
 import { PrismaClient, QuestionType } from "@prisma/client";
 import bcrypt from "bcryptjs";
 import type {
+  GridHotspotScene,
   IntersectionHotspotScene,
   LocationHotspotScene,
   MultipleChoiceScene,
@@ -19,6 +20,7 @@ import type {
   TrafficLightHotspotScene,
 } from "../src/lib/questions/types";
 import { generateSignQuestions } from "../src/lib/questions/generateSignQuestions";
+import { resolvePriority, type PriorityActor } from "../src/lib/questions/priority";
 
 const prisma = new PrismaClient();
 
@@ -92,7 +94,8 @@ type SeedQuestion = {
     | SignStripHotspotScene
     | TrafficLightHotspotScene
     | RoundaboutHotspotScene
-    | LocationHotspotScene;
+    | LocationHotspotScene
+    | GridHotspotScene;
 };
 
 const QUESTIONS: SeedQuestion[] = [
@@ -429,6 +432,108 @@ const QUESTIONS: SeedQuestion[] = [
       correctSlot: "other-car",
       question: "Wie mag rijden?",
     },
+  },
+  {
+    seedId: "sq-0396",
+    topic: "voorrang",
+    type: "HOTSPOT",
+    difficulty: 2,
+    prompt: "Je rijdt dit kruispunt op. Geen borden, geen verkeerslicht. Wie mag doorrijden?",
+    explanation: "Zonder borden geldt voorrang van rechts — ook voor een fietser. Jij kijkt naar rechts en ziet de fietser aankomen, die heeft daarom voorrang.",
+    scene: (() => {
+      const cell = { col: 1, row: 0 };
+      const actors: PriorityActor[] = [
+        { id: "you", bearing: 90 },
+        { id: "cyclist", bearing: 0 },
+      ];
+      const correctSlot = resolvePriority({ type: "voorrang-van-rechts" }, actors);
+      return {
+        kind: "HOTSPOT",
+        sceneId: "grid",
+        gridSize: { cols: 3, rows: 1 },
+        tiles: [
+          { cell: { col: 0, row: 0 }, kind: "grass", rotation: 0 },
+          { cell, kind: "crossroad", rotation: 0 },
+          { cell: { col: 2, row: 0 }, kind: "grass", rotation: 0 },
+        ],
+        actors: [
+          { id: "you", kind: "car", color: "var(--sign-red)", position: { cell, bearing: 90, stage: "approaching" }, self: true },
+          { id: "cyclist", kind: "cyclist", color: "var(--sign-blue)", position: { cell, bearing: 0, stage: "approaching" } },
+        ],
+        priorityRule: { type: "voorrang-van-rechts" },
+        correctSlot,
+        question: "Wie mag doorrijden?",
+      } satisfies GridHotspotScene;
+    })(),
+  },
+  {
+    seedId: "sq-0397",
+    topic: "voorrang",
+    subtopic: "voorrangsborden",
+    type: "HOTSPOT",
+    difficulty: 2,
+    prompt: "Je nadert dit kruispunt via de zijweg. Je ziet het bord 'verleen voorrang'. Wie mag als eerst rijden?",
+    explanation: "Bord B6 ('verleen voorrang') verplicht je voorrang te verlenen aan bestuurders op de doorgaande weg.",
+    scene: (() => {
+      const cell = { col: 1, row: 0 };
+      const actors: PriorityActor[] = [
+        { id: "you", bearing: 0 },
+        { id: "other-car", bearing: 90 },
+      ];
+      const correctSlot = resolvePriority(
+        { type: "sign", governedBy: [{ actorId: "you", sign: "give-way" }] },
+        actors
+      );
+      return {
+        kind: "HOTSPOT",
+        sceneId: "grid",
+        gridSize: { cols: 3, rows: 1 },
+        tiles: [
+          { cell: { col: 0, row: 0 }, kind: "grass", rotation: 0 },
+          { cell, kind: "t-junction", rotation: 0 },
+          { cell: { col: 2, row: 0 }, kind: "grass", rotation: 0 },
+        ],
+        signs: [{ signId: "B6", cell, bearing: 0 }],
+        actors: [
+          { id: "you", kind: "car", color: "var(--sign-red)", position: { cell, bearing: 0, stage: "approaching" }, self: true },
+          { id: "other-car", kind: "car", color: "var(--sign-blue)", position: { cell, bearing: 90, stage: "approaching" } },
+        ],
+        priorityRule: { type: "sign", governedBy: [{ actorId: "you", sign: "give-way" }] },
+        correctSlot,
+        question: "Wie mag als eerst rijden?",
+      } satisfies GridHotspotScene;
+    })(),
+  },
+  {
+    seedId: "sq-0398",
+    topic: "voorrang",
+    subtopic: "rotondes",
+    type: "HOTSPOT",
+    difficulty: 2,
+    prompt: "Bij deze rotonde rijdt al een andere auto. Wie gaat er eerst?",
+    explanation:
+      "Verkeer dat al op de rotonde rijdt heeft altijd voorrang op verkeer dat de rotonde op wil rijden — ook zonder bord.",
+    scene: (() => {
+      const cell = { col: 0, row: 0 };
+      const actors: PriorityActor[] = [
+        { id: "you", bearing: 270, stage: "approaching" },
+        { id: "ring-car", bearing: 270, stage: "on-ring" },
+      ];
+      const correctSlot = resolvePriority({ type: "roundabout" }, actors);
+      return {
+        kind: "HOTSPOT",
+        sceneId: "grid",
+        gridSize: { cols: 1, rows: 1 },
+        tiles: [{ cell, kind: "roundabout-center", rotation: 0 }],
+        actors: [
+          { id: "you", kind: "car", color: "var(--sign-red)", position: { cell, bearing: 270, stage: "approaching" }, self: true },
+          { id: "ring-car", kind: "car", color: "var(--sign-blue)", position: { cell, bearing: 270, stage: "on-ring" } },
+        ],
+        priorityRule: { type: "roundabout" },
+        correctSlot,
+        question: "Wie gaat er eerst?",
+      } satisfies GridHotspotScene;
+    })(),
   },
 
   // ---- Verkeersborden -------------------------------------------------------

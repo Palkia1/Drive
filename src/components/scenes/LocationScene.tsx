@@ -2,6 +2,7 @@
 
 import { useId } from "react";
 import type { LocationActor, LocationId, LocationSlot, SignId, TrafficLightState } from "@/lib/questions/types";
+import { outwardVector, pointOnBearing } from "@/lib/scenes/bearingMath";
 import { SignIcon } from "./SignIcon";
 import { TrafficActor, SelfLabel } from "./TrafficActor";
 
@@ -71,11 +72,6 @@ const ROUNDABOUT_RING_RADIUS = 187; // midpoint of the drivable ring (132-242)
 const ROUNDABOUT_RING_LEAD_DEG = 26;
 const SLOT_BEARING: Record<LocationSlot, number> = { north: 0, east: 90, south: 180, west: 270 };
 
-function outwardVector(bearingDeg: number) {
-  const rad = (bearingDeg * Math.PI) / 180;
-  return { x: Math.sin(rad), y: -Math.cos(rad) };
-}
-
 // Quarter of an approach arm's total width (228, per eenbaansrotonde.svg) —
 // puts an approaching actor in its own lane instead of straddling the
 // centerline, same right-hand-lane convention as every other location.
@@ -84,24 +80,12 @@ const ROUNDABOUT_LANE_OFFSET = 57;
 function ringActorGeometry(slot: LocationSlot, position: "approaching" | "on-ring"): SlotGeometry {
   const bearing = SLOT_BEARING[slot];
   if (position === "approaching") {
-    const out = outwardVector(bearing);
-    const px = ROUNDABOUT_CENTER.x + out.x * ROUNDABOUT_APPROACH_RADIUS;
-    const py = ROUNDABOUT_CENTER.y + out.y * ROUNDABOUT_APPROACH_RADIUS;
-    // Right-hand lane offset, perpendicular to the inward direction of travel.
-    const lateral = { x: -out.y, y: out.x };
-    return {
-      x: px - lateral.x * ROUNDABOUT_LANE_OFFSET,
-      y: py - lateral.y * ROUNDABOUT_LANE_OFFSET,
-      rotation: bearing + 180,
-    };
+    const { x, y } = pointOnBearing(ROUNDABOUT_CENTER, bearing, ROUNDABOUT_APPROACH_RADIUS, ROUNDABOUT_LANE_OFFSET);
+    return { x, y, rotation: bearing + 180 };
   }
   const ringBearing = bearing + ROUNDABOUT_RING_LEAD_DEG;
-  const out = outwardVector(ringBearing);
-  return {
-    x: ROUNDABOUT_CENTER.x + out.x * ROUNDABOUT_RING_RADIUS,
-    y: ROUNDABOUT_CENTER.y + out.y * ROUNDABOUT_RING_RADIUS,
-    rotation: ringBearing - 90,
-  };
+  const { x, y } = pointOnBearing(ROUNDABOUT_CENTER, ringBearing, ROUNDABOUT_RING_RADIUS);
+  return { x, y, rotation: ringBearing - 90 };
 }
 
 // TrafficActor is sized for a 300-unit canvas; these backgrounds are 1024,

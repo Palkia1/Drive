@@ -5,6 +5,7 @@ import { Check, X, Bookmark, Star } from "lucide-react";
 import { IntersectionScene } from "@/components/scenes/IntersectionScene";
 import { RoundaboutScene } from "@/components/scenes/RoundaboutScene";
 import { LocationScene } from "@/components/scenes/LocationScene";
+import { GridScene } from "@/components/scenes/GridScene";
 import { SignStripScene } from "@/components/scenes/SignStripScene";
 import { SignIcon } from "@/components/scenes/SignIcon";
 import type { QuestionScene } from "@/lib/questions/types";
@@ -106,6 +107,11 @@ export function QuestionCard({
       {scene.kind === "SINGLE_CHOICE" && scene.promptLocationScene && (
         <div className="relative mb-4">
           <LocationScene location={scene.promptLocationScene.location} signs={scene.promptLocationScene.signs} />
+        </div>
+      )}
+      {scene.kind === "SINGLE_CHOICE" && scene.promptGridScene && (
+        <div className="relative mb-4">
+          <GridScene gridSize={scene.promptGridScene.gridSize} tiles={scene.promptGridScene.tiles} />
         </div>
       )}
       <p className="relative text-lg font-semibold leading-snug mb-4">{question.prompt}</p>
@@ -221,6 +227,22 @@ export function QuestionCard({
           location={scene.location}
           signs={scene.signs}
           trafficLight={scene.trafficLight}
+          actors={scene.actors}
+          selectedSlot={selectedSlot}
+          correctSlot={scene.correctSlot}
+          disabled={locked}
+          onSelect={(slot) => {
+            setSelectedSlot(slot);
+            submit({ kind: "HOTSPOT_SLOT", slot });
+          }}
+        />
+      )}
+
+      {scene.kind === "HOTSPOT" && scene.sceneId === "grid" && (
+        <GridScene
+          gridSize={scene.gridSize}
+          tiles={scene.tiles}
+          signs={scene.signs}
           actors={scene.actors}
           selectedSlot={selectedSlot}
           correctSlot={scene.correctSlot}

@@ -2,6 +2,7 @@
 
 import { useId } from "react";
 import type { RoundaboutActor } from "@/lib/questions/types";
+import { outwardVector, pointOnBearing } from "@/lib/scenes/bearingMath";
 import { TrafficActor, SelfLabel } from "./TrafficActor";
 
 const CENTER = { x: 150, y: 150 };
@@ -11,13 +12,6 @@ const ARM_HALF_WIDTH = 35;
 const APPROACH_RADIUS = 128;
 const RING_ACTOR_LEAD_DEG = 26; // how far "upstream" (ccw) an on-ring actor sits from its arm
 const LANE_OFFSET = 18;
-
-// Bearing θ: 0 = north (up), 90 = east, clockwise — same convention as
-// IntersectionScene's slot rotations, generalized to an arbitrary angle.
-function outwardVector(bearingDeg: number) {
-  const rad = (bearingDeg * Math.PI) / 180;
-  return { x: Math.sin(rad), y: -Math.cos(rad) };
-}
 
 function armBearing(arm: number, armCount: number) {
   return (arm * 360) / armCount;
@@ -113,20 +107,13 @@ export function RoundaboutScene({
 
           let x: number, y: number, rotation: number;
           if (actor.position === "approaching") {
-            const out = outwardVector(bearing);
-            const px = CENTER.x + out.x * APPROACH_RADIUS;
-            const py = CENTER.y + out.y * APPROACH_RADIUS;
             // right-hand lane offset, perpendicular to the inward direction of travel
-            const lateral = { x: -out.y, y: out.x };
-            x = px - lateral.x * LANE_OFFSET;
-            y = py - lateral.y * LANE_OFFSET;
+            ({ x, y } = pointOnBearing(CENTER, bearing, APPROACH_RADIUS, LANE_OFFSET));
             rotation = bearing + 180;
           } else {
             const ringBearing = bearing + RING_ACTOR_LEAD_DEG;
             const ringRadius = (innerRadius + OUTER_RADIUS) / 2;
-            const out = outwardVector(ringBearing);
-            x = CENTER.x + out.x * ringRadius;
-            y = CENTER.y + out.y * ringRadius;
+            ({ x, y } = pointOnBearing(CENTER, ringBearing, ringRadius));
             rotation = ringBearing - 90;
           }
 

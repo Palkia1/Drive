@@ -4,6 +4,8 @@ export type AnswerOption = { value: string; label: string };
 
 const ACTOR_LABEL: Record<string, string> = { car: "Auto", cyclist: "Fietser", pedestrian: "Voetganger", truck: "Vrachtwagen" };
 const SLOT_LABEL: Record<string, string> = { north: "noord", east: "oost", south: "zuid", west: "west" };
+const BEARING_LABEL: Record<number, string> = { 0: "noord", 90: "oost", 180: "zuid", 270: "west" };
+const STAGE_LABEL: Record<string, string> = { "on-ring": "op de rotonde", entering: "rijdt in", approaching: "nadert" };
 
 function actorLabel(kind: string) {
   return ACTOR_LABEL[kind] ?? kind;
@@ -44,6 +46,14 @@ export function getHotspotAnswerOptions(
         options: scene.actors.map((a) => ({
           value: a.id,
           label: `${actorLabel(a.kind)} (${slotLabel(a.slot)}${a.position ? `, ${a.position === "on-ring" ? "op de rotonde" : "nadert"}` : ""})${a.self ? " — jij" : ""}`,
+        })),
+      };
+    case "grid":
+      return {
+        field: "correctSlot",
+        options: scene.actors.map((a) => ({
+          value: a.id,
+          label: `${actorLabel(a.kind)} (cel ${a.position.cell.col},${a.position.cell.row}, ${BEARING_LABEL[a.position.bearing] ?? a.position.bearing}, ${STAGE_LABEL[a.position.stage] ?? a.position.stage})${a.self ? " — jij" : ""}`,
         })),
       };
     case "sign-strip":

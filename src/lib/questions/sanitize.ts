@@ -12,7 +12,8 @@ export function toClientScene(scene: QuestionScene): QuestionScene {
         scene.sceneId === "intersection" ||
         scene.sceneId === "traffic-light-intersection" ||
         scene.sceneId === "roundabout" ||
-        scene.sceneId === "location"
+        scene.sceneId === "location" ||
+        scene.sceneId === "grid"
       ) {
         return { ...scene, correctSlot: undefined as never };
       }
