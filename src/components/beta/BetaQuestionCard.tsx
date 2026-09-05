@@ -36,7 +36,7 @@ export function BetaQuestionCard({ question }: { question: BetaQuestion }) {
 
   const discarded = q.status === "ARCHIVED";
 
-  async function post(body: object): Promise<{ sync?: { durable: boolean; reason?: string } } | null> {
+  async function post(body: object) {
     setBusy(true);
     setFlash(null);
     try {
@@ -46,26 +46,18 @@ export function BetaQuestionCard({ question }: { question: BetaQuestion }) {
         body: JSON.stringify(body),
       });
       if (!res.ok) throw new Error();
-      return await res.json();
+      return true;
     } catch {
       setFlash("Opslaan mislukt — probeer opnieuw.");
-      return null;
+      return false;
     } finally {
       setBusy(false);
     }
   }
 
-  function durabilityNote(sync?: { durable: boolean; reason?: string }) {
-    if (!sync || sync.durable) return "";
-    if (sync.reason === "no-seed-key") return " (overleeft geen nieuwe seed — automatisch gegenereerde vraag)";
-    if (sync.reason === "no-token") return " (overleeft geen nieuwe seed — sync niet ingesteld)";
-    if (sync.reason === "sync-error" || sync.reason === "not-found-in-source") return " (opgeslagen, maar niet gesynchroniseerd naar de broncode)";
-    return "";
-  }
-
   async function approve() {
-    const result = await post({ action: "APPROVED" });
-    if (result) {
+    const ok = await post({ action: "APPROVED" });
+    if (ok) {
       setQ((p) => ({ ...p, lastReview: { action: "APPROVED", createdAt: new Date().toISOString() } }));
       setFlash("Goedgekeurd");
     }
@@ -73,28 +65,28 @@ export function BetaQuestionCard({ question }: { question: BetaQuestion }) {
 
   async function discard() {
     if (!confirm("Deze vraag weggooien? Hij verdwijnt direct uit alle oefensessies.")) return;
-    const result = await post({ action: "DISCARDED" });
-    if (result) {
+    const ok = await post({ action: "DISCARDED" });
+    if (ok) {
       setQ((p) => ({ ...p, status: "ARCHIVED", lastReview: { action: "DISCARDED", createdAt: new Date().toISOString() } }));
-      setFlash("Weggegooid" + durabilityNote(result.sync));
+      setFlash("Weggegooid");
     }
   }
 
   async function savePrompt(prompt: string, explanation: string) {
-    const result = await post({ action: "EDITED_PROMPT", prompt, explanation: explanation || null });
-    if (result) {
+    const ok = await post({ action: "EDITED_PROMPT", prompt, explanation: explanation || null });
+    if (ok) {
       setQ((p) => ({ ...p, prompt, explanation: explanation || null, lastReview: { action: "EDITED_PROMPT", createdAt: new Date().toISOString() } }));
       setMode("view");
-      setFlash("Vraag opgeslagen" + durabilityNote(result.sync));
+      setFlash("Vraag opgeslagen");
     }
   }
 
   async function saveAnswers(scene: QuestionScene) {
-    const result = await post({ action: "EDITED_ANSWERS", scene });
-    if (result) {
+    const ok = await post({ action: "EDITED_ANSWERS", scene });
+    if (ok) {
       setQ((p) => ({ ...p, scene, lastReview: { action: "EDITED_ANSWERS", createdAt: new Date().toISOString() } }));
       setMode("view");
-      setFlash("Antwoorden opgeslagen" + durabilityNote(result.sync));
+      setFlash("Antwoorden opgeslagen");
     }
   }
 

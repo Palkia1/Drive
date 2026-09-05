@@ -2,7 +2,6 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/db";
 import { getBetaTester } from "@/lib/session";
-import { syncQuestionEditToSeedSource, type SyncResult } from "@/lib/seedSync/githubSync";
 
 const bodySchema = z.discriminatedUnion("action", [
   z.object({ action: z.literal("APPROVED"), note: z.string().max(2000).optional() }),
@@ -42,8 +41,7 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
       prisma.question.update({ where: { id }, data: { status: "ARCHIVED" } }),
       prisma.questionReview.create({ data: { questionId: id, testerId: tester.id, action: "DISCARDED", note: body.note } }),
     ]);
-    const sync = await syncQuestionEditToSeedSource(question.seedKey, { archived: true }, "vraag weggegooid", tester);
-    return NextResponse.json({ ok: true, sync: syncStatus(sync) });
+    return NextResponse.json({ ok: true });
   }
 
   if (body.action === "EDITED_PROMPT") {
@@ -54,13 +52,7 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
       }),
       prisma.questionReview.create({ data: { questionId: id, testerId: tester.id, action: "EDITED_PROMPT", note: body.note } }),
     ]);
-    const sync = await syncQuestionEditToSeedSource(
-      question.seedKey,
-      { prompt: body.prompt, explanation: body.explanation ?? "" },
-      "vraag aangepast",
-      tester
-    );
-    return NextResponse.json({ ok: true, sync: syncStatus(sync) });
+    return NextResponse.json({ ok: true });
   }
 
   // EDITED_ANSWERS — only allow overwriting a scene of the same shape as the
@@ -83,15 +75,5 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
     prisma.question.update({ where: { id }, data: { scene: JSON.stringify(newScene), version: { increment: 1 } } }),
     prisma.questionReview.create({ data: { questionId: id, testerId: tester.id, action: "EDITED_ANSWERS", note: body.note } }),
   ]);
-  const sync = await syncQuestionEditToSeedSource(question.seedKey, { scene: newScene }, "antwoorden aangepast", tester);
-  return NextResponse.json({ ok: true, sync: syncStatus(sync) });
-}
-
-/** Collapses a SyncResult to a small, UI-friendly shape — the portal only
- * needs to know whether the edit is durable across the next reseed, and (if
- * not) a short reason to show the tester. */
-function syncStatus(result: SyncResult): { durable: boolean; reason?: string } {
-  if (result.status === "synced") return { durable: true };
-  if (result.status === "skipped") return { durable: false, reason: result.reason };
-  return { durable: false, reason: "sync-error" };
+  return NextResponse.json({ ok: true });
 }
