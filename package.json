@@ -12,7 +12,9 @@
     "db:migrate": "prisma migrate dev",
     "db:seed": "tsx prisma/seed.ts",
     "db:reset": "prisma migrate reset --force",
-    "signs:manifest": "node scripts/generate-sign-manifest.mjs"
+    "signs:manifest": "node scripts/generate-sign-manifest.mjs",
+    "tiles:manifest": "node scripts/generate-tile-manifest.mjs",
+    "tiles:generate": "node scripts/generate-tile-art.mjs"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"

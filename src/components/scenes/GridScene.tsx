@@ -3,15 +3,17 @@
 import { useId } from "react";
 import type { Bearing, GridActor, GridCell, GridTile, SignId, TileKind, TileRotation } from "@/lib/questions/types";
 import { pointOnBearing } from "@/lib/scenes/bearingMath";
+import { REAL_TILE_FILES } from "@/lib/questions/realTiles.generated";
 import { SignIcon } from "./SignIcon";
 import { TrafficActor, SelfLabel } from "./TrafficActor";
 
 /**
- * Renders a GridHotspotScene: a small grid of road tiles (currently flat
- * placeholder shapes — Fase 2 swaps these for real illustrated art via a
- * public/tiles/ manifest, same pattern as SignIcon.tsx, with zero changes
- * needed here) with actors placed by cell + bearing instead of a per-
- * background hardcoded slot table.
+ * Renders a GridHotspotScene: a small grid of road tiles, addressed by
+ * cell + bearing instead of a per-background hardcoded slot table. Where
+ * real artwork exists (public/tiles/, tracked in realTiles.generated.ts —
+ * regenerate with `npm run tiles:manifest`), each tile is drawn once at its
+ * canonical rotation 0 and rotated in place via `transform="rotate(...)"`.
+ * Kinds without real art yet fall back to the flat placeholder shapes.
  *
  * Contract mirrors LocationScene exactly: `actors`/`onSelect`/`correctSlot`
  * are all optional, so the same component works non-interactively for
@@ -47,6 +49,19 @@ function openEdges(kind: TileKind, rotation: TileRotation): number[] {
 }
 
 function TileArt({ kind, rotation }: { kind: TileKind; rotation: TileRotation }) {
+  const ext = REAL_TILE_FILES[kind];
+  if (ext) {
+    // Real art is drawn once at canonical rotation 0 (e.g. t-junction's stem
+    // points north) — the renderer supplies every other orientation via a
+    // plain SVG rotation around the tile's center, so there's never a need
+    // for 4 separate rotated files per tile.
+    return (
+      <g transform={`rotate(${rotation} ${TILE_SIZE / 2} ${TILE_SIZE / 2})`}>
+        <image href={`/tiles/${kind}.${ext}`} width={TILE_SIZE} height={TILE_SIZE} preserveAspectRatio="none" />
+      </g>
+    );
+  }
+
   const half = TILE_SIZE / 2;
   const edges = openEdges(kind, rotation);
   const width = kind === "narrow-residential" ? NARROW_ROAD_WIDTH : ROAD_WIDTH;
