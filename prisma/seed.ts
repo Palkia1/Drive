@@ -62,6 +62,17 @@ const SUBTOPICS: Record<string, { slug: string; name: string }[]> = {
 // ---------------------------------------------------------------------------
 
 type SeedQuestion = {
+  /** Stable identifier for hand-authored QUESTIONS entries only (absent on
+   * procedurally-generated sign-recognition questions) — lets the
+   * beta-tester portal's GitHub sync find and patch this exact entry's
+   * source text after a live edit, so the edit survives the next reseed.
+   * Assigned once by scripts/inject-seed-ids.ts; never reuse or renumber an
+   * existing id. */
+  seedId?: string;
+  /** Set by a beta-tester's "Weggooien" — seeds as ARCHIVED (excluded from
+   * practice) instead of the default PUBLISHED. Kept as text rather than
+   * deleting the entry so the original content and history aren't lost. */
+  archived?: boolean;
   topic: string;
   /** Extra topic slugs this question also counts toward for mastery, beyond
    * `topic` (its primary topic) — e.g. a question that's really about both
@@ -87,6 +98,7 @@ type SeedQuestion = {
 const QUESTIONS: SeedQuestion[] = [
   // ---- Voorrang -----------------------------------------------------------
   {
+    seedId: "sq-0001",
     topic: "voorrang",
     subtopic: "gelijkwaardige-kruispunten",
     type: "HOTSPOT",
@@ -110,6 +122,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0002",
     topic: "voorrang",
     subtopic: "gelijkwaardige-kruispunten",
     type: "SINGLE_CHOICE",
@@ -128,6 +141,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0003",
     topic: "voorrang",
     subtopic: "rotondes",
     type: "SINGLE_CHOICE",
@@ -147,6 +161,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0004",
     topic: "voorrang",
     subtopic: "voorrangsvoertuigen",
     type: "SINGLE_CHOICE",
@@ -166,6 +181,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0005",
     topic: "voorrang",
     type: "HOTSPOT",
     difficulty: 3,
@@ -185,6 +201,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0006",
     topic: "voorrang",
     subtopic: "voorrangsborden",
     type: "HOTSPOT",
@@ -205,6 +222,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0007",
     topic: "voorrang",
     subtopic: "voorrangsborden",
     type: "HOTSPOT",
@@ -225,6 +243,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0008",
     topic: "voorrang",
     subtopic: "rotondes",
     type: "HOTSPOT",
@@ -246,6 +265,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0009",
     topic: "voorrang",
     subtopic: "rotondes",
     type: "HOTSPOT",
@@ -268,6 +288,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0010",
     topic: "voorrang",
     type: "HOTSPOT",
     difficulty: 2,
@@ -287,6 +308,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0011",
     topic: "voorrang",
     type: "HOTSPOT",
     difficulty: 2,
@@ -306,6 +328,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0012",
     topic: "voorrang",
     type: "HOTSPOT",
     difficulty: 2,
@@ -325,6 +348,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0013",
     topic: "voorrang",
     subtopic: "gelijkwaardige-kruispunten",
     type: "HOTSPOT",
@@ -345,6 +369,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0014",
     topic: "voorrang",
     subtopic: "rotondes",
     type: "HOTSPOT",
@@ -365,6 +390,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0015",
     topic: "voorrang",
     type: "SINGLE_CHOICE",
     difficulty: 1,
@@ -384,6 +410,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0016",
     topic: "voorrang",
     type: "HOTSPOT",
     difficulty: 2,
@@ -406,6 +433,7 @@ const QUESTIONS: SeedQuestion[] = [
 
   // ---- Verkeersborden -------------------------------------------------------
   {
+    seedId: "sq-0017",
     topic: "verkeersborden",
     subtopic: "gebodsborden",
     type: "SINGLE_CHOICE",
@@ -424,6 +452,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0018",
     topic: "verkeersborden",
     type: "HOTSPOT",
     difficulty: 2,
@@ -438,6 +467,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0019",
     topic: "verkeersborden",
     subtopic: "verbodsborden",
     type: "MULTIPLE_CHOICE",
@@ -457,6 +487,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0020",
     topic: "verkeersborden",
     subtopic: "gebodsborden",
     type: "SINGLE_CHOICE",
@@ -475,6 +506,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0021",
     topic: "verkeersborden",
     type: "HOTSPOT",
     difficulty: 2,
@@ -490,6 +522,7 @@ const QUESTIONS: SeedQuestion[] = [
 
   // ---- Snelheid -------------------------------------------------------------
   {
+    seedId: "sq-0022",
     topic: "snelheid",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -507,6 +540,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0023",
     topic: "snelheid",
     type: "SINGLE_CHOICE",
     difficulty: 3,
@@ -526,6 +560,7 @@ const QUESTIONS: SeedQuestion[] = [
   },
 
   {
+    seedId: "sq-0024",
     topic: "snelheid",
     type: "SINGLE_CHOICE",
     difficulty: 1,
@@ -543,6 +578,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0025",
     topic: "snelheid",
     type: "SINGLE_CHOICE",
     difficulty: 1,
@@ -560,6 +596,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0026",
     topic: "snelheid",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -577,6 +614,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0027",
     topic: "snelheid",
     type: "SINGLE_CHOICE",
     difficulty: 1,
@@ -594,6 +632,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0028",
     topic: "snelheid",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -611,6 +650,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0029",
     topic: "snelheid",
     type: "SINGLE_CHOICE",
     difficulty: 3,
@@ -628,6 +668,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0030",
     topic: "snelheid",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -645,6 +686,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0031",
     topic: "snelheid",
     type: "SINGLE_CHOICE",
     difficulty: 1,
@@ -662,6 +704,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0032",
     topic: "snelheid",
     type: "SINGLE_CHOICE",
     difficulty: 1,
@@ -679,6 +722,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0033",
     topic: "snelheid",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -696,6 +740,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0034",
     topic: "snelheid",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -713,6 +758,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0035",
     topic: "snelheid",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -730,6 +776,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0036",
     topic: "snelheid",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -747,6 +794,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0037",
     topic: "snelheid",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -764,6 +812,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0038",
     topic: "snelheid",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -781,6 +830,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0039",
     topic: "snelheid",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -798,6 +848,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0040",
     topic: "snelheid",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -816,6 +867,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0041",
     topic: "snelheid",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -833,6 +885,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0042",
     topic: "snelheid",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -850,6 +903,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0043",
     topic: "snelheid",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -867,6 +921,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0044",
     topic: "snelheid",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -884,6 +939,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0045",
     topic: "snelheid",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -901,6 +957,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0046",
     topic: "snelheid",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -918,6 +975,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0047",
     topic: "snelheid",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -935,6 +993,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0048",
     topic: "snelheid",
     type: "SINGLE_CHOICE",
     difficulty: 1,
@@ -952,6 +1011,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0049",
     topic: "snelheid",
     type: "SINGLE_CHOICE",
     difficulty: 1,
@@ -969,6 +1029,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0050",
     topic: "snelheid",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -986,6 +1047,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0051",
     topic: "snelheid",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -1003,6 +1065,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0052",
     topic: "snelheid",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -1020,6 +1083,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0053",
     topic: "snelheid",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -1037,6 +1101,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0054",
     topic: "snelheid",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -1054,6 +1119,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0055",
     topic: "snelheid",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -1071,6 +1137,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0056",
     topic: "snelheid",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -1088,6 +1155,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0057",
     topic: "snelheid",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -1105,6 +1173,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0058",
     topic: "snelheid",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -1122,6 +1191,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0059",
     topic: "snelheid",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -1139,6 +1209,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0060",
     topic: "snelheid",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -1156,6 +1227,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0061",
     topic: "snelheid",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -1173,6 +1245,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0062",
     topic: "snelheid",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -1190,6 +1263,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0063",
     topic: "snelheid",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -1207,6 +1281,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0064",
     topic: "snelheid",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -1224,6 +1299,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0065",
     topic: "snelheid",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -1241,6 +1317,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0066",
     topic: "snelheid",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -1258,6 +1335,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0067",
     topic: "snelheid",
     type: "SINGLE_CHOICE",
     difficulty: 3,
@@ -1275,6 +1353,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0068",
     topic: "snelheid",
     type: "SINGLE_CHOICE",
     difficulty: 3,
@@ -1292,6 +1371,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0069",
     topic: "snelheid",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -1309,6 +1389,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0070",
     topic: "snelheid",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -1326,6 +1407,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0071",
     topic: "snelheid",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -1343,6 +1425,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0072",
     topic: "snelheid",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -1360,6 +1443,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0073",
     topic: "snelheid",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -1377,6 +1461,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0074",
     topic: "snelheid",
     type: "SINGLE_CHOICE",
     difficulty: 1,
@@ -1396,6 +1481,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0075",
     topic: "snelheid",
     type: "SINGLE_CHOICE",
     difficulty: 1,
@@ -1418,6 +1504,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0076",
     topic: "snelheid",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -1437,6 +1524,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0077",
     topic: "snelheid",
     type: "SINGLE_CHOICE",
     difficulty: 1,
@@ -1456,6 +1544,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0078",
     topic: "snelheid",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -1475,6 +1564,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0079",
     topic: "snelheid",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -1495,6 +1585,7 @@ const QUESTIONS: SeedQuestion[] = [
   },
   // ---- Plaats op de weg -------------------------------------------------------
   {
+    seedId: "sq-0080",
     topic: "plaats-op-de-weg",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -1512,6 +1603,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0081",
     topic: "plaats-op-de-weg",
     type: "SINGLE_CHOICE",
     difficulty: 1,
@@ -1530,6 +1622,7 @@ const QUESTIONS: SeedQuestion[] = [
   },
 
   {
+    seedId: "sq-0082",
     topic: "plaats-op-de-weg",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -1547,6 +1640,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0083",
     topic: "plaats-op-de-weg",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -1564,6 +1658,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0084",
     topic: "plaats-op-de-weg",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -1581,6 +1676,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0085",
     topic: "plaats-op-de-weg",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -1598,6 +1694,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0086",
     topic: "plaats-op-de-weg",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -1615,6 +1712,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0087",
     topic: "plaats-op-de-weg",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -1632,6 +1730,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0088",
     topic: "plaats-op-de-weg",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -1649,6 +1748,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0089",
     topic: "plaats-op-de-weg",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -1666,6 +1766,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0090",
     topic: "plaats-op-de-weg",
     type: "SINGLE_CHOICE",
     difficulty: 1,
@@ -1683,6 +1784,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0091",
     topic: "plaats-op-de-weg",
     type: "SINGLE_CHOICE",
     difficulty: 1,
@@ -1700,6 +1802,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0092",
     topic: "plaats-op-de-weg",
     type: "SINGLE_CHOICE",
     difficulty: 1,
@@ -1717,6 +1820,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0093",
     topic: "plaats-op-de-weg",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -1734,6 +1838,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0094",
     topic: "plaats-op-de-weg",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -1751,6 +1856,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0095",
     topic: "plaats-op-de-weg",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -1768,6 +1874,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0096",
     topic: "plaats-op-de-weg",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -1785,6 +1892,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0097",
     topic: "plaats-op-de-weg",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -1802,6 +1910,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0098",
     topic: "plaats-op-de-weg",
     type: "SINGLE_CHOICE",
     difficulty: 3,
@@ -1819,6 +1928,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0099",
     topic: "plaats-op-de-weg",
     type: "SINGLE_CHOICE",
     difficulty: 3,
@@ -1836,6 +1946,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0100",
     topic: "plaats-op-de-weg",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -1853,6 +1964,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0101",
     topic: "plaats-op-de-weg",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -1870,6 +1982,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0102",
     topic: "plaats-op-de-weg",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -1887,6 +2000,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0103",
     topic: "plaats-op-de-weg",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -1904,6 +2018,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0104",
     topic: "plaats-op-de-weg",
     type: "SINGLE_CHOICE",
     difficulty: 3,
@@ -1921,6 +2036,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0105",
     topic: "plaats-op-de-weg",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -1938,6 +2054,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0106",
     topic: "plaats-op-de-weg",
     type: "SINGLE_CHOICE",
     difficulty: 3,
@@ -1955,6 +2072,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0107",
     topic: "plaats-op-de-weg",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -1972,6 +2090,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0108",
     topic: "plaats-op-de-weg",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -1989,6 +2108,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0109",
     topic: "plaats-op-de-weg",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -2006,6 +2126,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0110",
     topic: "plaats-op-de-weg",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -2023,6 +2144,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0111",
     topic: "plaats-op-de-weg",
     type: "SINGLE_CHOICE",
     difficulty: 3,
@@ -2040,6 +2162,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0112",
     topic: "plaats-op-de-weg",
     type: "SINGLE_CHOICE",
     difficulty: 3,
@@ -2057,6 +2180,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0113",
     topic: "plaats-op-de-weg",
     type: "SINGLE_CHOICE",
     difficulty: 3,
@@ -2074,6 +2198,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0114",
     topic: "plaats-op-de-weg",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -2091,6 +2216,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0115",
     topic: "plaats-op-de-weg",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -2108,6 +2234,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0116",
     topic: "plaats-op-de-weg",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -2125,6 +2252,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0117",
     topic: "plaats-op-de-weg",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -2142,6 +2270,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0118",
     topic: "plaats-op-de-weg",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -2159,6 +2288,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0119",
     topic: "plaats-op-de-weg",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -2176,6 +2306,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0120",
     topic: "plaats-op-de-weg",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -2193,6 +2324,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0121",
     topic: "plaats-op-de-weg",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -2210,6 +2342,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0122",
     topic: "plaats-op-de-weg",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -2227,6 +2360,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0123",
     topic: "plaats-op-de-weg",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -2244,6 +2378,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0124",
     topic: "plaats-op-de-weg",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -2261,6 +2396,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0125",
     topic: "plaats-op-de-weg",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -2278,6 +2414,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0126",
     topic: "plaats-op-de-weg",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -2295,6 +2432,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0127",
     topic: "plaats-op-de-weg",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -2312,6 +2450,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0128",
     topic: "plaats-op-de-weg",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -2329,6 +2468,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0129",
     topic: "plaats-op-de-weg",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -2346,6 +2486,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0130",
     topic: "plaats-op-de-weg",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -2363,6 +2504,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0131",
     topic: "plaats-op-de-weg",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -2380,6 +2522,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0132",
     topic: "plaats-op-de-weg",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -2399,6 +2542,7 @@ const QUESTIONS: SeedQuestion[] = [
   },
   // ---- Inhalen -------------------------------------------------------
   {
+    seedId: "sq-0133",
     topic: "inhalen",
     type: "MULTIPLE_CHOICE",
     difficulty: 3,
@@ -2416,6 +2560,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0134",
     topic: "inhalen",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -2434,6 +2579,7 @@ const QUESTIONS: SeedQuestion[] = [
   },
 
   {
+    seedId: "sq-0135",
     topic: "inhalen",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -2451,6 +2597,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0136",
     topic: "inhalen",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -2468,6 +2615,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0137",
     topic: "inhalen",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -2485,6 +2633,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0138",
     topic: "inhalen",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -2502,6 +2651,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0139",
     topic: "inhalen",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -2519,6 +2669,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0140",
     topic: "inhalen",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -2536,6 +2687,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0141",
     topic: "inhalen",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -2553,6 +2705,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0142",
     topic: "inhalen",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -2570,6 +2723,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0143",
     topic: "inhalen",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -2587,6 +2741,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0144",
     topic: "inhalen",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -2604,6 +2759,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0145",
     topic: "inhalen",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -2621,6 +2777,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0146",
     topic: "inhalen",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -2638,6 +2795,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0147",
     topic: "inhalen",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -2655,6 +2813,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0148",
     topic: "inhalen",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -2672,6 +2831,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0149",
     topic: "inhalen",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -2689,6 +2849,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0150",
     topic: "inhalen",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -2706,6 +2867,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0151",
     topic: "inhalen",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -2723,6 +2885,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0152",
     topic: "inhalen",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -2740,6 +2903,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0153",
     topic: "inhalen",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -2757,6 +2921,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0154",
     topic: "inhalen",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -2774,6 +2939,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0155",
     topic: "inhalen",
     type: "SINGLE_CHOICE",
     difficulty: 3,
@@ -2791,6 +2957,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0156",
     topic: "inhalen",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -2808,6 +2975,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0157",
     topic: "inhalen",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -2825,6 +2993,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0158",
     topic: "inhalen",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -2842,6 +3011,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0159",
     topic: "inhalen",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -2859,6 +3029,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0160",
     topic: "inhalen",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -2876,6 +3047,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0161",
     topic: "inhalen",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -2893,6 +3065,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0162",
     topic: "inhalen",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -2910,6 +3083,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0163",
     topic: "inhalen",
     type: "SINGLE_CHOICE",
     difficulty: 3,
@@ -2927,6 +3101,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0164",
     topic: "inhalen",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -2944,6 +3119,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0165",
     topic: "inhalen",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -2961,6 +3137,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0166",
     topic: "inhalen",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -2978,6 +3155,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0167",
     topic: "inhalen",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -2995,6 +3173,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0168",
     topic: "inhalen",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -3012,6 +3191,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0169",
     topic: "inhalen",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -3029,6 +3209,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0170",
     topic: "inhalen",
     type: "SINGLE_CHOICE",
     difficulty: 3,
@@ -3046,6 +3227,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0171",
     topic: "inhalen",
     type: "SINGLE_CHOICE",
     difficulty: 3,
@@ -3063,6 +3245,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0172",
     topic: "inhalen",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -3080,6 +3263,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0173",
     topic: "inhalen",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -3097,6 +3281,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0174",
     topic: "inhalen",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -3114,6 +3299,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0175",
     topic: "inhalen",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -3131,6 +3317,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0176",
     topic: "inhalen",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -3148,6 +3335,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0177",
     topic: "inhalen",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -3165,6 +3353,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0178",
     topic: "inhalen",
     type: "SINGLE_CHOICE",
     difficulty: 3,
@@ -3182,6 +3371,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0179",
     topic: "inhalen",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -3199,6 +3389,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0180",
     topic: "inhalen",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -3216,6 +3407,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0181",
     topic: "inhalen",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -3233,6 +3425,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0182",
     topic: "inhalen",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -3250,6 +3443,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0183",
     topic: "inhalen",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -3267,6 +3461,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0184",
     topic: "inhalen",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -3285,6 +3480,7 @@ const QUESTIONS: SeedQuestion[] = [
   },
   // ---- Bijzondere manoeuvres -------------------------------------------------------
   {
+    seedId: "sq-0185",
     topic: "bijzondere-manoeuvres",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -3303,6 +3499,7 @@ const QUESTIONS: SeedQuestion[] = [
   },
 
   {
+    seedId: "sq-0186",
     topic: "bijzondere-manoeuvres",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -3320,6 +3517,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0187",
     topic: "bijzondere-manoeuvres",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -3337,6 +3535,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0188",
     topic: "bijzondere-manoeuvres",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -3354,6 +3553,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0189",
     topic: "bijzondere-manoeuvres",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -3371,6 +3571,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0190",
     topic: "bijzondere-manoeuvres",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -3388,6 +3589,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0191",
     topic: "bijzondere-manoeuvres",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -3405,6 +3607,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0192",
     topic: "bijzondere-manoeuvres",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -3422,6 +3625,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0193",
     topic: "bijzondere-manoeuvres",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -3439,6 +3643,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0194",
     topic: "bijzondere-manoeuvres",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -3456,6 +3661,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0195",
     topic: "bijzondere-manoeuvres",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -3473,6 +3679,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0196",
     topic: "bijzondere-manoeuvres",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -3490,6 +3697,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0197",
     topic: "bijzondere-manoeuvres",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -3507,6 +3715,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0198",
     topic: "bijzondere-manoeuvres",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -3524,6 +3733,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0199",
     topic: "bijzondere-manoeuvres",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -3541,6 +3751,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0200",
     topic: "bijzondere-manoeuvres",
     type: "SINGLE_CHOICE",
     difficulty: 3,
@@ -3558,6 +3769,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0201",
     topic: "bijzondere-manoeuvres",
     type: "SINGLE_CHOICE",
     difficulty: 3,
@@ -3575,6 +3787,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0202",
     topic: "bijzondere-manoeuvres",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -3592,6 +3805,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0203",
     topic: "bijzondere-manoeuvres",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -3609,6 +3823,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0204",
     topic: "bijzondere-manoeuvres",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -3626,6 +3841,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0205",
     topic: "bijzondere-manoeuvres",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -3643,6 +3859,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0206",
     topic: "bijzondere-manoeuvres",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -3660,6 +3877,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0207",
     topic: "bijzondere-manoeuvres",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -3677,6 +3895,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0208",
     topic: "bijzondere-manoeuvres",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -3694,6 +3913,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0209",
     topic: "bijzondere-manoeuvres",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -3711,6 +3931,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0210",
     topic: "bijzondere-manoeuvres",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -3728,6 +3949,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0211",
     topic: "bijzondere-manoeuvres",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -3745,6 +3967,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0212",
     topic: "bijzondere-manoeuvres",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -3762,6 +3985,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0213",
     topic: "bijzondere-manoeuvres",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -3779,6 +4003,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0214",
     topic: "bijzondere-manoeuvres",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -3796,6 +4021,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0215",
     topic: "bijzondere-manoeuvres",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -3813,6 +4039,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0216",
     topic: "bijzondere-manoeuvres",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -3830,6 +4057,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0217",
     topic: "bijzondere-manoeuvres",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -3847,6 +4075,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0218",
     topic: "bijzondere-manoeuvres",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -3864,6 +4093,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0219",
     topic: "bijzondere-manoeuvres",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -3881,6 +4111,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0220",
     topic: "bijzondere-manoeuvres",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -3898,6 +4129,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0221",
     topic: "bijzondere-manoeuvres",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -3915,6 +4147,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0222",
     topic: "bijzondere-manoeuvres",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -3932,6 +4165,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0223",
     topic: "bijzondere-manoeuvres",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -3949,6 +4183,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0224",
     topic: "bijzondere-manoeuvres",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -3966,6 +4201,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0225",
     topic: "bijzondere-manoeuvres",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -3983,6 +4219,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0226",
     topic: "bijzondere-manoeuvres",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -4000,6 +4237,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0227",
     topic: "bijzondere-manoeuvres",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -4017,6 +4255,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0228",
     topic: "bijzondere-manoeuvres",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -4034,6 +4273,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0229",
     topic: "bijzondere-manoeuvres",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -4051,6 +4291,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0230",
     topic: "bijzondere-manoeuvres",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -4068,6 +4309,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0231",
     topic: "bijzondere-manoeuvres",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -4085,6 +4327,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0232",
     topic: "bijzondere-manoeuvres",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -4102,6 +4345,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0233",
     topic: "bijzondere-manoeuvres",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -4119,6 +4363,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0234",
     topic: "bijzondere-manoeuvres",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -4136,6 +4381,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0235",
     topic: "bijzondere-manoeuvres",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -4154,6 +4400,7 @@ const QUESTIONS: SeedQuestion[] = [
   },
   // ---- Weggebruikers -------------------------------------------------------
   {
+    seedId: "sq-0236",
     topic: "weggebruikers",
     type: "SINGLE_CHOICE",
     difficulty: 1,
@@ -4171,6 +4418,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0237",
     topic: "weggebruikers",
     // Proof of concept for multi-topic crediting (see SeedQuestion.secondaryTopics
     // below): this question is as much about voorrang as it is about
@@ -4195,6 +4443,7 @@ const QUESTIONS: SeedQuestion[] = [
   },
 
   {
+    seedId: "sq-0238",
     topic: "weggebruikers",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -4212,6 +4461,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0239",
     topic: "weggebruikers",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -4229,6 +4479,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0240",
     topic: "weggebruikers",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -4246,6 +4497,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0241",
     topic: "weggebruikers",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -4263,6 +4515,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0242",
     topic: "weggebruikers",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -4280,6 +4533,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0243",
     topic: "weggebruikers",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -4297,6 +4551,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0244",
     topic: "weggebruikers",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -4314,6 +4569,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0245",
     topic: "weggebruikers",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -4331,6 +4587,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0246",
     topic: "weggebruikers",
     type: "SINGLE_CHOICE",
     difficulty: 3,
@@ -4348,6 +4605,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0247",
     topic: "weggebruikers",
     type: "SINGLE_CHOICE",
     difficulty: 3,
@@ -4365,6 +4623,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0248",
     topic: "weggebruikers",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -4382,6 +4641,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0249",
     topic: "weggebruikers",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -4399,6 +4659,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0250",
     topic: "weggebruikers",
     type: "SINGLE_CHOICE",
     difficulty: 1,
@@ -4416,6 +4677,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0251",
     topic: "weggebruikers",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -4433,6 +4695,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0252",
     topic: "weggebruikers",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -4450,6 +4713,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0253",
     topic: "weggebruikers",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -4467,6 +4731,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0254",
     topic: "weggebruikers",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -4484,6 +4749,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0255",
     topic: "weggebruikers",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -4501,6 +4767,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0256",
     topic: "weggebruikers",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -4518,6 +4785,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0257",
     topic: "weggebruikers",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -4535,6 +4803,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0258",
     topic: "weggebruikers",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -4552,6 +4821,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0259",
     topic: "weggebruikers",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -4569,6 +4839,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0260",
     topic: "weggebruikers",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -4586,6 +4857,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0261",
     topic: "weggebruikers",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -4603,6 +4875,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0262",
     topic: "weggebruikers",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -4620,6 +4893,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0263",
     topic: "weggebruikers",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -4637,6 +4911,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0264",
     topic: "weggebruikers",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -4654,6 +4929,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0265",
     topic: "weggebruikers",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -4671,6 +4947,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0266",
     topic: "weggebruikers",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -4688,6 +4965,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0267",
     topic: "weggebruikers",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -4705,6 +4983,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0268",
     topic: "weggebruikers",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -4722,6 +5001,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0269",
     topic: "weggebruikers",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -4739,6 +5019,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0270",
     topic: "weggebruikers",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -4756,6 +5037,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0271",
     topic: "weggebruikers",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -4773,6 +5055,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0272",
     topic: "weggebruikers",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -4790,6 +5073,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0273",
     topic: "weggebruikers",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -4807,6 +5091,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0274",
     topic: "weggebruikers",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -4824,6 +5109,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0275",
     topic: "weggebruikers",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -4841,6 +5127,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0276",
     topic: "weggebruikers",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -4858,6 +5145,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0277",
     topic: "weggebruikers",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -4875,6 +5163,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0278",
     topic: "weggebruikers",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -4892,6 +5181,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0279",
     topic: "weggebruikers",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -4909,6 +5199,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0280",
     topic: "weggebruikers",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -4926,6 +5217,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0281",
     topic: "weggebruikers",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -4943,6 +5235,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0282",
     topic: "weggebruikers",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -4960,6 +5253,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0283",
     topic: "weggebruikers",
     type: "SINGLE_CHOICE",
     difficulty: 3,
@@ -4977,6 +5271,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0284",
     topic: "weggebruikers",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -4994,6 +5289,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0285",
     topic: "weggebruikers",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -5011,6 +5307,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0286",
     topic: "weggebruikers",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -5028,6 +5325,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0287",
     topic: "weggebruikers",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -5046,6 +5344,7 @@ const QUESTIONS: SeedQuestion[] = [
   },
   // ---- Verlichting (ondergebracht bij Veiligheid) --------------------------
   {
+    seedId: "sq-0288",
     topic: "veiligheid",
     type: "SINGLE_CHOICE",
     difficulty: 1,
@@ -5065,6 +5364,7 @@ const QUESTIONS: SeedQuestion[] = [
 
   // ---- Stoppen en parkeren (ondergebracht bij Bijzondere manoeuvres) -------
   {
+    seedId: "sq-0289",
     topic: "bijzondere-manoeuvres",
     type: "MULTIPLE_CHOICE",
     difficulty: 2,
@@ -5082,6 +5382,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0290",
     topic: "bijzondere-manoeuvres",
     type: "HOTSPOT",
     difficulty: 1,
@@ -5097,6 +5398,7 @@ const QUESTIONS: SeedQuestion[] = [
 
   // ---- Autosnelwegen -------------------------------------------------------
   {
+    seedId: "sq-0291",
     topic: "autosnelwegen",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -5115,6 +5417,7 @@ const QUESTIONS: SeedQuestion[] = [
   },
 
   {
+    seedId: "sq-0292",
     topic: "autosnelwegen",
     type: "SINGLE_CHOICE",
     difficulty: 1,
@@ -5132,6 +5435,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0293",
     topic: "autosnelwegen",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -5149,6 +5453,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0294",
     topic: "autosnelwegen",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -5166,6 +5471,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0295",
     topic: "autosnelwegen",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -5183,6 +5489,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0296",
     topic: "autosnelwegen",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -5200,6 +5507,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0297",
     topic: "autosnelwegen",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -5217,6 +5525,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0298",
     topic: "autosnelwegen",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -5234,6 +5543,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0299",
     topic: "autosnelwegen",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -5251,6 +5561,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0300",
     topic: "autosnelwegen",
     type: "SINGLE_CHOICE",
     difficulty: 1,
@@ -5268,6 +5579,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0301",
     topic: "autosnelwegen",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -5285,6 +5597,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0302",
     topic: "autosnelwegen",
     type: "SINGLE_CHOICE",
     difficulty: 3,
@@ -5302,6 +5615,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0303",
     topic: "autosnelwegen",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -5319,6 +5633,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0304",
     topic: "autosnelwegen",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -5336,6 +5651,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0305",
     topic: "autosnelwegen",
     type: "SINGLE_CHOICE",
     difficulty: 3,
@@ -5353,6 +5669,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0306",
     topic: "autosnelwegen",
     type: "SINGLE_CHOICE",
     difficulty: 3,
@@ -5370,6 +5687,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0307",
     topic: "autosnelwegen",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -5387,6 +5705,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0308",
     topic: "autosnelwegen",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -5404,6 +5723,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0309",
     topic: "autosnelwegen",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -5421,6 +5741,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0310",
     topic: "autosnelwegen",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -5438,6 +5759,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0311",
     topic: "autosnelwegen",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -5455,6 +5777,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0312",
     topic: "autosnelwegen",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -5472,6 +5795,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0313",
     topic: "autosnelwegen",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -5489,6 +5813,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0314",
     topic: "autosnelwegen",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -5506,6 +5831,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0315",
     topic: "autosnelwegen",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -5523,6 +5849,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0316",
     topic: "autosnelwegen",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -5540,6 +5867,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0317",
     topic: "autosnelwegen",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -5557,6 +5885,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0318",
     topic: "autosnelwegen",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -5574,6 +5903,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0319",
     topic: "autosnelwegen",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -5591,6 +5921,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0320",
     topic: "autosnelwegen",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -5608,6 +5939,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0321",
     topic: "autosnelwegen",
     type: "SINGLE_CHOICE",
     difficulty: 3,
@@ -5625,6 +5957,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0322",
     topic: "autosnelwegen",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -5642,6 +5975,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0323",
     topic: "autosnelwegen",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -5659,6 +5993,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0324",
     topic: "autosnelwegen",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -5676,6 +6011,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0325",
     topic: "autosnelwegen",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -5693,6 +6029,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0326",
     topic: "autosnelwegen",
     type: "SINGLE_CHOICE",
     difficulty: 3,
@@ -5710,6 +6047,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0327",
     topic: "autosnelwegen",
     type: "SINGLE_CHOICE",
     difficulty: 3,
@@ -5727,6 +6065,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0328",
     topic: "autosnelwegen",
     type: "SINGLE_CHOICE",
     difficulty: 3,
@@ -5744,6 +6083,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0329",
     topic: "autosnelwegen",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -5761,6 +6101,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0330",
     topic: "autosnelwegen",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -5778,6 +6119,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0331",
     topic: "autosnelwegen",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -5795,6 +6137,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0332",
     topic: "autosnelwegen",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -5812,6 +6155,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0333",
     topic: "autosnelwegen",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -5829,6 +6173,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0334",
     topic: "autosnelwegen",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -5846,6 +6191,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0335",
     topic: "autosnelwegen",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -5863,6 +6209,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0336",
     topic: "autosnelwegen",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -5880,6 +6227,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0337",
     topic: "autosnelwegen",
     type: "SINGLE_CHOICE",
     difficulty: 3,
@@ -5897,6 +6245,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0338",
     topic: "autosnelwegen",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -5914,6 +6263,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0339",
     topic: "autosnelwegen",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -5931,6 +6281,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0340",
     topic: "autosnelwegen",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -5948,6 +6299,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0341",
     topic: "autosnelwegen",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -5966,6 +6318,7 @@ const QUESTIONS: SeedQuestion[] = [
   },
   // ---- Veiligheid -------------------------------------------------------
   {
+    seedId: "sq-0342",
     topic: "veiligheid",
     type: "SINGLE_CHOICE",
     difficulty: 1,
@@ -5983,6 +6336,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0343",
     topic: "veiligheid",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -6001,6 +6355,7 @@ const QUESTIONS: SeedQuestion[] = [
   },
 
   {
+    seedId: "sq-0344",
     topic: "veiligheid",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -6018,6 +6373,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0345",
     topic: "veiligheid",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -6035,6 +6391,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0346",
     topic: "veiligheid",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -6052,6 +6409,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0347",
     topic: "veiligheid",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -6069,6 +6427,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0348",
     topic: "veiligheid",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -6086,6 +6445,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0349",
     topic: "veiligheid",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -6103,6 +6463,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0350",
     topic: "veiligheid",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -6120,6 +6481,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0351",
     topic: "veiligheid",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -6137,6 +6499,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0352",
     topic: "veiligheid",
     type: "SINGLE_CHOICE",
     difficulty: 3,
@@ -6154,6 +6517,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0353",
     topic: "veiligheid",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -6171,6 +6535,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0354",
     topic: "veiligheid",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -6188,6 +6553,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0355",
     topic: "veiligheid",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -6205,6 +6571,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0356",
     topic: "veiligheid",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -6222,6 +6589,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0357",
     topic: "veiligheid",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -6239,6 +6607,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0358",
     topic: "veiligheid",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -6256,6 +6625,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0359",
     topic: "veiligheid",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -6273,6 +6643,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0360",
     topic: "veiligheid",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -6290,6 +6661,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0361",
     topic: "veiligheid",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -6307,6 +6679,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0362",
     topic: "veiligheid",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -6324,6 +6697,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0363",
     topic: "veiligheid",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -6341,6 +6715,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0364",
     topic: "veiligheid",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -6358,6 +6733,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0365",
     topic: "veiligheid",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -6375,6 +6751,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0366",
     topic: "veiligheid",
     type: "SINGLE_CHOICE",
     difficulty: 3,
@@ -6392,6 +6769,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0367",
     topic: "veiligheid",
     type: "SINGLE_CHOICE",
     difficulty: 3,
@@ -6409,6 +6787,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0368",
     topic: "veiligheid",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -6426,6 +6805,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0369",
     topic: "veiligheid",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -6443,6 +6823,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0370",
     topic: "veiligheid",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -6460,6 +6841,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0371",
     topic: "veiligheid",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -6477,6 +6859,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0372",
     topic: "veiligheid",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -6494,6 +6877,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0373",
     topic: "veiligheid",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -6511,6 +6895,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0374",
     topic: "veiligheid",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -6528,6 +6913,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0375",
     topic: "veiligheid",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -6545,6 +6931,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0376",
     topic: "veiligheid",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -6562,6 +6949,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0377",
     topic: "veiligheid",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -6579,6 +6967,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0378",
     topic: "veiligheid",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -6596,6 +6985,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0379",
     topic: "veiligheid",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -6613,6 +7003,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0380",
     topic: "veiligheid",
     type: "SINGLE_CHOICE",
     difficulty: 1,
@@ -6630,6 +7021,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0381",
     topic: "veiligheid",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -6647,6 +7039,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0382",
     topic: "veiligheid",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -6664,6 +7057,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0383",
     topic: "veiligheid",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -6681,6 +7075,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0384",
     topic: "veiligheid",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -6698,6 +7093,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0385",
     topic: "veiligheid",
     type: "SINGLE_CHOICE",
     difficulty: 3,
@@ -6715,6 +7111,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0386",
     topic: "veiligheid",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -6732,6 +7129,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0387",
     topic: "veiligheid",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -6749,6 +7147,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0388",
     topic: "veiligheid",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -6766,6 +7165,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0389",
     topic: "veiligheid",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -6783,6 +7183,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0390",
     topic: "veiligheid",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -6800,6 +7201,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0391",
     topic: "veiligheid",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -6817,6 +7219,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0392",
     topic: "veiligheid",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -6834,6 +7237,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0393",
     topic: "veiligheid",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -6852,6 +7256,7 @@ const QUESTIONS: SeedQuestion[] = [
   },
   // ---- Overwegen (spoorwegkruisingen) ---------------------------------------
   {
+    seedId: "sq-0394",
     topic: "voorrang",
     type: "SINGLE_CHOICE",
     difficulty: 2,
@@ -6870,6 +7275,7 @@ const QUESTIONS: SeedQuestion[] = [
     },
   },
   {
+    seedId: "sq-0395",
     topic: "verkeersborden",
     subtopic: "gevaarsborden",
     type: "HOTSPOT",
@@ -6990,6 +7396,8 @@ export async function main() {
         topicId,
         subtopicId,
         secondaryTopicIds: secondaryTopicIds ? JSON.stringify(secondaryTopicIds) : undefined,
+        seedKey: "seedId" in q ? q.seedId : undefined,
+        status: "archived" in q && q.archived ? "ARCHIVED" : "PUBLISHED",
         type: q.type,
         difficulty: q.difficulty,
         prompt: q.prompt,

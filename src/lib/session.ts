@@ -51,7 +51,7 @@ export async function getBetaTester() {
   if (!session?.user) return null;
   const user = await prisma.user.findUnique({
     where: { id: session.user.id },
-    select: { id: true, isBetaTester: true, name: true },
+    select: { id: true, isBetaTester: true, name: true, email: true },
   });
   if (!user?.isBetaTester) return null;
   return user;

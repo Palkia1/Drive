@@ -92,6 +92,13 @@ De `android/`-map wordt gewoon meegecommit (standaard bij Capacitor) — alleen 
   asset-pipeline: een herbruikbare kruispunt-scene (auto's/fietsers/voetgangers op vaste
   "sloten") en een handgetekende verkeersbordenset. Consistente stijl, geen losse
   illustraties nodig, en makkelijk uit te breiden met nieuwe scenario's.
+- **Beta-tester feedbackportaal** (`/app/beta`, optioneel) — elk account kan zichzelf via
+  Instellingen tot beta-tester maken en daarna elke vraag beoordelen: aanpassen, weggooien
+  of goedkeuren, direct doorgevoerd in de database. Zonder `GITHUB_SYNC_TOKEN` overleeft
+  zo'n aanpassing geen volgende `prisma/seed.ts`-reseed; mét de token committeert het
+  portaal de aanpassing automatisch terug naar `prisma/seed.ts` op GitHub
+  (`src/lib/seedSync`), zodat hij blijft staan. Zie `.env.example` voor de vereiste
+  tokenscope.
 
 ## Wat is er gebouwd (MVP-kern uit §47 van het brief)
 

@@ -314,6 +314,11 @@ model Question {
   explanation       String?
   scene             String // JSON: options / hotspot targets / svg scene description
   version           Int            @default(1)
+  // Matches this row back to its hand-authored entry in prisma/seed.ts
+  // (SeedQuestion.seedId) — null for procedurally-generated sign-recognition
+  // questions, which have no source entry to sync a beta-tester edit back
+  // to. See src/lib/seedSync.
+  seedKey           String?        @unique
   createdAt         DateTime       @default(now())
   updatedAt         DateTime       @updatedAt
 
