@@ -200,7 +200,11 @@ function RanglijstTab({ leaderboard }: { leaderboard: Props["leaderboard"] }) {
   return (
     <div>
       <p className="text-xs mb-3" style={{ color: "var(--foreground-muted)" }}>
-        Reset elke dag om middernacht — gebaseerd op XP verdiend vandaag.
+        Reset elke dag om middernacht — gebaseerd op XP verdiend vandaag. Rijen met een{" "}
+        <span className="pill" style={{ background: "var(--surface-muted)", color: "var(--foreground-muted)", fontSize: "0.7rem", padding: "1px 6px" }}>
+          voorbeeld
+        </span>{" "}
+        label zijn geen echte spelers.
       </p>
       <div className="space-y-1.5">
         {leaderboard.top.map((row) => (
@@ -209,13 +213,21 @@ function RanglijstTab({ leaderboard }: { leaderboard: Props["leaderboard"] }) {
             className="flex items-center gap-3 px-3 py-2.5 rounded-xl"
             style={{
               background: row.isSelf ? "var(--brand-50)" : "var(--surface)",
-              border: "1px solid var(--border)",
+              border: row.isExample ? "1px dashed var(--border)" : "1px solid var(--border)",
+              opacity: row.isExample ? 0.75 : 1,
             }}
           >
             <span className="w-7 text-center font-bold text-sm" style={{ color: row.rank <= 3 ? "var(--accent-600)" : "var(--foreground-muted)" }}>
               {row.rank <= 3 ? <Trophy size={16} className="inline" /> : row.rank}
             </span>
-            <span className="flex-1 font-medium text-sm">{row.username}</span>
+            <span className="flex-1 font-medium text-sm flex items-center gap-2">
+              {row.username}
+              {row.isExample && (
+                <span className="pill" style={{ background: "var(--surface-muted)", color: "var(--foreground-muted)", fontSize: "0.65rem", padding: "1px 6px" }}>
+                  voorbeeld
+                </span>
+              )}
+            </span>
             <span className="text-sm font-semibold" style={{ color: "var(--brand-600)" }}>
               {row.xpToday.toLocaleString("nl-NL")} XP
             </span>
