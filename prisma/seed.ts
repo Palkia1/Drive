@@ -21,6 +21,21 @@ import type {
 } from "../src/lib/questions/types";
 import { generateSignQuestions } from "../src/lib/questions/generateSignQuestions";
 import { resolvePriority, type PriorityActor } from "../src/lib/questions/priority";
+import { LOCATION_ACTOR_SLOTS } from "../src/lib/scenes/locationSlots.generated";
+import type { LocationActor, LocationId } from "../src/lib/questions/types";
+
+/** Derives each actor's PriorityActor (just its position bearing) straight
+ * from the background's own slot manifest — same idea as GridActor already
+ * carrying its bearing directly, so a LocationHotspotScene's `correctSlot`
+ * is resolved from the real geometry instead of a bearing table re-typed
+ * here that could quietly drift from the artwork. */
+function locationPriorityActors(location: LocationId, actors: Pick<LocationActor, "id" | "slot">[]): PriorityActor[] {
+  return actors.map((a) => {
+    const bearing = LOCATION_ACTOR_SLOTS[location]?.[a.slot]?.bearing;
+    if (bearing === undefined) throw new Error(`locationPriorityActors: no slot "${a.slot}" on location "${location}"`);
+    return { id: a.id, bearing };
+  });
+}
 
 const prisma = new PrismaClient();
 
@@ -432,6 +447,85 @@ const QUESTIONS: SeedQuestion[] = [
       correctSlot: "other-car",
       question: "Wie mag rijden?",
     },
+  },
+  {
+    seedId: "sq-0399",
+    topic: "voorrang",
+    subtopic: "gelijkwaardige-kruispunten",
+    type: "HOTSPOT",
+    difficulty: 2,
+    prompt: "Jullie komen tegelijk aan bij dit kruispunt. Geen borden, geen verkeerslichten. Wie mag doorrijden?",
+    explanation:
+      "Zonder borden geldt voorrang van rechts. Jij nadert vanaf de oostkant; de andere auto komt vanuit het zuiden en heeft dus jou aan zijn rechterhand. Die auto moet daarom wachten.",
+    scene: (() => {
+      const location: LocationId = "gelijkwaardige-kruising-stedelijk";
+      const actors: { id: string; slot: string; kind: "car" | "cyclist"; color: string; self?: boolean }[] = [
+        { id: "you", slot: "east", kind: "car", color: "var(--sign-red)", self: true },
+        { id: "other-car", slot: "south", kind: "car", color: "var(--sign-blue)" },
+      ];
+      const correctSlot = resolvePriority({ type: "voorrang-van-rechts" }, locationPriorityActors(location, actors));
+      return {
+        kind: "HOTSPOT",
+        sceneId: "location",
+        location,
+        actors,
+        correctSlot,
+        question: "Wie mag doorrijden?",
+      } satisfies LocationHotspotScene;
+    })(),
+  },
+  {
+    seedId: "sq-0400",
+    topic: "voorrang",
+    subtopic: "gelijkwaardige-kruispunten",
+    type: "HOTSPOT",
+    difficulty: 2,
+    prompt: "Je nadert dit kruispunt. Er staan geen borden. Vanaf links komt een fietser aan. Wie mag als eerste?",
+    explanation:
+      "Voorrang van rechts geldt voor alle bestuurders, ook fietsers. De fietser komt vanuit het westen — dat is voor jou rechts — en heeft daarom voorrang, ook al is het maar een fiets.",
+    scene: (() => {
+      const location: LocationId = "gelijkwaardige-kruising-stedelijk";
+      const actors: { id: string; slot: string; kind: "car" | "cyclist"; color: string; self?: boolean }[] = [
+        { id: "you", slot: "north", kind: "car", color: "var(--sign-red)", self: true },
+        { id: "cyclist", slot: "west", kind: "cyclist", color: "var(--sign-blue)" },
+      ];
+      const correctSlot = resolvePriority({ type: "voorrang-van-rechts" }, locationPriorityActors(location, actors));
+      return {
+        kind: "HOTSPOT",
+        sceneId: "location",
+        location,
+        actors,
+        correctSlot,
+        question: "Wie mag als eerste?",
+      } satisfies LocationHotspotScene;
+    })(),
+  },
+  {
+    seedId: "sq-0401",
+    topic: "voorrang",
+    subtopic: "gelijkwaardige-kruispunten",
+    type: "HOTSPOT",
+    difficulty: 3,
+    prompt: "Op dit kruispunt naderen drie weggebruikers tegelijk. Geen borden, geen verkeerslichten. Wie mag als eerste rijden?",
+    explanation:
+      "Kijk steeds naar wie er rechts van jou zit. Jij (zuid) hebt de auto uit het oosten rechts van je, dus jij wacht. Die auto heeft op zijn beurt de fietser uit het noorden rechts van zich, dus die auto wacht ook. De fietser heeft niemand rechts van zich — vanuit het westen komt niemand — en mag daarom als eerste.",
+    scene: (() => {
+      const location: LocationId = "gelijkwaardige-kruising-stedelijk";
+      const actors: { id: string; slot: string; kind: "car" | "cyclist"; color: string; self?: boolean }[] = [
+        { id: "you", slot: "south", kind: "car", color: "var(--sign-red)", self: true },
+        { id: "other-car", slot: "east", kind: "car", color: "var(--sign-blue)" },
+        { id: "cyclist", slot: "north", kind: "cyclist", color: "var(--sign-yellow)" },
+      ];
+      const correctSlot = resolvePriority({ type: "voorrang-van-rechts" }, locationPriorityActors(location, actors));
+      return {
+        kind: "HOTSPOT",
+        sceneId: "location",
+        location,
+        actors,
+        correctSlot,
+        question: "Wie mag als eerste rijden?",
+      } satisfies LocationHotspotScene;
+    })(),
   },
   {
     seedId: "sq-0396",
