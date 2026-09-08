@@ -11,12 +11,27 @@ export type FriendView = {
   badgeCount: number | null;
 };
 
+const FRIEND_SELECT = {
+  id: true,
+  username: true,
+  activeTitle: true,
+  xp: true,
+  level: true,
+  streakCount: true,
+  shareXpWithFriends: true,
+  shareStreakWithFriends: true,
+  shareBadgesWithFriends: true,
+  _count: { select: { badges: true } },
+} as const;
+
 export async function getFriends(studentId: string): Promise<FriendView[]> {
   const friendships = await prisma.friendship.findMany({
     where: { status: "ACCEPTED", OR: [{ requesterId: studentId }, { addresseeId: studentId }] },
-    include: {
-      requester: { include: { badges: true } },
-      addressee: { include: { badges: true } },
+    select: {
+      id: true,
+      requesterId: true,
+      requester: { select: FRIEND_SELECT },
+      addressee: { select: FRIEND_SELECT },
     },
   });
 
@@ -30,7 +45,7 @@ export async function getFriends(studentId: string): Promise<FriendView[]> {
       xp: friend.shareXpWithFriends ? friend.xp : null,
       level: friend.level,
       streak: friend.shareStreakWithFriends ? friend.streakCount : null,
-      badgeCount: friend.shareBadgesWithFriends ? friend.badges.length : null,
+      badgeCount: friend.shareBadgesWithFriends ? friend._count.badges : null,
     };
   });
 }
@@ -38,7 +53,7 @@ export async function getFriends(studentId: string): Promise<FriendView[]> {
 export async function getPendingRequests(studentId: string) {
   return prisma.friendship.findMany({
     where: { addresseeId: studentId, status: "PENDING" },
-    include: { requester: true },
+    select: { id: true, createdAt: true, requester: { select: { username: true } } },
     orderBy: { createdAt: "desc" },
   });
 }

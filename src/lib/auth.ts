@@ -1,3 +1,4 @@
+import { cache } from "react";
 import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import Google from "next-auth/providers/google";
@@ -28,7 +29,7 @@ if (process.env.AUTH_APPLE_ID && process.env.AUTH_APPLE_SECRET) {
   );
 }
 
-export const { handlers, auth, signIn, signOut } = NextAuth({
+const { handlers, auth: uncachedAuth, signIn, signOut } = NextAuth({
   adapter: PrismaAdapter(prisma),
   trustHost: true,
   session: { strategy: "jwt" },
@@ -89,3 +90,10 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     },
   },
 });
+
+// cache()'d so the several session checks a single request makes (layout +
+// page, sometimes more than once per page) collapse into one call instead
+// of re-running the jwt callback's DB lookup each time.
+const auth = cache(uncachedAuth);
+
+export { handlers, auth, signIn, signOut };

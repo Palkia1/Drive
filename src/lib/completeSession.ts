@@ -18,7 +18,17 @@ const EXAM_PASS_THRESHOLD = 0.88; // mirrors the ~44/50 pass mark of the real CB
 export async function completeSession(studentId: string, sessionId: string) {
   const session = await prisma.practiceSession.findUnique({
     where: { id: sessionId },
-    include: { attempts: { include: { question: { include: { topic: true } } } } },
+    select: {
+      studentId: true,
+      completedAt: true,
+      mode: true,
+      attempts: {
+        select: {
+          isCorrect: true,
+          question: { select: { difficulty: true, topicId: true, topic: { select: { name: true } } } },
+        },
+      },
+    },
   });
   if (!session || session.studentId !== studentId) throw new Error("Session not found");
   if (session.completedAt) throw new Error("Session already completed");
@@ -39,9 +49,14 @@ export async function completeSession(studentId: string, sessionId: string) {
     totalCount > 0 &&
     (await prisma.practiceSession.count({ where: { studentId, completedAt: { not: null } } })) === 0;
 
-  const xpResult = await addXp(studentId, xp, isExam ? "exam" : "session");
-  const streakResult = totalCount > 0 ? await registerDailyActivity(studentId) : null;
-  const dailyGoalResult = totalCount > 0 ? await progressDailyGoal(studentId, totalCount) : null;
+  // These three each read-then-write disjoint StudentProfile/DailyGoal
+  // fields (xp/level, streak/lastActivityAt, a separate DailyGoal row), so
+  // running them concurrently can't clobber one another.
+  const [xpResult, streakResult, dailyGoalResult] = await Promise.all([
+    addXp(studentId, xp, isExam ? "exam" : "session"),
+    totalCount > 0 ? registerDailyActivity(studentId) : Promise.resolve(null),
+    totalCount > 0 ? progressDailyGoal(studentId, totalCount) : Promise.resolve(null),
+  ]);
   if (dailyGoalResult?.justCompleted) {
     await addXp(studentId, XP_DAILY_GOAL, "daily_goal");
   }
@@ -70,9 +85,11 @@ export async function completeSession(studentId: string, sessionId: string) {
     });
   }
 
-  const totalCorrectAllTime = await prisma.attempt.count({ where: { studentId, isCorrect: true } });
-  const isFirstExam =
-    isExam && totalCount > 0 && (await prisma.examResult.count({ where: { studentId } })) === 1;
+  const [totalCorrectAllTime, examResultCount] = await Promise.all([
+    prisma.attempt.count({ where: { studentId, isCorrect: true } }),
+    isExam && totalCount > 0 ? prisma.examResult.count({ where: { studentId } }) : Promise.resolve(0),
+  ]);
+  const isFirstExam = isExam && totalCount > 0 && examResultCount === 1;
 
   const newBadges = await awardEligibleBadges(studentId, {
     isFirstSession: wasFirstSession,

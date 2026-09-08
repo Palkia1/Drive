@@ -174,6 +174,7 @@ model StudentProfile {
   challengesCreated Challenge[]            @relation("ChallengeCreator")
   challengeInvites  ChallengeParticipant[]
 
+  @@index([drivingSchoolId, lastActivityAt])
   @@map("student_profiles")
 }
 
@@ -195,6 +196,7 @@ model Friendship {
   addressee StudentProfile @relation("FriendshipAddressee", fields: [addresseeId], references: [id], onDelete: Cascade)
 
   @@unique([requesterId, addresseeId])
+  @@index([addresseeId])
   @@map("friendships")
 }
 
@@ -329,6 +331,7 @@ model Question {
   marks    QuestionMark[]
   reviews  QuestionReview[]
 
+  @@index([topicId, status])
   @@map("questions")
 }
 
@@ -399,6 +402,7 @@ model PracticeSession {
   attempts   Attempt[]
   examResult ExamResult?
 
+  @@index([studentId, completedAt])
   @@map("practice_sessions")
 }
 
@@ -417,6 +421,7 @@ model Attempt {
   session  PracticeSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
 
   @@index([studentId, questionId])
+  @@index([sessionId, questionId])
   @@map("attempts")
 }
 
@@ -480,6 +485,7 @@ model XpEvent {
   student StudentProfile @relation(fields: [studentId], references: [id], onDelete: Cascade)
 
   @@index([studentId, createdAt])
+  @@index([createdAt])
   @@map("xp_events")
 }
 

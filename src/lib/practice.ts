@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/db";
-import type { Question } from "@prisma/client";
+import type { Prisma } from "@prisma/client";
 
 export const SESSION_SIZE = 8;
 export const EXAM_SIZE = 20;
@@ -11,6 +11,19 @@ export const LESSON_PRACTICE_SIZE = 4;
 // reachable via mode: "TOPIC" with one of these ids (see OefenenClient's
 // dedicated buttons), just excluded from QUICK/EXAM/WEAK_SPOTS.
 export const RECOGNITION_TOPIC_SLUGS = ["bord-naar-betekenis", "betekenis-naar-bord"];
+
+// Only the fields session-building and answering actually need — `explanation`
+// (only read by beta-review tooling) and any other Question columns are left
+// off so these queries don't drag full row payloads over the wire.
+const SESSION_QUESTION_SELECT = {
+  id: true,
+  topicId: true,
+  type: true,
+  difficulty: true,
+  prompt: true,
+  scene: true,
+} satisfies Prisma.QuestionSelect;
+type SessionQuestion = Prisma.QuestionGetPayload<{ select: typeof SESSION_QUESTION_SELECT }>;
 
 function shuffle<T>(arr: T[]): T[] {
   const copy = [...arr];
@@ -24,7 +37,7 @@ function shuffle<T>(arr: T[]): T[] {
 /** Orders candidates so never-seen / long-unseen questions surface first — a
  * lightweight stand-in for real spaced repetition (brief §15): we don't model
  * per-question forgetting curves, just "what have you not seen in a while". */
-async function orderBySpacing(studentId: string, questions: Question[]) {
+async function orderBySpacing<T extends { id: string }>(studentId: string, questions: T[]) {
   const lastSeen = await prisma.attempt.groupBy({
     by: ["questionId"],
     where: { studentId, questionId: { in: questions.map((q) => q.id) } },
@@ -35,7 +48,7 @@ async function orderBySpacing(studentId: string, questions: Question[]) {
   return [...questions].sort((a, b) => (lastSeenMap.get(a.id) ?? 0) - (lastSeenMap.get(b.id) ?? 0));
 }
 
-async function pickFromPool(studentId: string, questions: Question[], count: number) {
+async function pickFromPool<T extends { id: string }>(studentId: string, questions: T[], count: number) {
   const ordered = await orderBySpacing(studentId, questions);
   const pool = ordered.slice(0, Math.max(count * 3, count));
   return shuffle(pool).slice(0, Math.min(count, ordered.length));
@@ -45,12 +58,12 @@ export async function selectQuestionsForSession(
   studentId: string,
   mode: "QUICK" | "TOPIC" | "MISTAKES" | "WEAK_SPOTS" | "LESSON" | "EXAM",
   topicIds: string[]
-): Promise<{ questions: Question[]; resolvedTopicIds: string[] }> {
+): Promise<{ questions: SessionQuestion[]; resolvedTopicIds: string[] }> {
   if (mode === "MISTAKES") {
     const marks = await prisma.questionMark.findMany({
       where: { studentId, reason: "MISTAKE", resolvedAt: null },
       orderBy: { createdAt: "asc" },
-      include: { question: true },
+      select: { question: { select: SESSION_QUESTION_SELECT } },
       take: SESSION_SIZE * 2,
     });
     const questions = shuffle(marks.map((m) => m.question)).slice(0, SESSION_SIZE);
@@ -75,30 +88,41 @@ export async function selectQuestionsForSession(
       });
       weakTopicIds = [...weakTopicIds, ...unattempted.map((t) => t.id)];
     }
-    const questions = await prisma.question.findMany({ where: { topicId: { in: weakTopicIds }, status: "PUBLISHED" } });
+    const questions = await prisma.question.findMany({
+      where: { topicId: { in: weakTopicIds }, status: "PUBLISHED" },
+      select: SESSION_QUESTION_SELECT,
+    });
     return { questions: await pickFromPool(studentId, questions, SESSION_SIZE), resolvedTopicIds: weakTopicIds };
   }
 
   if (mode === "EXAM") {
     const questions = await prisma.question.findMany({
       where: { status: "PUBLISHED", topic: { slug: { notIn: RECOGNITION_TOPIC_SLUGS } } },
+      select: SESSION_QUESTION_SELECT,
     });
     return { questions: shuffle(questions).slice(0, Math.min(EXAM_SIZE, questions.length)), resolvedTopicIds: [] };
   }
 
   if (mode === "LESSON") {
-    const questions = await prisma.question.findMany({ where: { topicId: { in: topicIds }, status: "PUBLISHED" } });
+    const questions = await prisma.question.findMany({
+      where: { topicId: { in: topicIds }, status: "PUBLISHED" },
+      select: SESSION_QUESTION_SELECT,
+    });
     return { questions: await pickFromPool(studentId, questions, LESSON_PRACTICE_SIZE), resolvedTopicIds: topicIds };
   }
 
   if (mode === "TOPIC" && topicIds.length > 0) {
-    const questions = await prisma.question.findMany({ where: { topicId: { in: topicIds }, status: "PUBLISHED" } });
+    const questions = await prisma.question.findMany({
+      where: { topicId: { in: topicIds }, status: "PUBLISHED" },
+      select: SESSION_QUESTION_SELECT,
+    });
     return { questions: await pickFromPool(studentId, questions, SESSION_SIZE), resolvedTopicIds: topicIds };
   }
 
   // QUICK (default): a bit of everything.
   const questions = await prisma.question.findMany({
     where: { status: "PUBLISHED", topic: { slug: { notIn: RECOGNITION_TOPIC_SLUGS } } },
+    select: SESSION_QUESTION_SELECT,
   });
   return { questions: await pickFromPool(studentId, questions, SESSION_SIZE), resolvedTopicIds: [] };
 }

@@ -5,16 +5,21 @@ import { FoutenClient } from "@/components/practice/FoutenClient";
 export default async function FoutenPage() {
   const { student } = await requireStudent();
 
+  const questionSelect = {
+    question: { select: { id: true, prompt: true, difficulty: true, topic: { select: { name: true } } } },
+  } as const;
   const [mistakes, saved] = await Promise.all([
     prisma.questionMark.findMany({
       where: { studentId: student.id, reason: "MISTAKE", resolvedAt: null },
       orderBy: { createdAt: "desc" },
-      include: { question: { include: { topic: true } } },
+      select: questionSelect,
+      take: 100,
     }),
     prisma.questionMark.findMany({
       where: { studentId: student.id, reason: "SAVED" },
       orderBy: { createdAt: "desc" },
-      include: { question: { include: { topic: true } } },
+      select: questionSelect,
+      take: 100,
     }),
   ]);
 

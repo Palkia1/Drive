@@ -1,10 +1,15 @@
 "use client";
 
 import Link from "next/link";
+import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
 import { Sparkles, Target, Award } from "lucide-react";
-import { Confetti } from "@/components/celebrate/Confetti";
 import { ProgressBar } from "@/components/ui/ProgressBar";
+
+// This screen renders on every finished practice/exam session, but confetti
+// (and the framer-motion it pulls in) only actually fires part of the time —
+// load it lazily so that library isn't in the shared bundle for every visit.
+const Confetti = dynamic(() => import("@/components/celebrate/Confetti").then((m) => m.Confetti), { ssr: false });
 
 export type SessionCompleteResult = {
   totalCount: number;

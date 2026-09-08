@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/db";
-import { getTopicMasterySummaries } from "@/lib/mastery";
+import { buildMasterySummaries, getAllTopics, getTopicMasterySummaries } from "@/lib/mastery";
 
 export function activityLabel(lastActivityAt: Date | null): { label: string; level: "high" | "medium" | "low" | "none" } {
   if (!lastActivityAt) return { label: "Nog nooit actief", level: "none" };
@@ -17,26 +17,38 @@ export async function getSchoolStudentsOverview(schoolId: string) {
     orderBy: { lastActivityAt: "desc" },
   });
 
-  return Promise.all(
-    students.map(async (s) => {
-      const masteries = await getTopicMasterySummaries(s.id);
-      const measured = masteries.filter((m) => !m.insufficientData);
-      const strongest = [...measured].sort((a, b) => b.confidence - a.confidence)[0] ?? null;
-      const weakest = [...measured].sort((a, b) => a.confidence - b.confidence)[0] ?? null;
+  // Batched: 1 topics query + 1 mastery query for the whole cohort instead
+  // of getTopicMasterySummaries() once per student (which each re-fetched
+  // the full Topic table on its own).
+  const [topics, allMasteries] = await Promise.all([
+    getAllTopics(),
+    prisma.mastery.findMany({ where: { studentId: { in: students.map((s) => s.id) } } }),
+  ]);
+  const masteriesByStudent = new Map<string, typeof allMasteries>();
+  for (const m of allMasteries) {
+    const list = masteriesByStudent.get(m.studentId);
+    if (list) list.push(m);
+    else masteriesByStudent.set(m.studentId, [m]);
+  }
 
-      return {
-        studentId: s.id,
-        username: s.username,
-        xp: s.xp,
-        level: s.level,
-        streak: s.streakCount,
-        activity: activityLabel(s.lastActivityAt),
-        strongestTopic: strongest?.topicName ?? null,
-        weakestTopic: weakest && weakest.topicId !== strongest?.topicId ? weakest.topicName : measured.length > 1 ? weakest?.topicName ?? null : null,
-        examCount: s._count.examResults,
-      };
-    })
-  );
+  return students.map((s) => {
+    const masteries = buildMasterySummaries(topics, masteriesByStudent.get(s.id) ?? []);
+    const measured = masteries.filter((m) => !m.insufficientData);
+    const strongest = [...measured].sort((a, b) => b.confidence - a.confidence)[0] ?? null;
+    const weakest = [...measured].sort((a, b) => a.confidence - b.confidence)[0] ?? null;
+
+    return {
+      studentId: s.id,
+      username: s.username,
+      xp: s.xp,
+      level: s.level,
+      streak: s.streakCount,
+      activity: activityLabel(s.lastActivityAt),
+      strongestTopic: strongest?.topicName ?? null,
+      weakestTopic: weakest && weakest.topicId !== strongest?.topicId ? weakest.topicName : measured.length > 1 ? weakest?.topicName ?? null : null,
+      examCount: s._count.examResults,
+    };
+  });
 }
 
 export async function getStudentDetailForSchool(schoolId: string, studentId: string) {

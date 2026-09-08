@@ -1,3 +1,4 @@
+import { cache } from "react";
 import { prisma } from "@/lib/db";
 
 /**
@@ -126,9 +127,14 @@ export type TopicMasterySummary = {
   insufficientData: boolean;
 };
 
-export async function getTopicMasterySummaries(studentId: string): Promise<TopicMasterySummary[]> {
-  const topics = await prisma.topic.findMany({ orderBy: { order: "asc" } });
-  const masteries = await prisma.mastery.findMany({ where: { studentId } });
+// Per-request-memoized — every page under /app that needs the topic list
+// calls this, and it's cheap to share within one render pass.
+export const getAllTopics = cache(() => prisma.topic.findMany({ orderBy: { order: "asc" } }));
+
+export function buildMasterySummaries(
+  topics: { id: string; name: string; slug: string; icon: string }[],
+  masteries: { topicId: string; level: number; confidence: number; totalAttempts: number; correctAttempts: number }[]
+): TopicMasterySummary[] {
   const byTopic = new Map(masteries.map((m) => [m.topicId, m]));
 
   return topics.map((topic) => {
@@ -146,3 +152,16 @@ export async function getTopicMasterySummaries(studentId: string): Promise<Topic
     };
   });
 }
+
+// cache()'d so the several call sites that need one student's mastery
+// summary within the same request (dashboard, recommendation, exam
+// readiness) collapse into a single DB round-trip instead of one each.
+export const getTopicMasterySummaries = cache(async function getTopicMasterySummaries(
+  studentId: string
+): Promise<TopicMasterySummary[]> {
+  const [topics, masteries] = await Promise.all([
+    getAllTopics(),
+    prisma.mastery.findMany({ where: { studentId } }),
+  ]);
+  return buildMasterySummaries(topics, masteries);
+});
