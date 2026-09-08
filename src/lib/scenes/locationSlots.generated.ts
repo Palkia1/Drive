@@ -26,6 +26,12 @@ export const LOCATION_ACTOR_SLOTS: Record<string, Record<string, ActorSlot>> = {
     "west": {"x":180,"y":590,"rotation":90,"scale":2,"bearing":270},
     "east": {"x":844,"y":434,"rotation":270,"scale":2,"bearing":90},
   },
+  "gelijkwaardige-kruising-stedelijk": {
+    "north": {"x":436,"y":150,"rotation":180,"scale":2,"bearing":0},
+    "south": {"x":588,"y":874,"rotation":0,"scale":2,"bearing":180},
+    "west": {"x":124,"y":588,"rotation":90,"scale":2,"bearing":270},
+    "east": {"x":900,"y":436,"rotation":270,"scale":2,"bearing":90},
+  },
   "straat-van-rechts-stedelijk": {
     "north": {"x":436,"y":150,"rotation":180,"scale":2,"bearing":0},
     "south": {"x":588,"y":874,"rotation":0,"scale":2,"bearing":180},
@@ -51,6 +57,12 @@ export const LOCATION_SIGN_SLOTS: Record<string, Record<string, SignSlot>> = {
     "south": {"x":724,"y":914},
     "west": {"x":110,"y":724},
     "east": {"x":914,"y":300},
+  },
+  "gelijkwaardige-kruising-stedelijk": {
+    "north": {"x":300,"y":90},
+    "south": {"x":724,"y":934},
+    "west": {"x":90,"y":724},
+    "east": {"x":934,"y":300},
   },
   "straat-van-rechts-stedelijk": {
     "north": {"x":300,"y":90},
