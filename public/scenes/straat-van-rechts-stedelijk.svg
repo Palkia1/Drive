@@ -72,4 +72,17 @@
   <g id="module-yield-markings" data-module="yield-markings"/>
   <g id="module-road-users" data-module="road-users"/>
   <g id="module-learning-overlay" data-module="learning-overlay"/>
+
+  <!-- Onzichtbare plek-markeringen: waar een voertuig/bord bij elke
+       aanrijrichting hoort (geen west — deze T-kruising heeft die niet).
+       Gelezen door scripts/generate-scene-manifest.mjs — zie
+       src/lib/scenes/locationSlots.generated.ts. Niet renderen. -->
+  <g id="module-slots" data-module="slots" aria-hidden="true" display="none">
+    <circle data-slot="north" data-role="actor" data-bearing="0" data-rotation="180" data-scale="2" cx="436" cy="150"/>
+    <circle data-slot="south" data-role="actor" data-bearing="180" data-rotation="0" data-scale="2" cx="588" cy="874"/>
+    <circle data-slot="east" data-role="actor" data-bearing="90" data-rotation="270" data-scale="2" cx="900" cy="436"/>
+    <circle data-slot="north" data-role="sign" cx="300" cy="90"/>
+    <circle data-slot="south" data-role="sign" cx="664" cy="934"/>
+    <circle data-slot="east" data-role="sign" cx="934" cy="300"/>
+  </g>
 </svg>

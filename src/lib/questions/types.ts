@@ -128,16 +128,19 @@ export type RoundaboutHotspotScene = {
 
 /** One of a fixed set of real, illustrated road layouts (public/scenes/) —
  * unlike IntersectionHotspotScene/RoundaboutHotspotScene, which draw a
- * schematic layout in code, these are traced from provided artwork, so the
- * set of locations and each one's valid slots is fixed rather than
- * parametric. */
-export type LocationId =
-  | "gelijkwaardige-kruising"
-  | "doorgaande-weg-twee-zijwegen-zonder-naad"
-  | "straat-van-rechts-stedelijk"
-  | "eenbaansrotonde";
+ * schematic layout in code, these are traced from provided artwork. The
+ * filename (without extension) of a public/scenes/*.svg file that carries a
+ * "module-slots" marker layer — see src/lib/scenes/locationSlots.generated.ts
+ * (built by scripts/generate-scene-manifest.mjs) for the current set.
+ * A plain `string` rather than a literal union, same precedent as SignId
+ * below: the valid set is defined by what's on disk, not by the type
+ * checker, and is validated by the generated manifest at authoring time. */
+export type LocationId = string;
 
-export type LocationSlot = "north" | "east" | "south" | "west";
+/** A named placement spot on a LocationId background — e.g. "north", but
+ * not limited to compass points: each background defines its own valid set
+ * via its SVG's marker layer (see LocationId's doc comment). */
+export type LocationSlot = string;
 
 export type LocationActor = {
   id: string;

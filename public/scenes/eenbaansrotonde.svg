@@ -88,4 +88,25 @@
   <g id="module-traffic-signs" data-module="traffic-signs"/>
   <g id="module-road-users" data-module="road-users"/>
   <g id="module-learning-overlay" data-module="learning-overlay"/>
+
+  <!-- Onzichtbare plek-markeringen. De actor-cirkels hier zijn alleen de
+       "naderend"-standaardpositie per aansluiting — de daadwerkelijke positie
+       (naderend vs. al op de ring) wordt op basis van data-bearing en de
+       ring-geometry-marker hieronder berekend, dezelfde pointOnBearing-
+       wiskunde als voorheen in LocationScene.tsx. Gelezen door
+       scripts/generate-scene-manifest.mjs — zie
+       src/lib/scenes/locationSlots.generated.ts. Niet renderen. -->
+  <g id="module-slots" data-module="slots" aria-hidden="true" display="none">
+    <circle data-slot="north" data-role="actor" data-bearing="0" data-rotation="180" data-scale="2" cx="455" cy="162"/>
+    <circle data-slot="south" data-role="actor" data-bearing="180" data-rotation="0" data-scale="2" cx="569" cy="862"/>
+    <circle data-slot="west" data-role="actor" data-bearing="270" data-rotation="90" data-scale="2" cx="162" cy="569"/>
+    <circle data-slot="east" data-role="actor" data-bearing="90" data-rotation="270" data-scale="2" cx="862" cy="455"/>
+    <circle data-slot="north" data-role="sign" cx="340" cy="130"/>
+    <circle data-slot="south" data-role="sign" cx="684" cy="894"/>
+    <circle data-slot="west" data-role="sign" cx="130" cy="684"/>
+    <circle data-slot="east" data-role="sign" cx="894" cy="340"/>
+    <circle data-role="ring-geometry" cx="512" cy="512"
+            data-approach-radius="350" data-ring-radius="187"
+            data-lane-offset="57" data-ring-lead-deg="26"/>
+  </g>
 </svg>

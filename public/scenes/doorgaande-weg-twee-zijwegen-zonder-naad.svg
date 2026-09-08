@@ -79,4 +79,18 @@
       <path d="M779 904l-8-15m8 15 9-18m-9 18 1-25"/>
     </g>
   </g>
+
+  <!-- Onzichtbare plek-markeringen: waar een voertuig/bord bij elke
+       aanrijrichting hoort. Gelezen door scripts/generate-scene-manifest.mjs
+       — zie src/lib/scenes/locationSlots.generated.ts. Niet renderen. -->
+  <g id="module-slots" data-module="slots" aria-hidden="true" display="none">
+    <circle data-slot="north" data-role="actor" data-bearing="0" data-rotation="180" data-scale="2" cx="462" cy="180"/>
+    <circle data-slot="south" data-role="actor" data-bearing="180" data-rotation="0" data-scale="2" cx="562" cy="844"/>
+    <circle data-slot="west" data-role="actor" data-bearing="270" data-rotation="90" data-scale="2" cx="100" cy="572"/>
+    <circle data-slot="east" data-role="actor" data-bearing="90" data-rotation="270" data-scale="2" cx="924" cy="452"/>
+    <circle data-slot="north" data-role="sign" cx="360" cy="110"/>
+    <circle data-slot="south" data-role="sign" cx="664" cy="914"/>
+    <circle data-slot="west" data-role="sign" cx="110" cy="680"/>
+    <circle data-slot="east" data-role="sign" cx="914" cy="344"/>
+  </g>
 </svg>

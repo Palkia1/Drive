@@ -3,97 +3,31 @@
 import { useId } from "react";
 import type { LocationActor, LocationId, LocationSlot, SignId, TrafficLightState } from "@/lib/questions/types";
 import { outwardVector, pointOnBearing } from "@/lib/scenes/bearingMath";
+import { LOCATION_ACTOR_SLOTS, LOCATION_RING_GEOMETRY, LOCATION_SIGN_SLOTS, type ActorSlot } from "@/lib/scenes/locationSlots.generated";
 import { SignIcon } from "./SignIcon";
 import { TrafficActor, SelfLabel } from "./TrafficActor";
 
-// Every location's road geometry was measured directly from its SVG (see
-// public/scenes/*.svg — each is a 1024×1024 top-down illustration with
-// documented coordinates in its own comments). Rotation follows the same
-// convention as IntersectionScene: 0° = facing up (north), clockwise —
-// north-slot traffic faces south (180°), etc.
-type SlotGeometry = { x: number; y: number; rotation: number };
+// Every location's slot geometry (where a vehicle/sign may sit, at what
+// rotation and scale) lives inside its own SVG as an invisible marker layer
+// — see any public/scenes/*.svg's "module-slots" group — instead of a table
+// here, so artwork and placement data can never drift apart. Read out at
+// build time by scripts/generate-scene-manifest.mjs into
+// locationSlots.generated.ts, imported above.
 
-const ACTOR_POS: Record<LocationId, Partial<Record<LocationSlot, SlotGeometry>>> = {
-  "gelijkwaardige-kruising": {
-    north: { x: 434, y: 180, rotation: 180 },
-    south: { x: 590, y: 844, rotation: 0 },
-    west: { x: 180, y: 590, rotation: 90 },
-    east: { x: 844, y: 434, rotation: 270 },
-  },
-  "doorgaande-weg-twee-zijwegen-zonder-naad": {
-    north: { x: 462, y: 180, rotation: 180 },
-    south: { x: 562, y: 844, rotation: 0 },
-    west: { x: 100, y: 572, rotation: 90 },
-    east: { x: 924, y: 452, rotation: 270 },
-  },
-  "straat-van-rechts-stedelijk": {
-    north: { x: 436, y: 150, rotation: 180 },
-    south: { x: 588, y: 874, rotation: 0 },
-    east: { x: 900, y: 436, rotation: 270 },
-  },
-  // Roundabout actors are positioned via trig (see ringActorPosition below);
-  // this table isn't used for "eenbaansrotonde".
-  eenbaansrotonde: {},
-};
-
-// Beside the relevant approach, on the right-hand side of that direction of
-// travel — same placement convention as IntersectionScene's SIGN_POS,
-// scaled up for these 1024×1024 backgrounds. Used for both an optional
-// priority-sign overlay and the traffic-light overlay.
-const MARKER_POS: Record<LocationId, Partial<Record<LocationSlot, { x: number; y: number }>>> = {
-  "gelijkwaardige-kruising": {
-    north: { x: 300, y: 110 },
-    south: { x: 724, y: 914 },
-    west: { x: 110, y: 724 },
-    east: { x: 914, y: 300 },
-  },
-  "doorgaande-weg-twee-zijwegen-zonder-naad": {
-    north: { x: 360, y: 110 },
-    south: { x: 664, y: 914 },
-    west: { x: 110, y: 680 },
-    east: { x: 914, y: 344 },
-  },
-  "straat-van-rechts-stedelijk": {
-    north: { x: 300, y: 90 },
-    south: { x: 664, y: 934 },
-    east: { x: 934, y: 300 },
-  },
-  eenbaansrotonde: {
-    north: { x: 340, y: 130 },
-    south: { x: 684, y: 894 },
-    west: { x: 130, y: 684 },
-    east: { x: 894, y: 340 },
-  },
-};
-
-const ROUNDABOUT_CENTER = { x: 512, y: 512 };
-const ROUNDABOUT_APPROACH_RADIUS = 350;
-const ROUNDABOUT_RING_RADIUS = 187; // midpoint of the drivable ring (132-242)
-const ROUNDABOUT_RING_LEAD_DEG = 26;
-const SLOT_BEARING: Record<LocationSlot, number> = { north: 0, east: 90, south: 180, west: 270 };
-
-// Quarter of an approach arm's total width (228, per eenbaansrotonde.svg) —
-// puts an approaching actor in its own lane instead of straddling the
-// centerline, same right-hand-lane convention as every other location.
-const ROUNDABOUT_LANE_OFFSET = 57;
-
-function ringActorGeometry(slot: LocationSlot, position: "approaching" | "on-ring"): SlotGeometry {
-  const bearing = SLOT_BEARING[slot];
+/** Roundabout backgrounds (currently just "eenbaansrotonde") don't use a
+ * fixed per-slot position: an actor's exact spot depends on whether it's
+ * still approaching or already circulating, computed from the background's
+ * ring-geometry marker + the slot's own compass bearing. */
+function ringActorGeometry(ring: NonNullable<(typeof LOCATION_RING_GEOMETRY)[string]>, slot: ActorSlot, position: "approaching" | "on-ring") {
+  const center = { x: ring.x, y: ring.y };
   if (position === "approaching") {
-    const { x, y } = pointOnBearing(ROUNDABOUT_CENTER, bearing, ROUNDABOUT_APPROACH_RADIUS, ROUNDABOUT_LANE_OFFSET);
-    return { x, y, rotation: bearing + 180 };
+    const { x, y } = pointOnBearing(center, slot.bearing, ring.approachRadius, ring.laneOffset);
+    return { x, y, rotation: slot.bearing + 180, scale: slot.scale };
   }
-  const ringBearing = bearing + ROUNDABOUT_RING_LEAD_DEG;
-  const { x, y } = pointOnBearing(ROUNDABOUT_CENTER, ringBearing, ROUNDABOUT_RING_RADIUS);
-  return { x, y, rotation: ringBearing - 90 };
+  const ringBearing = slot.bearing + ring.ringLeadDeg;
+  const { x, y } = pointOnBearing(center, ringBearing, ring.ringRadius);
+  return { x, y, rotation: ringBearing - 90, scale: slot.scale };
 }
-
-// TrafficActor is sized for a 300-unit canvas; these backgrounds are 1024,
-// a straight 3.4× scale — but the narrowest lanes here (roundabout arms/ring,
-// ~110-114 wide) are much tighter relative to road width than the old hand-
-// drawn scenes, so a car at 3.4× (width ~88) or truck (~116) would overflow
-// them. 2.0× keeps every vehicle comfortably inside its own lane everywhere.
-const ACTOR_SCALE = 2.0;
 
 export function LocationScene({
   location,
@@ -119,7 +53,9 @@ export function LocationScene({
   onSelect?: (slot: string) => void;
 }) {
   const shadowFilterId = useId();
-  const markerPos = MARKER_POS[location];
+  const markerPos = LOCATION_SIGN_SLOTS[location] ?? {};
+  const actorSlots = LOCATION_ACTOR_SLOTS[location] ?? {};
+  const ringGeometry = LOCATION_RING_GEOMETRY[location];
 
   return (
     <div className="w-full max-w-sm mx-auto">
@@ -161,14 +97,12 @@ export function LocationScene({
           })()}
 
         {actors.map((actor) => {
-          const geometry =
-            location === "eenbaansrotonde"
-              ? ringActorGeometry(actor.slot, actor.position ?? "approaching")
-              : ACTOR_POS[location][actor.slot];
-          if (!geometry) return null;
+          const slot = actorSlots[actor.slot];
+          if (!slot) return null;
+          const geometry = ringGeometry ? ringActorGeometry(ringGeometry, slot, actor.position ?? "approaching") : slot;
           const isSelected = selectedSlot === actor.id;
           const outcome = disabled && isSelected ? (actor.id === correctSlot ? "correct" : "incorrect") : null;
-          const out = outwardVector(SLOT_BEARING[actor.slot]);
+          const out = outwardVector(slot.bearing);
           const labelDx = out.x * 58;
           const labelDy = out.y * 58;
 
@@ -184,9 +118,9 @@ export function LocationScene({
                 />
               )}
               <g transform={`rotate(${geometry.rotation})`}>
-                <TrafficActor kind={actor.kind} color={actor.color} shadowFilterId={shadowFilterId} scale={ACTOR_SCALE} />
+                <TrafficActor kind={actor.kind} color={actor.color} shadowFilterId={shadowFilterId} scale={geometry.scale} />
               </g>
-              {actor.self && <SelfLabel dx={labelDx} dy={labelDy} scale={ACTOR_SCALE} />}
+              {actor.self && <SelfLabel dx={labelDx} dy={labelDy} scale={geometry.scale} />}
               <circle
                 r="55"
                 fill="transparent"
