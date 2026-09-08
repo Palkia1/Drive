@@ -7548,6 +7548,278 @@ const QUESTIONS: SeedQuestion[] = [
       correctSignId: "andreaskruis",
     },
   },
+
+  // ---- Batch aangeleverd door de gebruiker (echte CBR-stijl vragen) --------
+  // Antwoorden zijn niet geraden: per vraag opgezocht (RVV 1990-artikeltekst
+  // via maxius.nl waar mogelijk, anders VVN/CBR-content), niet uit het
+  // geheugen. Zie de git-commit voor de bronnen per vraag.
+  {
+    seedId: "sq-0404",
+    topic: "inhalen",
+    type: "SINGLE_CHOICE",
+    difficulty: 2,
+    prompt: "Je wilt de langzaam rijdende tram links inhalen. Mag dat?",
+    explanation:
+      "Inhalen gebeurt normaal gesproken links — dat geldt ook voor een tram. Trams hebben daarnaast nog een extra uitzondering: die mag je óók rechts inhalen (art. 11 RVV 1990), maar dat vervangt links inhalen niet, het komt erbij.",
+    scene: {
+      kind: "SINGLE_CHOICE",
+      options: [
+        { id: "a", label: "Ja" },
+        { id: "b", label: "Nee" },
+      ],
+      correctOptionId: "a",
+    },
+  },
+  {
+    seedId: "sq-0405",
+    topic: "veiligheid",
+    type: "SINGLE_CHOICE",
+    difficulty: 2,
+    prompt: "Welke verlichting moet je bij dag voeren als door weersomstandigheden het zicht ernstig wordt belemmerd?",
+    explanation:
+      "Dimlicht — grootlicht kaatst juist terug van regen, sneeuw of mist en verblindt jezelf en anderen. Dimlicht (eventueel met mistlicht erbij) is dan de juiste keuze.",
+    scene: {
+      kind: "SINGLE_CHOICE",
+      options: [
+        { id: "a", label: "Afhankelijk van de omstandigheden groot licht of dimlicht" },
+        { id: "b", label: "Dimlicht" },
+        { id: "c", label: "Groot licht" },
+      ],
+      correctOptionId: "b",
+    },
+  },
+  {
+    seedId: "sq-0406",
+    topic: "veiligheid",
+    type: "SINGLE_CHOICE",
+    difficulty: 1,
+    prompt: "Wanneer gebruik je minder brandstof?",
+    explanation:
+      "Cruise control houdt je snelheid gelijkmatiger dan je dat zelf doet, en dat scheelt echt brandstof. Open ramen kosten juist meer door extra luchtweerstand, en de motor eerst stationair laten warmdraaien helpt niet — een auto warmt pas op tijdens het rijden.",
+    scene: {
+      kind: "SINGLE_CHOICE",
+      options: [
+        { id: "a", label: "Als je met open ramen rijdt" },
+        { id: "b", label: "Als je regelmatig de cruise control gebruikt" },
+        { id: "c", label: "Als je eerst de motor warm laat worden en pas daarna wegrijdt" },
+      ],
+      correctOptionId: "b",
+    },
+  },
+  {
+    seedId: "sq-0407",
+    topic: "veiligheid",
+    type: "SINGLE_CHOICE",
+    difficulty: 2,
+    prompt: "Bij welke temperatuur (Celsius) moet je rekening houden met een glad wegdek door ijsvorming?",
+    explanation:
+      "Al onder de +4°C, niet pas bij 0°C — het wegdek zelf kan een paar graden kouder zijn dan de temperatuur die je auto of het weerbericht aangeeft, dus gladheid kan al eerder ontstaan dan je zou denken.",
+    scene: {
+      kind: "SINGLE_CHOICE",
+      options: [
+        { id: "a", label: "Als de temperatuur daalt onder de +4 graden Celsius" },
+        { id: "b", label: "Pas als de temperatuur daalt onder de +2 graden Celsius" },
+        { id: "c", label: "Pas als de temperatuur daalt onder de 0 graden Celsius" },
+      ],
+      correctOptionId: "a",
+    },
+  },
+  {
+    seedId: "sq-0408",
+    topic: "veiligheid",
+    type: "SINGLE_CHOICE",
+    difficulty: 2,
+    prompt: "Het zicht is ernstig belemmerd omdat het regent. Mag je nu met dimlicht en mistlicht aan de voorzijde rijden?",
+    explanation:
+      "Ja. Mistlicht voor mag je voeren als het zicht ernstig wordt belemmerd door mist, sneeuwval of regen (art. 34 RVV 1990), en dat mag gewoon tegelijk met dimlicht — het een sluit het ander niet uit.",
+    scene: {
+      kind: "SINGLE_CHOICE",
+      options: [
+        { id: "a", label: "Ja" },
+        { id: "b", label: "Nee" },
+      ],
+      correctOptionId: "a",
+    },
+  },
+  {
+    seedId: "sq-0409",
+    topic: "veiligheid",
+    type: "SINGLE_CHOICE",
+    difficulty: 2,
+    prompt: "Bij welk wegdek moet je rekening houden met een langere remweg?",
+    explanation:
+      "Bij allebei: nat wegdek geeft minder grip, en verrassend genoeg is ook net aangelegd nieuw asfalt tijdelijk gladder (door het bindmiddel dat er nog op zit) — vandaar de borden 'Nieuw wegdek, langere remweg'.",
+    scene: {
+      kind: "SINGLE_CHOICE",
+      options: [
+        { id: "a", label: "Alleen bij een nieuw wegdek" },
+        { id: "b", label: "Alleen bij een nat wegdek" },
+        { id: "c", label: "Bij een nieuw en een nat wegdek" },
+      ],
+      correctOptionId: "c",
+    },
+  },
+  {
+    seedId: "sq-0410",
+    topic: "plaats-op-de-weg",
+    type: "SINGLE_CHOICE",
+    difficulty: 2,
+    prompt: "Langs de kant van de weg staan soms bermpaaltjes. Aan welke kant van de weg hebben de bermpaaltjes rode reflectoren?",
+    explanation:
+      "Aan de rechterkant rood, aan de linkerkant wit — dezelfde kleurcode als de achterlichten (rood) en voorkant (wit) van voertuigen, zodat je in het donker meteen ziet aan welke kant van de weg je rijdt.",
+    scene: {
+      kind: "SINGLE_CHOICE",
+      options: [
+        { id: "a", label: "Aan de linkerkant" },
+        { id: "b", label: "Aan de rechterkant én aan de linkerkant" },
+        { id: "c", label: "Aan de rechterkant" },
+      ],
+      correctOptionId: "c",
+    },
+  },
+  {
+    seedId: "sq-0411",
+    topic: "inhalen",
+    type: "SINGLE_CHOICE",
+    difficulty: 2,
+    prompt: "Je rijdt op een weg met tegenliggers. Wat is de belangrijkste factor waar je op moet letten als je een ander voertuig wil gaan inhalen?",
+    explanation:
+      "Het snelheidsverschil: hoe kleiner het verschil tussen jouw snelheid en die van het voertuig dat je inhaalt, hoe langer de inhaalmanoeuvre duurt — en hoe langer je op de weghelft van de tegenligger zit.",
+    scene: {
+      kind: "SINGLE_CHOICE",
+      options: [
+        { id: "a", label: "Het snelheidsverschil tussen jou en het voertuig dat je wil inhalen" },
+        { id: "b", label: "De lengte van het voertuig dat je wil inhalen" },
+        { id: "c", label: "Het aantal voertuigen dat achter jou rijdt" },
+      ],
+      correctOptionId: "a",
+    },
+  },
+  {
+    seedId: "sq-0412",
+    topic: "snelheid",
+    type: "SINGLE_CHOICE",
+    difficulty: 2,
+    prompt: "Wat is de maximale snelheid van een Segway in een voetgangersgebied?",
+    explanation:
+      "6 km/u — op het voetpad/trottoir telt een Segway (net als een scootmobiel) als gehandicaptenvoertuig en moet die stapvoets, niet sneller dan een voetganger.",
+    scene: {
+      kind: "SINGLE_CHOICE",
+      options: [
+        { id: "a", label: "6 kilometer per uur" },
+        { id: "b", label: "13 kilometer per uur" },
+        { id: "c", label: "25 kilometer per uur" },
+      ],
+      correctOptionId: "a",
+    },
+  },
+  {
+    seedId: "sq-0413",
+    topic: "veiligheid",
+    type: "SINGLE_CHOICE",
+    difficulty: 1,
+    prompt: "Kun je direct na een lange autorit een betrouwbare oliepeiling doen?",
+    explanation:
+      "Nee. Meteen na het stoppen is de olie nog niet teruggelopen in het carter — je peilstok geeft dan een te laag niveau aan. Wacht minstens 10 minuten na het uitzetten van de motor.",
+    scene: {
+      kind: "SINGLE_CHOICE",
+      options: [
+        { id: "a", label: "Ja" },
+        { id: "b", label: "Nee" },
+      ],
+      correctOptionId: "b",
+    },
+  },
+  {
+    seedId: "sq-0414",
+    topic: "plaats-op-de-weg",
+    type: "SINGLE_CHOICE",
+    difficulty: 2,
+    prompt: "Je rijdt op een weg waar je 50 kilometer per uur mag rijden. Je wilt afslaan. Wanneer moet je je richtingaanwijzer aanzetten?",
+    explanation:
+      "Binnen de bebouwde kom (waar 50 km/u de norm is) is de vuistregel ongeveer 100 meter voor de uitrijstrook of het kruispunt — genoeg tijd voor het verkeer achter je om het op te merken.",
+    scene: {
+      kind: "SINGLE_CHOICE",
+      options: [
+        { id: "a", label: "25 meter voor de uitrijstrook of voor het kruispunt" },
+        { id: "b", label: "50 meter voor de uitrijstrook of voor het kruispunt" },
+        { id: "c", label: "100 meter voor de uitrijstrook of voor het kruispunt" },
+      ],
+      correctOptionId: "c",
+    },
+  },
+  {
+    seedId: "sq-0415",
+    topic: "veiligheid",
+    type: "SINGLE_CHOICE",
+    difficulty: 2,
+    prompt: "Wanneer kun je last hebben van aquaplaning?",
+    explanation:
+      "Aquaplaning ontstaat klassiek in sporen (spoorvorming) die vol water staan: je banden kunnen dat water niet snel genoeg wegdrukken, waardoor er een waterfilm tussen band en wegdek ontstaat en je het contact met het wegdek verliest.",
+    scene: {
+      kind: "SINGLE_CHOICE",
+      options: [
+        { id: "a", label: "Als je door het opspattende water van een vrachtauto rijdt" },
+        { id: "b", label: "Als je op een weg met gaten, die volstaan met water, rijdt" },
+        { id: "c", label: "Als je op een weg rijdt met sporen die volstaan met water" },
+      ],
+      correctOptionId: "c",
+    },
+  },
+  {
+    seedId: "sq-0416",
+    topic: "veiligheid",
+    type: "SINGLE_CHOICE",
+    difficulty: 1,
+    prompt: "Je hebt twee glazen bier gedronken. Wat gebeurt er met je reactievermogen?",
+    explanation:
+      "Het neemt af. Alcohol vertraagt je reactietijd en maakt je onvoorzichtiger, ook al voelt rijden juist ontspannener aan — dat gevoel is precies het probleem.",
+    scene: {
+      kind: "SINGLE_CHOICE",
+      options: [
+        { id: "a", label: "Het reactievermogen neemt toe" },
+        { id: "b", label: "Het reactievermogen neemt af" },
+        { id: "c", label: "Het reactievermogen blijft gelijk" },
+      ],
+      correctOptionId: "b",
+    },
+  },
+  {
+    seedId: "sq-0417",
+    topic: "voorrang",
+    type: "MULTIPLE_CHOICE",
+    difficulty: 2,
+    prompt: "Je nadert een voetgangersoversteekplaats. Wat geldt er? Er kunnen meer antwoorden goed zijn.",
+    explanation:
+      "Alle drie kloppen (art. 12 RVV 1990): vlak voor of op een oversteekplaats mag je niet inhalen, en je moet zowel voetgangers als bestuurders van een gehandicaptenvoertuig voor laten gaan die (willen) oversteken.",
+    scene: {
+      kind: "MULTIPLE_CHOICE",
+      options: [
+        { id: "a", label: "Je mag geen voertuig inhalen" },
+        { id: "b", label: "Je moet voetgangers die (willen) oversteken, voor laten gaan" },
+        { id: "c", label: "Je moet bestuurders van een gehandicaptenvoertuig die (willen) oversteken, voor laten gaan" },
+      ],
+      correctOptionIds: ["a", "b", "c"],
+    },
+  },
+  {
+    seedId: "sq-0418",
+    topic: "veiligheid",
+    type: "SINGLE_CHOICE",
+    difficulty: 1,
+    prompt: "Wat kan er gebeuren als sensoren en camera's van ADAS-systemen vuil zijn?",
+    explanation:
+      "De rijhulpsystemen raken verstoord — een vuile of bevroren sensor 'ziet' de weg niet goed meer, waardoor het systeem verkeerd werkt of helemaal uitvalt.",
+    scene: {
+      kind: "SINGLE_CHOICE",
+      options: [
+        { id: "a", label: "De ADAS-systemen raken verstoord" },
+        { id: "b", label: "De motor van de auto start niet meer" },
+        { id: "c", label: "Het navigatiesysteem werkt niet meer" },
+      ],
+      correctOptionId: "a",
+    },
+  },
 ];
 
 // ---------------------------------------------------------------------------
