@@ -528,6 +528,65 @@ const QUESTIONS: SeedQuestion[] = [
     })(),
   },
   {
+    seedId: "sq-0402",
+    topic: "voorrang",
+    subtopic: "voorrangsborden",
+    type: "HOTSPOT",
+    difficulty: 2,
+    prompt: "Je nadert dit kruispunt vanuit het zuiden. Je ziet het bord 'verleen voorrang'. Wie mag als eerste rijden?",
+    explanation:
+      "Bord B6 ('verleen voorrang') verplicht jou voorrang te verlenen aan bestuurders op de kruisende weg — ook als er verder niemand rechts van je zit.",
+    scene: (() => {
+      const location: LocationId = "gelijkwaardige-kruising-stedelijk";
+      const actors: { id: string; slot: string; kind: "car"; color: string; self?: boolean }[] = [
+        { id: "you", slot: "south", kind: "car", color: "var(--sign-red)", self: true },
+        { id: "other-car", slot: "east", kind: "car", color: "var(--sign-blue)" },
+      ];
+      const correctSlot = resolvePriority(
+        { type: "sign", governedBy: [{ actorId: "you", sign: "give-way" }] },
+        locationPriorityActors(location, actors)
+      );
+      return {
+        kind: "HOTSPOT",
+        sceneId: "location",
+        location,
+        signs: [{ signId: "B6", slot: "south" }],
+        actors,
+        correctSlot,
+        question: "Wie mag als eerste rijden?",
+      } satisfies LocationHotspotScene;
+    })(),
+  },
+  {
+    seedId: "sq-0403",
+    topic: "voorrang",
+    type: "HOTSPOT",
+    difficulty: 2,
+    prompt: "Je nadert dit kruispunt. Wie mag rijden?",
+    explanation:
+      "Bij rood licht moet jij altijd stoppen, ongeacht de voorrangssituatie. De andere bestuurder wordt niet door een licht tegengehouden en mag doorrijden.",
+    scene: (() => {
+      const location: LocationId = "gelijkwaardige-kruising-stedelijk";
+      const actors: { id: string; slot: string; kind: "car"; color: string; self?: boolean }[] = [
+        { id: "you", slot: "north", kind: "car", color: "var(--sign-red)", self: true },
+        { id: "other-car", slot: "west", kind: "car", color: "var(--sign-blue)" },
+      ];
+      const correctSlot = resolvePriority(
+        { type: "traffic-light", lights: { you: "red" } },
+        locationPriorityActors(location, actors)
+      );
+      return {
+        kind: "HOTSPOT",
+        sceneId: "location",
+        location,
+        trafficLight: { slot: "north", state: "red" },
+        actors,
+        correctSlot,
+        question: "Wie mag rijden?",
+      } satisfies LocationHotspotScene;
+    })(),
+  },
+  {
     seedId: "sq-0396",
     topic: "voorrang",
     type: "HOTSPOT",
