@@ -34,6 +34,12 @@ export async function POST(req: Request) {
     if (!school) {
       return NextResponse.json({ error: "Onbekende rijschoolcode." }, { status: 404 });
     }
+    if (school.license?.status === "suspended" || school.license?.status === "canceled") {
+      return NextResponse.json(
+        { error: "Deze rijschoolcode is niet meer actief. Neem contact op met je rijschool." },
+        { status: 409 }
+      );
+    }
     if (school.license && school.students.length >= school.license.seats) {
       return NextResponse.json(
         { error: "Deze rijschool heeft het maximum aantal actieve leerlingen bereikt. Neem contact op met je rijschool." },

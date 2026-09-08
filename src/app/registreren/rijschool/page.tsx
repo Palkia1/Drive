@@ -14,7 +14,6 @@ export default function RegisterSchoolPage() {
   const [ownerName, setOwnerName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [seats, setSeats] = useState(10);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -26,7 +25,7 @@ export default function RegisterSchoolPage() {
     const res = await fetch("/api/register-school", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ schoolName, ownerName, email, password, seats }),
+      body: JSON.stringify({ schoolName, ownerName, email, password }),
     });
     const data = await res.json();
     if (!res.ok) {
@@ -60,16 +59,9 @@ export default function RegisterSchoolPage() {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
-        <label className="block text-sm font-medium" style={{ color: "var(--foreground-muted)" }}>
-          Aantal leerlingplekken (later aan te passen)
-          <select className="input mt-1" value={seats} onChange={(e) => setSeats(Number(e.target.value))}>
-            {[10, 25, 50, 100].map((n) => (
-              <option key={n} value={n}>
-                {n} leerlingen
-              </option>
-            ))}
-          </select>
-        </label>
+        <p className="text-xs" style={{ color: "var(--foreground-muted)" }}>
+          Je start met een proefperiode voor 5 leerlingen. Meer plekken nodig? Neem contact met ons op.
+        </p>
         {error && (
           <p className="text-sm font-medium" style={{ color: "var(--danger-500)" }}>
             {error}

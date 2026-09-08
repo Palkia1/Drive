@@ -213,8 +213,7 @@ function RanglijstTab({ leaderboard }: { leaderboard: Props["leaderboard"] }) {
             className="flex items-center gap-3 px-3 py-2.5 rounded-xl"
             style={{
               background: row.isSelf ? "var(--brand-50)" : "var(--surface)",
-              border: row.isExample ? "1px dashed var(--border)" : "1px solid var(--border)",
-              opacity: row.isExample ? 0.75 : 1,
+              border: "1px solid var(--border)",
             }}
           >
             <span className="w-7 text-center font-bold text-sm" style={{ color: row.rank <= 3 ? "var(--accent-600)" : "var(--foreground-muted)" }}>
@@ -223,7 +222,11 @@ function RanglijstTab({ leaderboard }: { leaderboard: Props["leaderboard"] }) {
             <span className="flex-1 font-medium text-sm flex items-center gap-2">
               {row.username}
               {row.isExample && (
-                <span className="pill" style={{ background: "var(--surface-muted)", color: "var(--foreground-muted)", fontSize: "0.65rem", padding: "1px 6px" }}>
+                <span
+                  className="pill"
+                  title="Voorbeeldspeler, geen echte gebruiker"
+                  style={{ background: "var(--surface-muted)", color: "var(--foreground-muted)", fontSize: "0.6rem", padding: "1px 5px", letterSpacing: "0.02em" }}
+                >
                   voorbeeld
                 </span>
               )}

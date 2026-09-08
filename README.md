@@ -102,6 +102,16 @@ De `android/`-map wordt gewoon meegecommit (standaard bij Capacitor) — alleen 
   `GET /api/admin/beta-content` (zelfde `SEED_KEY` als de seed-endpoint) om
   `prisma/seed.ts` bij te werken zodat aanpassingen blijven staan — geen extra
   accounts of sleutels nodig.
+- **Rijschool-seats zijn eigenaar-gecontroleerd, niet self-service** — een rijschool die
+  zichzelf registreert (`/registreren/rijschool`) krijgt altijd een vast proefaantal van 5
+  leerlingplekken (`TRIAL_SEATS` in `src/app/api/register-school/route.ts`); de school kan dit
+  zelf niet verhogen. Meer plekken toekennen, of een school volledig blokkeren (`status:
+  "suspended"`, waardoor de rijschoolcode niet langer werkt voor nieuwe leerlingen), doe je
+  zelf via `GET`/`PATCH /api/admin/schools[/:id]` — zelfde `SEED_KEY` als de andere
+  admin-routes, maar via een `x-admin-key`-header in plaats van een querystring (bijv.
+  `curl -H "x-admin-key: $SEED_KEY" https://.../api/admin/schools` om alle scholen +
+  licenties te zien, dan `curl -X PATCH -H "x-admin-key: $SEED_KEY" -d '{"seats":25}'
+  https://.../api/admin/schools/<id>` om er een op te hogen).
 
 ## Wat is er gebouwd (MVP-kern uit §47 van het brief)
 

@@ -5,6 +5,13 @@ import { registerSchoolSchema } from "@/lib/validation";
 import { generateSchoolCode } from "@/lib/codes";
 import { checkRateLimit, clientIp } from "@/lib/rateLimit";
 
+// A school's real seat allowance is an owner decision, not a self-service
+// signup choice — a driving school starts on this small trial allowance and
+// the platform owner raises it via PATCH /api/admin/schools/[id] (see that
+// route) after actually reviewing the school. Never trust a client-supplied
+// seat count here, even if one is sent.
+const TRIAL_SEATS = 5;
+
 export async function POST(req: Request) {
   const allowed = await checkRateLimit(`register-school:${clientIp(req)}`, 10);
   if (!allowed) {
@@ -16,7 +23,7 @@ export async function POST(req: Request) {
   if (!parsed.success) {
     return NextResponse.json({ error: parsed.error.issues[0]?.message ?? "Ongeldige invoer" }, { status: 400 });
   }
-  const { schoolName, ownerName, email, password, seats } = parsed.data;
+  const { schoolName, ownerName, email, password } = parsed.data;
 
   const existing = await prisma.user.findUnique({ where: { email } });
   if (existing) {
@@ -36,7 +43,7 @@ export async function POST(req: Request) {
         create: {
           name: schoolName,
           code,
-          license: { create: { seats, plan: "standard", status: "trial" } },
+          license: { create: { seats: TRIAL_SEATS, plan: "standard", status: "trial" } },
         },
       },
     },
