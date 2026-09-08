@@ -66,7 +66,16 @@ export function LocationScene({
           </filter>
         </defs>
 
-        <image href={`/scenes/${location}.svg`} x="0" y="0" width="1024" height="1024" />
+        {/* `location` ultimately comes from Question.scene, which a beta
+            tester can edit — gate it through the generated manifest before
+            it reaches a resource URL, same pattern as SignIcon/GridScene's
+            REAL_SIGN_FILES/REAL_TILE_FILES lookups. The review route also
+            rejects an unrecognized location outright; this is the
+            belt-and-suspenders check for any other path that writes
+            Question.scene (a future CMS, a hand-typed seed.ts typo, ...). */}
+        {location in LOCATION_ACTOR_SLOTS && (
+          <image href={`/scenes/${location}.svg`} x="0" y="0" width="1024" height="1024" />
+        )}
 
         {signs?.map((s) => {
           const pos = markerPos[s.slot];

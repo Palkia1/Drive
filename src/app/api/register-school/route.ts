@@ -3,8 +3,14 @@ import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/db";
 import { registerSchoolSchema } from "@/lib/validation";
 import { generateSchoolCode } from "@/lib/codes";
+import { checkRateLimit, clientIp } from "@/lib/rateLimit";
 
 export async function POST(req: Request) {
+  const allowed = await checkRateLimit(`register-school:${clientIp(req)}`, 10);
+  if (!allowed) {
+    return NextResponse.json({ error: "Te veel pogingen. Probeer het over een minuut opnieuw." }, { status: 429 });
+  }
+
   const body = await req.json().catch(() => null);
   const parsed = registerSchoolSchema.safeParse(body);
   if (!parsed.success) {

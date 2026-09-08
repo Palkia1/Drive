@@ -7,6 +7,12 @@ import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/db";
 import { checkRateLimit, clientIp } from "@/lib/rateLimit";
 
+// A precomputed bcrypt hash of an unused placeholder (cost 10, matching
+// every real hash in this app) — compared against when no user/passwordHash
+// exists, so authorize() always pays one bcrypt.compare() and "no such
+// account" can't be timing-distinguished from "wrong password".
+const DUMMY_PASSWORD_HASH = "$2a$10$CwTycUXWue0Thq9StjUM0uJ8vZH8V5NxZvUEr8U2gk5Wc39yUdMFm";
+
 // Google/Apple only get wired up when real credentials are configured — in
 // dev those env vars are empty, so only email/password is offered. This
 // keeps the provider list truthful instead of showing dead buttons.
@@ -48,10 +54,12 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         if (!ipAllowed || !emailAllowed) return null;
 
         const user = await prisma.user.findUnique({ where: { email: email.toLowerCase() } });
-        if (!user?.passwordHash) return null;
-
-        const valid = await bcrypt.compare(password, user.passwordHash);
-        if (!valid) return null;
+        // Always compare against a real bcrypt hash, even for a missing
+        // account, so "no such account" and "wrong password" take the same
+        // time — a plain early return here would let response time reveal
+        // which accounts exist.
+        const valid = await bcrypt.compare(password, user?.passwordHash ?? DUMMY_PASSWORD_HASH);
+        if (!user?.passwordHash || !valid) return null;
 
         return { id: user.id, email: user.email, name: user.name, image: user.image, role: user.role };
       },

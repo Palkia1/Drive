@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
+import { isValidAdminKey } from "@/lib/adminKey";
+import { checkRateLimit, clientIp } from "@/lib/rateLimit";
 
 /**
  * Read-only export of what beta-testers actually changed, keyed by
@@ -10,8 +12,13 @@ import { prisma } from "@/lib/db";
  * same SEED_KEY as /api/admin/seed.
  */
 export async function GET(req: Request) {
+  const allowed = await checkRateLimit(`admin-beta-content:${clientIp(req)}`, 5);
+  if (!allowed) {
+    return NextResponse.json({ error: "Te veel pogingen. Probeer het over een minuut opnieuw." }, { status: 429 });
+  }
+
   const key = new URL(req.url).searchParams.get("key");
-  if (!process.env.SEED_KEY || !key || key !== process.env.SEED_KEY) {
+  if (!isValidAdminKey(key)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 

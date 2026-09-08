@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/db";
 import { getBetaTester } from "@/lib/session";
+import { LOCATION_ACTOR_SLOTS } from "@/lib/scenes/locationSlots.generated";
 
 const bodySchema = z.discriminatedUnion("action", [
   z.object({ action: z.literal("APPROVED"), note: z.string().max(2000).optional() }),
@@ -64,12 +65,29 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
   } catch {
     return NextResponse.json({ error: "Bestaande scene is corrupt" }, { status: 500 });
   }
-  const newScene = body.scene as { kind?: unknown; sceneId?: unknown };
+  const newScene = body.scene as {
+    kind?: unknown;
+    sceneId?: unknown;
+    location?: unknown;
+    promptLocationScene?: { location?: unknown };
+  };
   if (
     newScene.kind !== existingScene.kind ||
     (existingScene.kind === "HOTSPOT" && newScene.sceneId !== existingScene.sceneId)
   ) {
     return NextResponse.json({ error: "Scene-type komt niet overeen" }, { status: 400 });
+  }
+  // A "location" scene's background feeds an <image href> in LocationScene —
+  // reject anything not in the generated manifest rather than letting an
+  // arbitrary string reach that resource URL on published content (see the
+  // matching render-time check in LocationScene.tsx for the same reasoning).
+  const locationCandidates = [newScene.location, newScene.promptLocationScene?.location].filter(
+    (v): v is string => typeof v === "string"
+  );
+  for (const loc of locationCandidates) {
+    if (!(loc in LOCATION_ACTOR_SLOTS)) {
+      return NextResponse.json({ error: `Onbekende locatie: ${loc}` }, { status: 400 });
+    }
   }
   await prisma.$transaction([
     prisma.question.update({ where: { id }, data: { scene: JSON.stringify(newScene), version: { increment: 1 } } }),
