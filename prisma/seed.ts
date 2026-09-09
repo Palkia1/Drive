@@ -4035,6 +4035,234 @@ const QUESTIONS: SeedQuestion[] = [
       correctOptionId: "a",
     },
   },
+
+  // ---- Content-balans: meer Verkeersborden + Voorrang (RVV 1990-artikelen
+  // en officiële bordbetekenissen opgezocht per vraag, zie hieronder) -------
+  {
+    seedId: "sq-0419",
+    topic: "verkeersborden",
+    subtopic: "verbodsborden",
+    type: "SINGLE_CHOICE",
+    difficulty: 3,
+    prompt: "Bij dit bord nadert een gewone motorfiets zonder zijspan. Mag deze doorrijden?",
+    explanation:
+      "C6 sluit voertuigen met meer dan twee wielen uit (auto's, motoren mét zijspan). Een gewone motorfiets op twee wielen mag er wél onderdoor — dat is precies het verschil met bord C12, dat álle motorvoertuigen verbiedt, ongeacht het aantal wielen.",
+    scene: {
+      kind: "SINGLE_CHOICE",
+      promptSignId: "C6",
+      options: [
+        { id: "a", label: "Ja, want C6 verbiedt alleen voertuigen met meer dan twee wielen" },
+        { id: "b", label: "Nee, want C6 verbiedt alle motorvoertuigen" },
+        { id: "c", label: "Alleen als de motor een zijspan heeft" },
+      ],
+      correctOptionId: "a",
+    },
+  },
+  {
+    seedId: "sq-0420",
+    topic: "verkeersborden",
+    type: "SINGLE_CHOICE",
+    difficulty: 3,
+    prompt:
+      "Je rijdt op een erf en nadert een kruising zonder verdere borden. Daarna verlaat je het erf weer via de uitrit naar een gewone weg. Welke voorrangsregel geldt waar?",
+    explanation:
+      "Op kruisingen binnen het erf geldt gewoon voorrang van rechts. Maar het erf werkt bij het verlaten als een soort uitrit: dan moet je altijd al het overige verkeer voorrang verlenen, ook als je eigenlijk van rechts zou komen.",
+    scene: {
+      kind: "SINGLE_CHOICE",
+      promptSignId: "G5",
+      options: [
+        { id: "a", label: "Binnen het erf geldt voorrang van rechts; bij het verlaten van het erf moet je al het verkeer voor laten gaan" },
+        { id: "b", label: "Op een erf gelden geen voorrangsregels, iedereen let op elkaar" },
+        { id: "c", label: "Binnen het erf én bij het verlaten geldt altijd voorrang van rechts" },
+      ],
+      correctOptionId: "a",
+    },
+  },
+  {
+    seedId: "sq-0421",
+    topic: "verkeersborden",
+    type: "SINGLE_CHOICE",
+    difficulty: 1,
+    prompt: "Je parkeert je auto om 14:20 in een parkeerschijfzone. Op welke tijd zet je je parkeerschijf?",
+    explanation:
+      "De parkeerschijf moet op de aankomsttijd staan, afgerond naar het eerstvolgende hele of halve uur — 14:20 wordt dus 14:30.",
+    scene: {
+      kind: "SINGLE_CHOICE",
+      promptSignId: "E10",
+      options: [
+        { id: "a", label: "14:30" },
+        { id: "b", label: "14:20" },
+        { id: "c", label: "15:00" },
+      ],
+      correctOptionId: "a",
+    },
+  },
+  {
+    seedId: "sq-0422",
+    topic: "verkeersborden",
+    type: "SINGLE_CHOICE",
+    difficulty: 3,
+    prompt: "Bij dit bord nadert een bromfietser (geel kenteken). Mag deze dit fietspad gebruiken?",
+    explanation:
+      "G11 (verplicht fietspad) is bedoeld voor fietsers en snorfietsen. Bromfietsen (geel kenteken) mogen hier normaal niet rijden — dat mag alleen op een G12a-fietspad ('fiets-/bromfietspad'), dat expliciet ook bromfietsen toelaat.",
+    scene: {
+      kind: "SINGLE_CHOICE",
+      promptSignId: "G11",
+      options: [
+        { id: "a", label: "Nee, G11 is alleen voor fietsers en snorfietsen — bromfietsen moeten op de rijbaan blijven" },
+        { id: "b", label: "Ja, alle brom- en snorfietsen mogen op elk fietspad rijden" },
+        { id: "c", label: "Alleen als de bromfietser stapvoets rijdt" },
+      ],
+      correctOptionId: "a",
+    },
+  },
+  {
+    seedId: "sq-0423",
+    topic: "verkeersborden",
+    type: "SINGLE_CHOICE",
+    difficulty: 3,
+    prompt: "Je rijdt achter een langzame trekker en passeert dit bord. Mag je de trekker nog inhalen?",
+    explanation:
+      "F1 verbiedt het inhalen van motorvoertuigen. Een trekker is een motorvoertuig, dus die mag je hier niet inhalen — een veelgemaakte denkfout. Fietsers, bromfietsers en gehandicaptenvoertuigen mag je bij dit bord wél nog inhalen.",
+    scene: {
+      kind: "SINGLE_CHOICE",
+      promptSignId: "F1",
+      options: [
+        { id: "a", label: "Nee, een trekker is een motorvoertuig, dus het inhaalverbod geldt ook hiervoor" },
+        { id: "b", label: "Ja, want F1 geldt alleen voor auto's" },
+        { id: "c", label: "Ja, langzame landbouwvoertuigen zijn altijd uitgezonderd van inhaalverboden" },
+      ],
+      correctOptionId: "a",
+    },
+  },
+  {
+    seedId: "sq-0424",
+    topic: "verkeersborden",
+    subtopic: "voorrangsborden",
+    type: "SINGLE_CHOICE",
+    difficulty: 2,
+    prompt: "Wat is het verschil tussen het bord 'voorrangskruispunt' (B3) en het bord 'verleen voorrang' (B6)?",
+    explanation:
+      "B3 (en de varianten B4/B5) bevestigen dat jij op deze kruising voorrang hebt op kruisend verkeer. B6 is het spiegelbeeld: dat bord staat bij de zijweg en verplicht de bestuurder daar om voorrang te verlenen aan jou.",
+    scene: {
+      kind: "SINGLE_CHOICE",
+      options: [
+        { id: "a", label: "B3 waarschuwt dat jij voorrang hébt op de kruising; B6 verplicht jou om voorrang te verlénen" },
+        { id: "b", label: "Ze betekenen precies hetzelfde, alleen een andere vorm" },
+        { id: "c", label: "B3 geldt alleen buiten de bebouwde kom, B6 alleen erbinnen" },
+      ],
+      correctOptionId: "a",
+    },
+  },
+  {
+    seedId: "sq-0425",
+    topic: "verkeersborden",
+    type: "SINGLE_CHOICE",
+    difficulty: 1,
+    prompt: "Er is een trottoir aanwezig, maar een voetganger loopt liever op de rijbaan. Mag dat?",
+    explanation:
+      "Voetgangers zijn verplicht het trottoir of voetpad te gebruiken als dat aanwezig is. Pas als dat ontbreekt, mogen ze uitwijken naar het fietspad, en pas als ook dat ontbreekt naar de berm of de rand van de rijbaan.",
+    scene: {
+      kind: "SINGLE_CHOICE",
+      options: [
+        { id: "a", label: "Nee, als er een trottoir of voetpad is, moet een voetganger dat gebruiken" },
+        { id: "b", label: "Ja, voetgangers mogen altijd zelf kiezen waar ze lopen" },
+        { id: "c", label: "Alleen als er geen fietsers op het trottoir zijn" },
+      ],
+      correctOptionId: "a",
+    },
+  },
+  {
+    seedId: "sq-0426",
+    topic: "voorrang",
+    type: "SINGLE_CHOICE",
+    difficulty: 2,
+    prompt: "Je rijdt een uitrit op naar de openbare weg. Een fietser nadert van links, een auto van rechts. Wie laat je voorgaan?",
+    explanation:
+      "Een uitrit is geen gelijkwaardige weg. Bij het oprijden van de openbare weg vanuit een uitrit moet je al het overige verkeer voorrang verlenen — voetgangers, fietsers én auto's, ongeacht van welke kant ze komen.",
+    scene: {
+      kind: "SINGLE_CHOICE",
+      options: [
+        { id: "a", label: "Allebei — vanuit een uitrit verleen je altijd voorrang aan al het overige verkeer" },
+        { id: "b", label: "Alleen de auto, want die komt van rechts" },
+        { id: "c", label: "Alleen de fietser, want fietsers hebben altijd voorrang" },
+      ],
+      correctOptionId: "a",
+    },
+  },
+  {
+    seedId: "sq-0427",
+    topic: "voorrang",
+    type: "SINGLE_CHOICE",
+    difficulty: 3,
+    prompt: "Binnen de bebouwde kom zet een lijnbus bij een halte zijn richtingaanwijzer aan om weg te rijden. Wat doe jij?",
+    explanation:
+      "Binnen de bebouwde kom moet je een lijnbus die met richtingaanwijzer aangeeft van een halte weg te rijden, de gelegenheid geven dat te doen — dus zo nodig vaart minderen en stoppen. Buiten de bebouwde kom geldt deze regel niet.",
+    scene: {
+      kind: "SINGLE_CHOICE",
+      options: [
+        { id: "a", label: "Ik vertraag en laat de bus zo nodig voorgaan" },
+        { id: "b", label: "Ik heb voorrang, want ik rijd al op de doorgaande weg" },
+        { id: "c", label: "Dit geldt alleen buiten de bebouwde kom" },
+      ],
+      correctOptionId: "a",
+    },
+  },
+  {
+    seedId: "sq-0428",
+    topic: "voorrang",
+    type: "SINGLE_CHOICE",
+    difficulty: 3,
+    prompt: "Je nadert een kruising zonder voorrangsborden. Van links komt een tram aan. Wie heeft voorrang?",
+    explanation:
+      "Een tram heeft op een kruising zonder voorrangsborden of -lichten altijd voorrang, ongeacht uit welke richting hij komt — de normale regel 'voorrang van rechts' geldt hier niet voor de tram. Wél moet de tram zich houden aan een stopbord, rood licht of voorrangsweg als die er zijn.",
+    scene: {
+      kind: "SINGLE_CHOICE",
+      options: [
+        { id: "a", label: "De tram — die gaat bij een kruising zonder voorrangsregeling altijd voor, ook van links" },
+        { id: "b", label: "Ik, want ik kom van rechts" },
+        { id: "c", label: "Dat hangt af van de snelheid van de tram" },
+      ],
+      correctOptionId: "a",
+    },
+  },
+  {
+    seedId: "sq-0429",
+    topic: "voorrang",
+    subtopic: "voorrangsvoertuigen",
+    type: "SINGLE_CHOICE",
+    difficulty: 2,
+    prompt: "Een politieauto nadert met alléén het blauwe zwaailicht aan, geen sirene. Moet je voorrang verlenen zoals bij een voorrangsvoertuig?",
+    explanation:
+      "Een voertuig is pas een voorrangsvoertuig — met voorrang op al het overige verkeer — als het zowel het blauwe zwaailicht als het tweetonige geluidssignaal (sirene) voert. Zwaailicht zonder sirene betekent dat je nog niet verplicht bent voorrang te verlenen.",
+    scene: {
+      kind: "SINGLE_CHOICE",
+      options: [
+        { id: "a", label: "Nee — pas met zwaailicht én sirene samen is het een voorrangsvoertuig dat voorrang krijgt" },
+        { id: "b", label: "Ja, het zwaailicht alleen is al genoeg" },
+        { id: "c", label: "Alleen bij nacht" },
+      ],
+      correctOptionId: "a",
+    },
+  },
+  {
+    seedId: "sq-0430",
+    topic: "voorrang",
+    type: "SINGLE_CHOICE",
+    difficulty: 2,
+    prompt: "Je slaat linksaf. Een fietser rijdt op dezelfde weg rechtdoor, vlak naast je. Wie gaat er voor?",
+    explanation:
+      "Wie afslaat, moet het verkeer dat op dezelfde weg rechtdoor gaat — of hem tegemoetkomt — voor laten gaan. Dat geldt voor alle bestuurders, dus ook voor fietsers en bromfietsers die rechtdoor blijven rijden.",
+    scene: {
+      kind: "SINGLE_CHOICE",
+      options: [
+        { id: "a", label: "De fietser — wie afslaat, moet rechtdoorgaand verkeer op dezelfde weg voor laten gaan" },
+        { id: "b", label: "Ik, want ik ben al aan het afslaan" },
+        { id: "c", label: "De fietser alleen als hij een hand uitsteekt" },
+      ],
+      correctOptionId: "a",
+    },
+  },
 ];
 
 // ---------------------------------------------------------------------------
