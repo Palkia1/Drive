@@ -159,7 +159,8 @@
   --radius-md: var(--radius-md);
   --radius-lg: var(--radius-lg);
 
-  --font-sans: var(--font-geist-sans);
+  --font-sans: var(--font-body);
+  --font-display: var(--font-display);
   --font-mono: var(--font-geist-mono);
 }
 
@@ -315,12 +316,14 @@ body {
   /* --- Typography scale — one consistent hierarchy instead of ad-hoc
      text-2xl/font-extrabold combinations per screen. --- */
   .text-display {
+    font-family: var(--font-display), var(--font-sans), ui-sans-serif, system-ui, sans-serif;
     font-size: 1.75rem; /* 28px */
     font-weight: 800;
     line-height: 1.15;
     letter-spacing: -0.01em;
   }
   .text-heading {
+    font-family: var(--font-display), var(--font-sans), ui-sans-serif, system-ui, sans-serif;
     font-size: 1.375rem; /* 22px */
     font-weight: 800;
     line-height: 1.2;
