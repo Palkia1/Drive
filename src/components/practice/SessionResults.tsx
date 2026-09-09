@@ -5,6 +5,7 @@ import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
 import { Sparkles, Target, Award } from "lucide-react";
 import { ProgressBar } from "@/components/ui/ProgressBar";
+import { ShareButton } from "@/components/ui/ShareButton";
 
 // This screen renders on every finished practice/exam session, but confetti
 // (and the framer-motion it pulls in) only actually fires part of the time —
@@ -47,6 +48,7 @@ export function SessionResults({
   // calmer by design and skip this tier, only ever getting the big burst on
   // a pass.
   const smallCelebrate = !isExam && !bigCelebrate && scorePct >= 60;
+  const shareText = buildShareText(result, isExam);
 
   return (
     <div className="relative">
@@ -140,6 +142,7 @@ export function SessionResults({
           <button className="btn-primary w-full" onClick={onRestartSameConfig}>
             Nog een sessie
           </button>
+          {shareText && <ShareButton text={shareText} />}
           <button className="btn-secondary w-full" onClick={() => router.push("/app")}>
             Terug naar home
           </button>
@@ -160,6 +163,29 @@ function StatChip({ label, color }: { label: string; color: string }) {
       {label}
     </span>
   );
+}
+
+// Only worth a share prompt when there's actually something to brag about —
+// a mediocre quick session doesn't get one.
+function buildShareText(result: SessionCompleteResult, isExam: boolean): string | null {
+  if (isExam && result.examResult) {
+    return result.examResult.passed
+      ? `Ik heb net mijn oefenexamen gehaald bij Rijklaar — ${Math.round(result.examResult.scorePct)}%! 🚗✅`
+      : null;
+  }
+  if (result.badges.length > 0) {
+    return `Nieuwe badge verdiend bij Rijklaar: ${result.badges[0].name}! 🏅`;
+  }
+  if (result.xp.leveledUp) {
+    return `Level ${result.xp.newLevel} bereikt bij Rijklaar! 🎉`;
+  }
+  if (result.streak && result.streak.streak > 0 && result.streak.streak % 7 === 0) {
+    return `${result.streak.streak} dagen op rij geoefend bij Rijklaar! 🔥`;
+  }
+  if (result.totalCount > 0 && result.correctCount === result.totalCount) {
+    return `Perfecte score bij Rijklaar: ${result.correctCount}/${result.totalCount} goed! 💯`;
+  }
+  return null;
 }
 
 function isExamPassed(result: SessionCompleteResult) {

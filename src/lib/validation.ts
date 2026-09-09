@@ -32,6 +32,18 @@ export const registerSchoolSchema = z.object({
   password: z.string().min(8, "Wachtwoord moet minimaal 8 tekens zijn"),
 });
 
+export const createChallengeSchema = z
+  .object({
+    metric: z.enum(["xp", "topic_accuracy"]),
+    topicId: z.string().min(1).nullable().default(null),
+    label: z.string().trim().min(2, "Geef je uitdaging een naam").max(60),
+    durationHours: z.coerce.number().int().min(1).max(24 * 30),
+  })
+  .refine((v) => v.metric !== "topic_accuracy" || v.topicId, {
+    message: "Kies een onderwerp voor een nauwkeurigheids-uitdaging",
+    path: ["topicId"],
+  });
+
 export const adminUpdateSchoolSchema = z
   .object({
     seats: z.coerce.number().int().min(0).max(5000).optional(),
