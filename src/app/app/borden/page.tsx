@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
-import { requireStudent } from "@/lib/session";
+import { requireBetaTester } from "@/lib/session";
 import { SIGN_CATALOGUE, type SignCategory } from "@/lib/questions/signCatalogue";
 import { REAL_SIGN_FILES } from "@/lib/questions/realSigns.generated";
 import { SignIcon } from "@/components/scenes/SignIcon";
@@ -27,7 +27,7 @@ const SAMPLE_NUMBER: Record<string, number> = {
 };
 
 export default async function BordenOverzichtPage() {
-  await requireStudent();
+  await requireBetaTester();
   const categories: SignCategory[] = ["A", "B", "C", "D", "E", "F", "G", "H", "J", "L"];
   const realCount = Object.keys(REAL_SIGN_FILES).length;
 

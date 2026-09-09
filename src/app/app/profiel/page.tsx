@@ -167,9 +167,11 @@ export default async function ProfielPage() {
         {user.email}
       </div>
 
-      <Link href="/app/borden" className="block text-center text-sm font-semibold py-2" style={{ color: "var(--brand-600)" }}>
-        Bordenoverzicht (intern)
-      </Link>
+      {student.user.isBetaTester && (
+        <Link href="/app/borden" className="block text-center text-sm font-semibold py-2" style={{ color: "var(--brand-600)" }}>
+          Bordenoverzicht (intern)
+        </Link>
+      )}
 
       <SignOutButton />
     </div>

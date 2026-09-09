@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 
 function greetingFor(hour: number) {
+  if (hour < 6) return "Goedenavond";
   if (hour < 12) return "Goedemorgen";
   if (hour < 18) return "Goedemiddag";
   return "Goedenavond";
