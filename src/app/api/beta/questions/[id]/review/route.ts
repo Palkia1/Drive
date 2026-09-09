@@ -18,6 +18,11 @@ const bodySchema = z.discriminatedUnion("action", [
     scene: z.record(z.string(), z.unknown()),
     note: z.string().max(2000).optional(),
   }),
+  z.object({
+    action: z.literal("EDITED_DIFFICULTY"),
+    difficulty: z.number().int().min(1).max(5),
+    note: z.string().max(2000).optional(),
+  }),
 ]);
 
 export async function POST(req: Request, { params }: { params: Promise<{ id: string }> }) {
@@ -52,6 +57,14 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
         data: { prompt: body.prompt, explanation: body.explanation ?? null, version: { increment: 1 } },
       }),
       prisma.questionReview.create({ data: { questionId: id, testerId: tester.id, action: "EDITED_PROMPT", note: body.note } }),
+    ]);
+    return NextResponse.json({ ok: true });
+  }
+
+  if (body.action === "EDITED_DIFFICULTY") {
+    await prisma.$transaction([
+      prisma.question.update({ where: { id }, data: { difficulty: body.difficulty } }),
+      prisma.questionReview.create({ data: { questionId: id, testerId: tester.id, action: "EDITED_DIFFICULTY", note: body.note } }),
     ]);
     return NextResponse.json({ ok: true });
   }

@@ -23,6 +23,7 @@ const ACTION_LABEL: Record<string, string> = {
   APPROVED: "Goedgekeurd door jou",
   EDITED_PROMPT: "Vraag aangepast door jou",
   EDITED_ANSWERS: "Antwoorden aangepast door jou",
+  EDITED_DIFFICULTY: "Moeilijkheid aangepast door jou",
   DISCARDED: "Weggegooid door jou",
 };
 
@@ -90,12 +91,30 @@ export function BetaQuestionCard({ question }: { question: BetaQuestion }) {
     }
   }
 
+  async function setDifficulty(difficulty: number) {
+    if (difficulty === q.difficulty) return;
+    const ok = await post({ action: "EDITED_DIFFICULTY", difficulty });
+    if (ok) {
+      setQ((p) => ({ ...p, difficulty, lastReview: { action: "EDITED_DIFFICULTY", createdAt: new Date().toISOString() } }));
+      setFlash("Moeilijkheid opgeslagen");
+    }
+  }
+
   return (
     <div className="card p-4 space-y-3" style={{ opacity: discarded ? 0.55 : 1 }}>
       <div className="flex items-center justify-between gap-2">
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-0.5" aria-label={`Moeilijkheid ${q.difficulty} van 5 — klik om aan te passen`}>
           {Array.from({ length: 5 }).map((_, i) => (
-            <Star key={i} size={12} strokeWidth={2.5} color="var(--gold-500)" fill={i < q.difficulty ? "var(--gold-500)" : "none"} />
+            <button
+              key={i}
+              type="button"
+              disabled={busy || discarded}
+              onClick={() => setDifficulty(i + 1)}
+              className="p-0.5 disabled:pointer-events-none"
+              aria-label={`Zet moeilijkheid op ${i + 1}`}
+            >
+              <Star size={14} strokeWidth={2.5} color="var(--gold-500)" fill={i < q.difficulty ? "var(--gold-500)" : "none"} />
+            </button>
           ))}
         </div>
         {discarded && (
