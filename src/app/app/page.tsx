@@ -46,7 +46,10 @@ export default async function HomePage() {
           </span>
           <div className="flex min-w-0 items-center gap-2">
             <p className="truncate font-extrabold">{student.username}</p>
-            <span className="shrink-0 rounded-full px-2 py-1 text-xs font-bold" style={{ background: "var(--surface-muted)", color: "var(--foreground-muted)" }}>
+            <span
+              className="shrink-0 px-2 py-1 text-xs font-bold"
+              style={{ background: "var(--surface-muted)", color: "var(--foreground-muted)", borderRadius: "var(--radius-sm)" }}
+            >
               Niv. {student.level}
             </span>
           </div>
@@ -57,36 +60,45 @@ export default async function HomePage() {
             <span className="text-sm font-extrabold">{student.streakCount}</span>
           </div>
           <div className="flex items-center gap-1">
-            <Star size={18} strokeWidth={2.5} fill="var(--brand-500)" style={{ color: "var(--brand-500)" }} />
+            <Star size={18} strokeWidth={2.5} fill="var(--gold-500)" style={{ color: "var(--gold-500)" }} />
             <span className="text-sm font-extrabold">{student.xp.toLocaleString("nl-NL")}</span>
           </div>
         </div>
       </div>
 
-      <h1 className="text-3xl font-extrabold tracking-tight">
+      {/* Neutral, not the brand green — the style guide's "Hero Headline" spec
+         is deliberate about this: a personal greeting stays calm charcoal so
+         the green recommendation card right below it carries the color
+         weight instead of competing with it. */}
+      <h1 className="text-3xl font-extrabold tracking-tight" style={{ color: "var(--foreground)" }}>
         <Greeting />!
       </h1>
 
       <Link
         href={recHref}
-        className="block relative overflow-hidden rounded-[26px] p-5"
-        style={{ background: `linear-gradient(135deg, ${recColor}, color-mix(in srgb, ${recColor} 65%, black))`, boxShadow: "0 14px 30px -14px color-mix(in srgb, " + recColor + " 70%, transparent)" }}
+        className="block relative overflow-hidden p-5"
+        style={{ background: recColor, borderRadius: "var(--radius-lg)" }}
       >
-        <span className="absolute -right-6 -top-10 w-28 h-28 rounded-full pointer-events-none animate-bokeh-a" style={{ background: "rgba(255,255,255,0.08)" }} />
-        <span className="absolute -right-10 bottom-0 w-36 h-36 rounded-full pointer-events-none animate-bokeh-b" style={{ background: "rgba(255,255,255,0.06)" }} />
-        <span className="absolute left-8 -bottom-8 w-16 h-16 rounded-full pointer-events-none animate-bokeh-b" style={{ background: "rgba(255,255,255,0.07)" }} />
-
         <div className="relative flex items-start justify-between gap-3">
-          <span className="inline-block rounded-full px-3 py-1 text-[11px] font-bold uppercase tracking-wide text-white" style={{ background: "rgba(255,255,255,0.22)" }}>
+          <span
+            className="inline-block px-3 py-1 text-[11px] font-bold uppercase tracking-wide text-white"
+            style={{ background: "rgba(255,255,255,0.22)", borderRadius: "var(--radius-sm)" }}
+          >
             Aanbevolen voor jou
           </span>
-          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl" style={{ background: "rgba(255,255,255,0.2)" }}>
+          <div
+            className="flex h-12 w-12 shrink-0 items-center justify-center"
+            style={{ background: "rgba(255,255,255,0.2)", borderRadius: "var(--radius-md)" }}
+          >
             <TopicIcon icon={recIcon} size={24} />
           </div>
         </div>
         <p className="relative mt-3 text-xl font-extrabold leading-tight text-white">{recommendationTitle(recommendation)}</p>
         <p className="relative mt-1 max-w-[240px] text-sm text-white/85">{recommendationSubtitle(recommendation)}</p>
-        <span className="relative mt-5 inline-flex items-center gap-1.5 rounded-full bg-white px-5 py-2.5 text-sm font-extrabold" style={{ color: recColor }}>
+        <span
+          className="relative mt-5 inline-flex items-center gap-1.5 bg-white px-5 py-2.5 text-sm font-extrabold"
+          style={{ color: recColor, borderRadius: "var(--radius-sm)" }}
+        >
           Start sessie <ArrowRight size={16} strokeWidth={3} />
         </span>
       </Link>
@@ -123,7 +135,12 @@ export default async function HomePage() {
 
       {progressTopics.length > 0 && (
         <div>
-          <h2 className="mb-3 text-xl font-extrabold">Jouw voortgang</h2>
+          {/* The one deliberate use of the rounded green "section headline"
+             voice on this screen — reserved for exactly this per the style
+             guide, not sprinkled across every heading. */}
+          <h2 className="text-heading mb-3" style={{ color: "var(--primary-500)" }}>
+            Jouw voortgang
+          </h2>
           <div className="grid grid-cols-2 gap-3.5">
             {progressTopics.map((t) => {
               const color = getTopicColor(t.topicIcon);
@@ -131,10 +148,13 @@ export default async function HomePage() {
                 <Link
                   key={t.topicId}
                   href={`/app/sessie?mode=TOPIC&topics=${t.topicId}`}
-                  className="rounded-[22px] p-4"
-                  style={{ background: color }}
+                  className="p-4"
+                  style={{ background: color, borderRadius: "var(--radius-lg)" }}
                 >
-                  <div className="mb-3 flex h-11 w-11 items-center justify-center rounded-2xl" style={{ background: "rgba(255,255,255,0.22)" }}>
+                  <div
+                    className="mb-3 flex h-11 w-11 items-center justify-center"
+                    style={{ background: "rgba(255,255,255,0.22)", borderRadius: "var(--radius-md)" }}
+                  >
                     <TopicIcon icon={t.topicIcon} size={22} />
                   </div>
                   <p className="truncate font-extrabold text-white">{t.topicName}</p>
