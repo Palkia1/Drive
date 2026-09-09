@@ -3,7 +3,7 @@ import { SignOutButton } from "@/components/profile/SignOutButton";
 
 export function SchoolTopBar({ schoolName, code, seatsUsed, seats }: { schoolName: string; code: string; seatsUsed: number; seats: number }) {
   return (
-    <header className="border-b" style={{ borderColor: "var(--border)", background: "var(--surface)" }}>
+    <header className="border-b print:hidden" style={{ borderColor: "var(--border)", background: "var(--surface)" }}>
       <div className="mx-auto max-w-5xl px-6 py-4 flex items-center justify-between flex-wrap gap-3">
         <div>
           <Link href="/school" className="font-extrabold text-lg tracking-tight" style={{ color: "var(--brand-600)" }}>

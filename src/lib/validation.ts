@@ -44,6 +44,14 @@ export const createChallengeSchema = z
     path: ["topicId"],
   });
 
+export const assignHomeworkSchema = z.object({
+  studentId: z.string().min(1),
+  topicId: z.string().min(1).nullable().default(null),
+  targetCount: z.coerce.number().int().min(1).max(200),
+  note: z.string().trim().max(300).nullable().default(null),
+  dueDate: z.coerce.date().nullable().default(null),
+});
+
 export const adminUpdateSchoolSchema = z
   .object({
     seats: z.coerce.number().int().min(0).max(5000).optional(),

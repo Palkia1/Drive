@@ -127,6 +127,14 @@ De `android/`-map wordt gewoon meegecommit (standaard bij Capacitor) — alleen 
 - Leerling-accounts (e-mail/wachtwoord; Google/Apple UI-klaar, zie hieronder)
 - Rijschool-accounts met unieke rijschoolcode, seat-based licentie (`License.seats`)
 - Leerlingen koppelen/loskoppelen via code, nooit aan 2 scholen tegelijk (schema-constraint)
+- Huiswerk toewijzen (`src/lib/homework.ts`): een instructeur wijst een leerling N vragen toe
+  (optioneel op één onderwerp, met notitie/einddatum), zichtbaar op de home van die leerling
+  met een directe link naar de juiste sessie. Voortgang is — net als bij vriendenuitdagingen —
+  live berekend uit de Attempt-historie sinds toewijzing, geen apart voortgangsveld dat uit de
+  pas kan lopen.
+- PDF-voortgangsrapport per leerling (`/school/leerlingen/[id]/rapport`): een print-geoptimaliseerde
+  pagina (topbar/navigatie verborgen via `print:hidden`) die de instructeur met de browser's eigen
+  "Opslaan als PDF" kan downloaden — geen PDF-renderbibliotheek nodig voor dit soort tekst/tabel-rapport.
 - Contentmodel: Categorie (rijbewijs B, uitbreidbaar naar A/AM/C/D/E) → Onderwerp →
   Subonderwerp → Vraag, volledig los van de app-code (zie `prisma/seed.ts`)
 - Korte oefensessies (8 vragen), snel/onderwerp/combinatie/fouten/zwakke-punten-modi

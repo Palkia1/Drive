@@ -103,6 +103,7 @@ model DrivingSchool {
   owner    User             @relation(fields: [ownerId], references: [id], onDelete: Cascade)
   license  License?
   students StudentProfile[]
+  homework Homework[]
 
   @@map("driving_schools")
 }
@@ -167,6 +168,7 @@ model StudentProfile {
   xpEvents    XpEvent[]
   dailyGoals  DailyGoal[]
   examResults ExamResult[]
+  homework    Homework[]
 
   friendshipsSent     Friendship[] @relation("FriendshipRequester")
   friendshipsReceived Friendship[] @relation("FriendshipAddressee")
@@ -266,6 +268,7 @@ model Topic {
   lessons    TheoryLesson[]
   masteries  Mastery[]
   challenges Challenge[]
+  homework   Homework[]
 
   @@map("topics")
 }
@@ -543,6 +546,33 @@ model DailyGoal {
 
   @@unique([studentId, date])
   @@map("daily_goals")
+}
+
+// ---------------------------------------------------------------------------
+// Rijschool: huiswerk
+// ---------------------------------------------------------------------------
+
+// Deliberately no "HomeworkAttempt" join table — progress is computed live
+// from the student's own Attempt history since `createdAt` (optionally
+// filtered to `topicId`), the same pattern Challenge standings use. One
+// less thing that can drift out of sync with what the student actually did.
+model Homework {
+  id              String    @id @default(cuid())
+  drivingSchoolId String
+  studentId       String
+  topicId         String? // null = any topic counts toward targetCount
+  targetCount     Int
+  note            String?
+  dueDate         DateTime?
+  createdAt       DateTime  @default(now())
+  createdBy       String // instructor's User.id
+
+  drivingSchool DrivingSchool  @relation(fields: [drivingSchoolId], references: [id], onDelete: Cascade)
+  student       StudentProfile @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  topic         Topic?         @relation(fields: [topicId], references: [id])
+
+  @@index([studentId, createdAt])
+  @@map("homework")
 }
 
 // ---------------------------------------------------------------------------

@@ -1,16 +1,24 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Printer } from "lucide-react";
 import { requireInstructor } from "@/lib/session";
 import { getStudentDetailForSchool } from "@/lib/schoolStats";
+import { getHomeworkForStudent } from "@/lib/homework";
+import { getAllTopics } from "@/lib/mastery";
 import { MasteryBar } from "@/components/ui/MasteryBar";
 import { ActivityDot } from "@/components/school/ActivityDot";
+import { HomeworkPanel } from "@/components/school/HomeworkPanel";
 
 export default async function StudentDetailPage({ params }: { params: Promise<{ studentId: string }> }) {
   const { studentId } = await params;
   const { school } = await requireInstructor();
+  // Homework is fetched only after confirming this student belongs to this
+  // school (getStudentDetailForSchool already scopes on school.id) —
+  // getHomeworkForStudent itself has no school check, so this ordering is
+  // what keeps an instructor from pulling another school's student data.
   const detail = await getStudentDetailForSchool(school.id, studentId);
   if (!detail) notFound();
+  const [homework, topics] = await Promise.all([getHomeworkForStudent(studentId), getAllTopics()]);
 
   const { student, masteries, accuracyPct, totalAttempts, examResults, recentSessions, openMistakes, activity } = detail;
 
@@ -20,9 +28,14 @@ export default async function StudentDetailPage({ params }: { params: Promise<{ 
 
   return (
     <div className="space-y-6">
-      <Link href="/school" className="text-sm inline-flex items-center gap-1.5" style={{ color: "var(--foreground-muted)" }}>
-        <ArrowLeft size={14} /> Terug naar overzicht
-      </Link>
+      <div className="flex items-center justify-between">
+        <Link href="/school" className="text-sm inline-flex items-center gap-1.5" style={{ color: "var(--foreground-muted)" }}>
+          <ArrowLeft size={14} /> Terug naar overzicht
+        </Link>
+        <Link href={`/school/leerlingen/${studentId}/rapport`} className="text-sm inline-flex items-center gap-1.5 font-semibold" style={{ color: "var(--brand-600)" }}>
+          <Printer size={14} /> Rapport (PDF)
+        </Link>
+      </div>
 
       <div className="flex items-center justify-between flex-wrap gap-3">
         <div>
@@ -37,6 +50,8 @@ export default async function StudentDetailPage({ params }: { params: Promise<{ 
           <Stat label="Streak" value={`${student.streakCount}🔥`} />
         </div>
       </div>
+
+      <HomeworkPanel studentId={studentId} homework={homework} topics={topics.map((t) => ({ id: t.id, name: t.name }))} />
 
       <div className="grid md:grid-cols-3 gap-3">
         <Stat card label="Vragen beantwoord" value={totalAttempts} />

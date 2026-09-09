@@ -4,22 +4,25 @@ import { getRecommendation } from "@/lib/recommendation";
 import { getExamReadiness } from "@/lib/readiness";
 import { getOrCreateDailyGoal } from "@/lib/gamification";
 import { getTopicMasterySummaries } from "@/lib/mastery";
+import { getHomeworkForStudent } from "@/lib/homework";
 import { RECOGNITION_TOPIC_SLUGS } from "@/lib/practice";
 import { ProgressBar } from "@/components/ui/ProgressBar";
 import { TopicIcon, getTopicColor } from "@/components/topics/TopicIcon";
-import { ArrowRight, Target, Star, PartyPopper, CircleAlert, Hourglass } from "lucide-react";
+import { ArrowRight, Target, Star, PartyPopper, CircleAlert, Hourglass, BookOpen } from "lucide-react";
 import { StreakFlameIcon } from "@/components/icons/StreakFlameIcon";
 import { Greeting } from "@/components/ui/Greeting";
 import { EmailVerificationBanner } from "@/components/ui/EmailVerificationBanner";
 
 export default async function HomePage() {
   const { student } = await requireStudent();
-  const [recommendation, dailyGoal, readiness, topics] = await Promise.all([
+  const [recommendation, dailyGoal, readiness, topics, homework] = await Promise.all([
     getRecommendation(student.id),
     getOrCreateDailyGoal(student.id),
     getExamReadiness(student.id),
     getTopicMasterySummaries(student.id),
+    getHomeworkForStudent(student.id),
   ]);
+  const openHomework = homework.filter((h) => !h.done);
 
   const recHref =
     recommendation.kind === "default"
@@ -87,6 +90,36 @@ export default async function HomePage() {
           Start sessie <ArrowRight size={16} strokeWidth={3} />
         </span>
       </Link>
+
+      {openHomework.length > 0 && (
+        <div className="card p-4">
+          <h2 className="font-bold text-sm mb-3 flex items-center gap-1.5">
+            <BookOpen size={16} style={{ color: "var(--primary-500)" }} /> Huiswerk van je rijschool
+          </h2>
+          <div className="space-y-3">
+            {openHomework.map((h) => (
+              <Link
+                key={h.id}
+                href={h.topicId ? `/app/sessie?mode=TOPIC&topics=${h.topicId}` : "/app/sessie?mode=QUICK"}
+                className="block"
+              >
+                <div className="flex items-center justify-between text-sm mb-1">
+                  <span className="font-medium">{h.topicName ?? "Alle onderwerpen"}</span>
+                  <span style={{ color: "var(--foreground-muted)" }}>
+                    {h.progress}/{h.targetCount}
+                  </span>
+                </div>
+                <ProgressBar value={h.progress} max={h.targetCount} color="var(--primary-500)" height={7} />
+                {h.dueDate && (
+                  <p className="text-xs mt-1" style={{ color: h.overdue ? "var(--danger-500)" : "var(--foreground-muted)" }}>
+                    {h.overdue ? "Verlopen op" : "Tot"} {new Date(h.dueDate).toLocaleDateString("nl-NL")}
+                  </p>
+                )}
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
 
       {progressTopics.length > 0 && (
         <div>
