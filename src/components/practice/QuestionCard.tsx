@@ -288,7 +288,7 @@ export function QuestionCard({
 
       {!isExam && result && (
         <div
-          className="absolute inset-x-0 bottom-0 px-5 py-4 flex items-center gap-3 font-extrabold animate-pop-in"
+          className="relative -mx-5 -mb-5 mt-4 px-5 py-4 flex items-center gap-3 font-extrabold animate-pop-in"
           style={{
             // Darkened from the plain -500 tokens specifically because
             // white text sits directly on top — --success-500/--danger-500
