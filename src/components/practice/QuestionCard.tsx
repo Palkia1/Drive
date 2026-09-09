@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Check, X, Bookmark, Star } from "lucide-react";
+import { Check, X, Bookmark, Star, CloudOff } from "lucide-react";
 import { IntersectionScene } from "@/components/scenes/IntersectionScene";
 import { RoundaboutScene } from "@/components/scenes/RoundaboutScene";
 import { LocationScene } from "@/components/scenes/LocationScene";
@@ -10,6 +10,7 @@ import { SignStripScene } from "@/components/scenes/SignStripScene";
 import { SignIcon } from "@/components/scenes/SignIcon";
 import type { QuestionScene } from "@/lib/questions/types";
 import type { SubmittedAnswer } from "@/lib/answers";
+import { enqueueAnswer } from "@/lib/offlineQueue";
 
 export type ClientQuestion = {
   id: string;
@@ -31,13 +32,16 @@ export function QuestionCard({
   sessionId: string;
   isExam: boolean;
   initiallySaved?: boolean;
-  onAnswered: (answer: SubmittedAnswer, isCorrect: boolean) => void;
+  onAnswered: (answer: SubmittedAnswer, isCorrect: boolean | null) => void;
 }) {
   const [selectedOptionIds, setSelectedOptionIds] = useState<string[]>([]);
   const [selectedSlot, setSelectedSlot] = useState<string | null>(null);
   const [selectedSign, setSelectedSign] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
-  const [result, setResult] = useState<"correct" | "incorrect" | null>(null);
+  // "deferred" — offline: the answer is queued locally and will actually be
+  // graded once it syncs (see src/lib/offlineQueue.ts), so we can't tell
+  // the student right/wrong yet.
+  const [result, setResult] = useState<"correct" | "incorrect" | "deferred" | null>(null);
   const [saved, setSaved] = useState(Boolean(initiallySaved));
 
   async function toggleSaved() {
@@ -52,9 +56,19 @@ export function QuestionCard({
   const scene = question.scene;
   const locked = submitting || result !== null;
 
+  function deferOffline(answer: SubmittedAnswer) {
+    enqueueAnswer({ sessionId, questionId: question.id, answer, timeMs: 0 });
+    setResult("deferred");
+    setTimeout(() => onAnswered(answer, null), isExam ? 250 : 900);
+  }
+
   async function submit(answer: SubmittedAnswer) {
     setSubmitting(true);
     try {
+      if (!navigator.onLine) {
+        deferOffline(answer);
+        return;
+      }
       const res = await fetch(`/api/sessions/${sessionId}/answer`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -64,6 +78,11 @@ export function QuestionCard({
       const isCorrect = Boolean(data.isCorrect);
       setResult(isCorrect ? "correct" : "incorrect");
       setTimeout(() => onAnswered(answer, isCorrect), isExam ? 250 : 700);
+    } catch {
+      // The request itself failed (connection dropped mid-flight even
+      // though navigator.onLine hadn't flipped yet) — same fallback as the
+      // explicit offline check above.
+      deferOffline(answer);
     } finally {
       setSubmitting(false);
     }
@@ -278,21 +297,31 @@ export function QuestionCard({
             background:
               result === "correct"
                 ? "color-mix(in srgb, var(--success-500) 70%, black)"
-                : "color-mix(in srgb, var(--danger-500) 84%, black)",
+                : result === "incorrect"
+                  ? "color-mix(in srgb, var(--danger-500) 84%, black)"
+                  : "color-mix(in srgb, var(--foreground-muted) 80%, black)",
             color: "white",
           }}
         >
           <div className="w-8 h-8 rounded-full flex items-center justify-center shrink-0" style={{ background: "rgba(255,255,255,0.25)" }}>
             <OutcomeIcon outcome={result} size={18} />
           </div>
-          <span className="text-base">{result === "correct" ? "Goed zo!" : "Niet helemaal."}</span>
+          <span className="text-base">
+            {result === "correct" ? "Goed zo!" : result === "incorrect" ? "Niet helemaal." : "Opgeslagen — wordt gecontroleerd zodra je weer online bent."}
+          </span>
         </div>
       )}
     </div>
   );
 }
 
-function optionStyle(outcome: "correct" | "incorrect" | null, isSelected: boolean): React.CSSProperties {
+function optionStyle(outcome: "correct" | "incorrect" | "deferred" | null, isSelected: boolean): React.CSSProperties {
+  if (outcome === "deferred" && isSelected) {
+    return {
+      background: "var(--surface-muted)",
+      border: "2.5px solid var(--foreground-muted)",
+    };
+  }
   if (outcome && isSelected) {
     const color = outcome === "correct" ? "var(--success-500)" : "var(--danger-500)";
     return {
@@ -307,7 +336,8 @@ function optionStyle(outcome: "correct" | "incorrect" | null, isSelected: boolea
   };
 }
 
-function OutcomeIcon({ outcome, className, size = 20 }: { outcome: "correct" | "incorrect"; className?: string; size?: number }) {
+function OutcomeIcon({ outcome, className, size = 20 }: { outcome: "correct" | "incorrect" | "deferred"; className?: string; size?: number }) {
+  if (outcome === "deferred") return <CloudOff size={size} className={className} strokeWidth={2.5} />;
   return outcome === "correct" ? (
     <Check size={size} className={className} strokeWidth={3} />
   ) : (

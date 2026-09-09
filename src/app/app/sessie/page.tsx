@@ -2,14 +2,14 @@
 
 import { Suspense, useEffect, useState, useCallback, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { X } from "lucide-react";
+import { X, WifiOff } from "lucide-react";
 import { ProgressBar } from "@/components/ui/ProgressBar";
 import { QuestionCard, type ClientQuestion } from "@/components/practice/QuestionCard";
 import { SessionResults, type SessionCompleteResult } from "@/components/practice/SessionResults";
 import type { SubmittedAnswer } from "@/lib/answers";
 import { captureEvent } from "@/lib/analytics";
 
-type Phase = "loading" | "running" | "completing" | "done" | "error";
+type Phase = "loading" | "running" | "completing" | "offline-pending" | "done" | "error";
 
 function SessieRunner() {
   const router = useRouter();
@@ -63,7 +63,7 @@ function SessieRunner() {
     startSession();
   }, [startSession]);
 
-  async function handleAnswered(_answer: SubmittedAnswer, isCorrect: boolean) {
+  async function handleAnswered(_answer: SubmittedAnswer, isCorrect: boolean | null) {
     const question = questions[index];
     captureEvent("question_answered", {
       topicId: question?.topicId,
@@ -80,17 +80,44 @@ function SessieRunner() {
 
   async function finishSession() {
     setPhase("completing");
-    const res = await fetch(`/api/sessions/${sessionId}/complete`, { method: "POST" });
-    const data = await res.json();
-    setResult({ ...data, masterySnapshot });
-    setPhase("done");
-    captureEvent(mode === "EXAM" ? "exam_completed" : "session_completed", {
-      mode,
-      questionCount: questions.length,
-      correctCount: data.correctCount,
-      xpEarned: data.xpEarned,
-    });
+    if (!navigator.onLine) {
+      setPhase("offline-pending");
+      return;
+    }
+    try {
+      const res = await fetch(`/api/sessions/${sessionId}/complete`, { method: "POST" });
+      const data = await res.json();
+      setResult({ ...data, masterySnapshot });
+      setPhase("done");
+      captureEvent(mode === "EXAM" ? "exam_completed" : "session_completed", {
+        mode,
+        questionCount: questions.length,
+        correctCount: data.correctCount,
+        xpEarned: data.xpEarned,
+      });
+    } catch {
+      // Connection dropped mid-request — same fallback as the explicit
+      // offline check above. Unlike a single answer, the finished result
+      // depends on a response we actually need to show, so this retries
+      // itself (via the "online" listener below) rather than going through
+      // the fire-and-forget answer queue.
+      setPhase("offline-pending");
+    }
   }
+
+  // While a finished session is waiting to sync, retry the instant the
+  // browser reports connectivity again — no need for the student to do
+  // anything, though the button below covers browsers that don't fire this
+  // reliably.
+  useEffect(() => {
+    if (phase !== "offline-pending") return;
+    function retry() {
+      finishSession();
+    }
+    window.addEventListener("online", retry);
+    return () => window.removeEventListener("online", retry);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- finishSession closes over stable-enough state (sessionId/mode/questions/masterySnapshot) for this session's lifetime
+  }, [phase]);
 
   if (phase === "loading") {
     return <CenteredMessage text="Sessie voorbereiden..." />;
@@ -107,6 +134,20 @@ function SessieRunner() {
   }
   if (phase === "completing") {
     return <CenteredMessage text="Resultaat berekenen..." />;
+  }
+  if (phase === "offline-pending") {
+    return (
+      <div className="text-center py-16">
+        <WifiOff size={32} className="mx-auto mb-3" style={{ color: "var(--foreground-muted)" }} />
+        <p className="font-semibold">Je bent offline</p>
+        <p className="text-sm mt-1" style={{ color: "var(--foreground-muted)" }}>
+          Je antwoorden zijn bewaard. Zodra je weer verbinding hebt, halen we je resultaat op.
+        </p>
+        <button className="btn-secondary mt-4" onClick={finishSession}>
+          Probeer opnieuw
+        </button>
+      </div>
+    );
   }
   if (phase === "done" && result) {
     return (

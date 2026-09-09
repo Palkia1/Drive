@@ -85,9 +85,18 @@ De `android/`-map wordt gewoon meegecommit (standaard bij Capacitor) — alleen 
   XP-curve, mastery-berekening — puur, geen database nodig). `npx playwright test` draait een
   end-to-end smoke test (registreren → sessie → resultaat, zie `e2e/README.md` voor de
   vereiste seed-stap) tegen een lopende server.
-- **PWA-manifest** (`public/manifest.json`) — maakt de web-app "installeerbaar" (Add to Home
-  Screen) los van de Capacitor/Android-shell; geen service worker/offline-modus (nog niet
-  gebouwd, zie hieronder).
+- **PWA-manifest + minimale offline-modus** (`public/manifest.json`, `public/sw.js`) — maakt de
+  web-app "installeerbaar" (Add to Home Screen), los van de Capacitor/Android-shell. De service
+  worker cachet de app-shell en statische assets (network-first voor paginanavigatie, cache-first
+  voor `_next/static`/SVG's/fonts) zodat de app iets toont i.p.v. de browser-foutpagina bij geen
+  netwerk; API-routes worden bewust nooit door de SW onderschept. Een antwoord dat offline wordt
+  gegeven, wordt lokaal in de wachtrij gezet (`src/lib/offlineQueue.ts`, localStorage) i.p.v.
+  meteen goed/fout getoond — dat kán ook niet eerlijk, want `correctOptionId`/`correctSlot`
+  worden al server-side uit de scene gestript vóór die naar de client gaat. Zodra de browser weer
+  online is (het `online`-event, waar dan ook in de app) wordt de wachtrij automatisch
+  gesynchroniseerd; een 409 ("al beantwoord") telt daarbij als succesvol afgehandeld. Sessie-*start*
+  en -*afronden* vereisen nog wel een verse verbinding (geen lokale vraag-cache) — zie "Bekende
+  beperkingen".
 - **Eigen SVG-scenes** (`src/components/scenes`) in plaats van stockfoto's of een externe
   asset-pipeline: een herbruikbare kruispunt-scene (auto's/fietsers/voetgangers op vaste
   "sloten") en een handgetekende verkeersbordenset. Consistente stijl, geen losse
@@ -133,7 +142,16 @@ De `android/`-map wordt gewoon meegecommit (standaard bij Capacitor) — alleen 
   badges, mastery zichtbaar voor vrienden)
 - Vrienden via vriendschapscode, verzoeken accepteren/weigeren
 - Landelijk dagelijks scoreboard (reset vanzelf — het is gewoon "XP sinds middernacht",
-  geen aparte reset-job nodig)
+  geen aparte reset-job nodig; bevat een paar permanente, duidelijk gelabelde voorbeeldspelers
+  zodat het bord nooit leeg oogt — nooit voorgesteld als echte gebruikers)
+- Vriendenuitdagingen (`src/lib/challenges.ts`): kies "meeste XP" of "hoogste score op een
+  onderwerp" + een duur, vrienden zien 'm en kunnen meedoen. Standen worden live berekend uit
+  XpEvent/Attempt-historie binnen elk deelnemers eigen deelname-venster (nooit een opgeslagen
+  delta), dus blijven kloppen ook na afloop. Zichtbaarheid en deelname zijn beide vrienden-only,
+  op de server zelf gecontroleerd (niet alleen client-side gefilterd).
+- Resultaat delen (`ShareButton`, native share-sheet met klembord-fallback) — alleen getoond bij
+  een écht deelbaar resultaat (examen gehaald, nieuwe badge, level-up, streak-mijlpaal, perfecte
+  score), geen publieke pagina's of URL's nodig.
 - Examenmodus: apart, rustiger UI, geen tussentijdse feedback, pas-percentage o.b.v.
   CBR-achtige 88%-drempel, en een **expliciet onderscheid** tussen "dit examen gehaald"
   en "klaar voor het echte examen" (zie `src/lib/readiness.ts`)
@@ -225,13 +243,12 @@ nu niet gebouwd:
 - **Pushmeldingen**: functioneel niet gebouwd (vereist een mobiele shell/service worker +
   een notificatie-provider); het datamodel houdt al bij wat je zou willen weten
   (streak, laatste activiteit, XP-verschil) om zulke meldingen later te voeden.
-- **Offline-modus**: er is een PWA-manifest (installeerbaar), maar geen service worker —
-  zonder netwerk laadt de app niet. Bewust uitgesteld: volledige offline-oefensessies vereisen
-  een lokale antwoorden-wachtrij + sync-conflictafhandeling, een apart project op zich.
+- **Offline-modus is minimaal, niet volledig**: het app-shell + antwoorden-wachtrij werken (zie
+  hierboven), maar een sessie *starten* of *afronden* kan alleen online — er is geen lokale kopie
+  van de vraagbank, dus een leerling die de app volledig offline opent kan geen nieuwe sessie
+  beginnen totdat er weer verbinding is.
 - **Cosmetische beloningen / titels**: `StudentProfile.activeTitle` bestaat en wordt getoond
   op het profiel, maar er is geen "unlock"-systeem gebouwd.
-- **Challenges tussen vrienden** (brief §5): het datamodel (`Challenge`,
-  `ChallengeParticipant`) staat al klaar, maar er is geen UI voor.
 - **Licentie-/betaalflow**: `License` heeft een `plan`/`status`/`seats`, seat-limiet wordt
   al gehandhaafd bij het koppelen van een leerling — maar er zit geen betaalprovider achter.
 - **Categorie K (milieuzones)** en een handvol zeldzame J/L-varianten zitten nog niet in de
