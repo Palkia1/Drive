@@ -382,6 +382,21 @@ body {
   animation: fade-in 0.2s ease both;
 }
 
+/* Marks the one node on the topic path the system is actively pointing you
+   to — a slow breathing ring, not a spinner, so it reads as "start here"
+   rather than "loading". */
+@keyframes node-pulse {
+  0%, 100% {
+    box-shadow: 0 0 0 0 color-mix(in srgb, currentColor 35%, transparent), var(--shadow-card);
+  }
+  50% {
+    box-shadow: 0 0 0 10px color-mix(in srgb, currentColor 0%, transparent), var(--shadow-card);
+  }
+}
+.animate-node-pulse {
+  animation: node-pulse 2.2s ease-in-out infinite;
+}
+
 /* Slow drifting "bokeh" circles for the hero card — small, looping,
    never distracting enough to fight for attention against the CTA. */
 @keyframes bokeh-drift-a {

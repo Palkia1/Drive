@@ -7,8 +7,9 @@ import { getTopicMasterySummaries } from "@/lib/mastery";
 import { getHomeworkForStudent } from "@/lib/homework";
 import { RECOGNITION_TOPIC_SLUGS } from "@/lib/practice";
 import { ProgressBar } from "@/components/ui/ProgressBar";
-import { TopicIcon, getTopicColor } from "@/components/topics/TopicIcon";
-import { ArrowRight, Target, Star, PartyPopper, CircleAlert, Hourglass, BookOpen } from "lucide-react";
+import { TopicPath } from "@/components/topics/TopicPath";
+import { Mascot } from "@/components/mascot/Mascot";
+import { Star, PartyPopper, CircleAlert, Hourglass, BookOpen, Target } from "lucide-react";
 import { StreakFlameIcon } from "@/components/icons/StreakFlameIcon";
 import { Greeting } from "@/components/ui/Greeting";
 import { EmailVerificationBanner } from "@/components/ui/EmailVerificationBanner";
@@ -23,19 +24,19 @@ export default async function HomePage() {
     getHomeworkForStudent(student.id),
   ]);
   const openHomework = homework.filter((h) => !h.done);
+  const progressTopics = topics.filter((t) => !RECOGNITION_TOPIC_SLUGS.includes(t.topicSlug));
 
+  const recommendedTopicId = recommendation.kind !== "default" ? recommendation.topic.topicId : null;
+  const recommendedOnPath = progressTopics.some((t) => t.topicId === recommendedTopicId);
   const recHref =
     recommendation.kind === "default"
       ? "/app/sessie?mode=QUICK"
       : `/app/sessie?mode=TOPIC&topics=${recommendation.topic.topicId}`;
-  const recColor = recommendation.kind === "default" ? "var(--brand-500)" : getTopicColor(recommendation.topic.topicIcon);
-  const recIcon = recommendation.kind === "default" ? "sign" : recommendation.topic.topicIcon;
-  const progressTopics = topics.filter((t) => !RECOGNITION_TOPIC_SLUGS.includes(t.topicSlug));
 
   return (
     <div className="space-y-6">
       {!student.user.emailVerified && <EmailVerificationBanner />}
-      {/* Compacte identiteitsregel: naam + level links, streak + xp rechts — elk stukje data precies één keer (de rest staat al in de topbar). */}
+      {/* Identity strip: naam + level links, streak + xp rechts — elk stukje data precies één keer. */}
       <div className="flex items-center justify-between">
         <div className="flex min-w-0 items-center gap-2.5">
           <span
@@ -63,33 +64,35 @@ export default async function HomePage() {
         </div>
       </div>
 
-      <h1 className="text-3xl font-extrabold tracking-tight">
-        <Greeting />!
-      </h1>
-
-      <Link
-        href={recHref}
-        className="block relative overflow-hidden rounded-[26px] p-5"
-        style={{ background: `linear-gradient(135deg, ${recColor}, color-mix(in srgb, ${recColor} 65%, black))`, boxShadow: "0 14px 30px -14px color-mix(in srgb, " + recColor + " 70%, transparent)" }}
-      >
-        <span className="absolute -right-6 -top-10 w-28 h-28 rounded-full pointer-events-none animate-bokeh-a" style={{ background: "rgba(255,255,255,0.08)" }} />
-        <span className="absolute -right-10 bottom-0 w-36 h-36 rounded-full pointer-events-none animate-bokeh-b" style={{ background: "rgba(255,255,255,0.06)" }} />
-        <span className="absolute left-8 -bottom-8 w-16 h-16 rounded-full pointer-events-none animate-bokeh-b" style={{ background: "rgba(255,255,255,0.07)" }} />
-
-        <div className="relative flex items-start justify-between gap-3">
-          <span className="inline-block rounded-full px-3 py-1 text-[11px] font-bold uppercase tracking-wide text-white" style={{ background: "rgba(255,255,255,0.22)" }}>
-            Aanbevolen voor jou
-          </span>
-          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl" style={{ background: "rgba(255,255,255,0.2)" }}>
-            <TopicIcon icon={recIcon} size={24} />
-          </div>
+      {/* Mascot + speech bubble: ONE thing to read, ONE thing to do —
+         replaces a headline, a separate gradient recommendation card, and a
+         grid of 5-7 equally-weighted topic tiles with a single synthesized
+         message (Tesler's law: the system already computed what matters
+         most, so say that, not five raw signals for the student to weigh
+         themselves) and a single follow-up action (Hick's law: fewer
+         competing choices on screen). */}
+      <div className="flex items-end gap-3">
+        <Mascot mood={mascotMoodFor(recommendation)} size={64} className="shrink-0" />
+        <div
+          className="relative flex-1 rounded-2xl px-4 py-3"
+          style={{ background: "var(--surface-muted)" }}
+        >
+          <span
+            className="absolute -left-1.5 bottom-4 h-3 w-3 rotate-45"
+            style={{ background: "var(--surface-muted)" }}
+            aria-hidden="true"
+          />
+          <p className="text-xs font-bold" style={{ color: "var(--foreground-muted)" }}>
+            <Greeting />, {student.username}
+          </p>
+          <p className="mt-0.5 text-[15px] font-bold leading-snug">{speechFor(recommendation)}</p>
+          {!recommendedOnPath && (
+            <Link href={recHref} className="btn-primary mt-3 inline-flex text-sm !px-4 !py-2">
+              Start sessie
+            </Link>
+          )}
         </div>
-        <p className="relative mt-3 text-xl font-extrabold leading-tight text-white">{recommendationTitle(recommendation)}</p>
-        <p className="relative mt-1 max-w-[240px] text-sm text-white/85">{recommendationSubtitle(recommendation)}</p>
-        <span className="relative mt-5 inline-flex items-center gap-1.5 rounded-full bg-white px-5 py-2.5 text-sm font-extrabold" style={{ color: recColor }}>
-          Start sessie <ArrowRight size={16} strokeWidth={3} />
-        </span>
-      </Link>
+      </div>
 
       {openHomework.length > 0 && (
         <div className="card p-4">
@@ -122,72 +125,60 @@ export default async function HomePage() {
       )}
 
       {progressTopics.length > 0 && (
-        <div>
-          <h2 className="mb-3 text-xl font-extrabold">Jouw voortgang</h2>
-          <div className="grid grid-cols-2 gap-3.5">
-            {progressTopics.map((t) => {
-              const color = getTopicColor(t.topicIcon);
-              return (
-                <Link
-                  key={t.topicId}
-                  href={`/app/sessie?mode=TOPIC&topics=${t.topicId}`}
-                  className="rounded-[22px] p-4"
-                  style={{ background: color }}
-                >
-                  <div className="mb-3 flex h-11 w-11 items-center justify-center rounded-2xl" style={{ background: "rgba(255,255,255,0.22)" }}>
-                    <TopicIcon icon={t.topicIcon} size={22} />
-                  </div>
-                  <p className="truncate font-extrabold text-white">{t.topicName}</p>
-                  <p className="mb-2 mt-0.5 text-xs font-bold text-white/80">
-                    {t.insufficientData ? " " : `Level ${t.level}/5`}
-                  </p>
-                  <ProgressBar value={t.insufficientData ? 0 : t.level} max={5} color="white" trackColor="rgba(255,255,255,0.25)" height={6} />
-                </Link>
-              );
-            })}
-          </div>
+        <div className="overflow-x-auto">
+          <TopicPath topics={progressTopics} currentTopicId={recommendedOnPath ? recommendedTopicId : null} />
         </div>
       )}
 
-      <div className="flex items-center gap-3 card p-4">
-        <div className="icon-bubble" style={{ width: 30, height: 30, borderRadius: 9, background: "var(--primary-500)" }}>
-          <Target size={15} color="white" />
-        </div>
-        <div className="min-w-0 flex-1">
-          <div className="mb-1 flex items-center justify-between">
-            <span className="text-sm font-bold">Dagdoel</span>
-            <span className="text-xs font-bold" style={{ color: "var(--foreground-muted)" }}>
-              {dailyGoal.progress}/{dailyGoal.target}
-            </span>
+      {/* Dagdoel + examengereedheid — one glanceable card instead of two,
+         so the "how am I doing" answer isn't split across separate blocks
+         the student has to mentally combine. */}
+      <div className="card divide-y" style={{ borderColor: "var(--border)" }}>
+        <div className="flex items-center gap-3 p-4">
+          <div className="icon-bubble shrink-0" style={{ width: 30, height: 30, borderRadius: 9, background: "var(--primary-500)" }}>
+            <Target size={15} color="white" />
           </div>
-          <ProgressBar value={dailyGoal.progress} max={dailyGoal.target} color="var(--primary-500)" height={8} />
+          <div className="min-w-0 flex-1">
+            <div className="mb-1 flex items-center justify-between">
+              <span className="text-sm font-bold">Dagdoel</span>
+              <span className="text-xs font-bold" style={{ color: "var(--foreground-muted)" }}>
+                {dailyGoal.progress}/{dailyGoal.target}
+              </span>
+            </div>
+            <ProgressBar value={dailyGoal.progress} max={dailyGoal.target} color="var(--primary-500)" height={8} />
+          </div>
         </div>
+        <ReadinessRow readiness={readiness} />
       </div>
-
-      <ReadinessCard readiness={readiness} />
     </div>
   );
 }
 
-function recommendationTitle(rec: Awaited<ReturnType<typeof getRecommendation>>) {
-  if (rec.kind === "default") return "Snel oefenen";
-  return rec.topic.topicName;
-}
-
-function recommendationSubtitle(rec: Awaited<ReturnType<typeof getRecommendation>>) {
+function mascotMoodFor(rec: Awaited<ReturnType<typeof getRecommendation>>): "wave" | "cheer" | "think" {
   switch (rec.kind) {
     case "almost_level":
-      return `Je bent bijna level ${rec.nextLevel}. Nog een paar vragen te gaan.`;
+      return "cheer";
     case "weak_topic":
-      return "Hier heb je de laatste tijd moeite mee gehad.";
-    case "new_topic":
-      return "Nog niet geoefend — begin hier.";
+      return "think";
     default:
-      return "Een korte, gemixte oefening van 8 vragen.";
+      return "wave";
   }
 }
 
-function ReadinessCard({ readiness }: { readiness: Awaited<ReturnType<typeof getExamReadiness>> }) {
+function speechFor(rec: Awaited<ReturnType<typeof getRecommendation>>): string {
+  switch (rec.kind) {
+    case "almost_level":
+      return `Je staat vlak voor level ${rec.nextLevel} bij ${rec.topic.topicName} — nog een paar vragen!`;
+    case "weak_topic":
+      return `${rec.topic.topicName} kan nog wat oefening gebruiken. Zullen we?`;
+    case "new_topic":
+      return `${rec.topic.topicName} heb je nog niet geprobeerd — spring op de kaart hieronder.`;
+    default:
+      return "Klaar voor een snelle oefenronde van 8 vragen?";
+  }
+}
+
+function ReadinessRow({ readiness }: { readiness: Awaited<ReturnType<typeof getExamReadiness>> }) {
   const copy = (() => {
     switch (readiness.kind) {
       case "not_enough_data":
@@ -222,9 +213,9 @@ function ReadinessCard({ readiness }: { readiness: Awaited<ReturnType<typeof get
   const Icon = copy.icon;
 
   return (
-    <div className="card p-4 flex items-start gap-3">
-      <div className="icon-bubble shrink-0" style={{ width: 34, height: 34, borderRadius: 11, background: copy.color }}>
-        <Icon size={17} color="white" />
+    <div className="flex items-start gap-3 p-4">
+      <div className="icon-bubble shrink-0" style={{ width: 30, height: 30, borderRadius: 9, background: copy.color }}>
+        <Icon size={15} color="white" />
       </div>
       <div>
         <p className="font-bold text-sm" style={{ color: copy.color }}>
