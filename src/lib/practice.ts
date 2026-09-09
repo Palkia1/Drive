@@ -45,7 +45,15 @@ async function orderBySpacing<T extends { id: string }>(studentId: string, quest
   });
   const lastSeenMap = new Map(lastSeen.map((r) => [r.questionId, r._max.answeredAt?.getTime() ?? 0]));
 
-  return [...questions].sort((a, b) => (lastSeenMap.get(a.id) ?? 0) - (lastSeenMap.get(b.id) ?? 0));
+  // Shuffle before the sort, not after: `sort` is stable, so questions that
+  // tie on lastSeen (most commonly a big group of "never attempted"
+  // questions, all defaulting to 0) keep whatever order they're in when the
+  // sort starts. Without this, that order was Prisma's incidental DB scan
+  // order — the same every time — so pickFromPool's slice(0, count*3) below
+  // kept drawing from the same narrow, DB-order-first slice of the pool
+  // instead of a fresh random sample, which is what made sessions feel like
+  // they kept repeating the same questions.
+  return shuffle(questions).sort((a, b) => (lastSeenMap.get(a.id) ?? 0) - (lastSeenMap.get(b.id) ?? 0));
 }
 
 async function pickFromPool<T extends { id: string }>(studentId: string, questions: T[], count: number) {
