@@ -2,16 +2,15 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Zap, ListChecks, RotateCcw, TrendingDown, GraduationCap, ChevronRight, Check, ScanEye, HelpCircle } from "lucide-react";
+import { Zap, ListChecks, RotateCcw, TrendingDown, GraduationCap, ChevronRight, Check, ScanEye } from "lucide-react";
 import { BottomSheet } from "@/components/ui/BottomSheet";
 import { TopicIcon, getTopicColor } from "@/components/topics/TopicIcon";
 import type { TopicMasterySummary } from "@/lib/mastery";
 
-// These two topics are procedurally generated (one per catalogue sign, both
-// directions — see generateSignQuestions.ts) and get dedicated one-tap modes
+// Procedurally generated (one per catalogue sign, both directions in one
+// topic — see generateSignQuestions.ts) and gets a dedicated one-tap mode
 // below instead of showing up in the generic multi-select topic picker.
-const SIGN_TO_MEANING_SLUG = "bord-naar-betekenis";
-const MEANING_TO_SIGN_SLUG = "betekenis-naar-bord";
+const SIGN_RECOGNITION_SLUG = "bord-naar-betekenis";
 
 export function OefenenClient({
   topics,
@@ -24,9 +23,8 @@ export function OefenenClient({
   const [sheetOpen, setSheetOpen] = useState(false);
   const [selectedTopics, setSelectedTopics] = useState<string[]>([]);
 
-  const signToMeaningId = topics.find((t) => t.topicSlug === SIGN_TO_MEANING_SLUG)?.topicId;
-  const meaningToSignId = topics.find((t) => t.topicSlug === MEANING_TO_SIGN_SLUG)?.topicId;
-  const pickableTopics = topics.filter((t) => t.topicSlug !== SIGN_TO_MEANING_SLUG && t.topicSlug !== MEANING_TO_SIGN_SLUG);
+  const signRecognitionId = topics.find((t) => t.topicSlug === SIGN_RECOGNITION_SLUG)?.topicId;
+  const pickableTopics = topics.filter((t) => t.topicSlug !== SIGN_RECOGNITION_SLUG);
 
   function start(mode: string, topicIds: string[] = []) {
     router.push(`/app/sessie?mode=${mode}&topics=${topicIds.join(",")}`);
@@ -91,18 +89,10 @@ export function OefenenClient({
           <MenuRow
             icon={<ScanEye size={20} color="white" />}
             color="var(--teal-500)"
-            title="Bord → betekenis"
-            subtitle="Zie het bord, kies de juiste betekenis"
-            disabled={!signToMeaningId}
-            onClick={() => signToMeaningId && start("TOPIC", [signToMeaningId])}
-          />
-          <MenuRow
-            icon={<HelpCircle size={20} color="white" />}
-            color="var(--pink-500)"
-            title="Betekenis → bord"
-            subtitle="Lees de betekenis, kies het juiste bord"
-            disabled={!meaningToSignId}
-            onClick={() => meaningToSignId && start("TOPIC", [meaningToSignId])}
+            title="Borden herkennen"
+            subtitle="Bord → betekenis en betekenis → bord, door elkaar"
+            disabled={!signRecognitionId}
+            onClick={() => signRecognitionId && start("TOPIC", [signRecognitionId])}
           />
         </div>
       </div>

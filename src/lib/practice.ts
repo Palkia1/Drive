@@ -8,9 +8,9 @@ export const LESSON_PRACTICE_SIZE = 4;
 // Procedurally generated (one per catalogue sign × 2 directions, see
 // generateSignQuestions.ts) — hundreds of near-identical recognition drills
 // that would otherwise swamp the "a bit of everything" pools. Still fully
-// reachable via mode: "TOPIC" with one of these ids (see OefenenClient's
-// dedicated buttons), just excluded from QUICK/EXAM/WEAK_SPOTS.
-export const RECOGNITION_TOPIC_SLUGS = ["bord-naar-betekenis", "betekenis-naar-bord"];
+// reachable via mode: "TOPIC" with this id (see OefenenClient's dedicated
+// button), just excluded from QUICK/EXAM/WEAK_SPOTS.
+export const RECOGNITION_TOPIC_SLUGS = ["bord-naar-betekenis"];
 
 // Only the fields session-building and answering actually need — `explanation`
 // (only read by beta-review tooling) and any other Question columns are left

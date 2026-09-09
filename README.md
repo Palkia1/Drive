@@ -222,10 +222,10 @@ vier betekenissen hoort bij dit bord" (`promptSignId` op een `SINGLE_CHOICE`-sce
 `types.ts`/`QuestionCard.tsx`) en het omgekeerde, "welk van deze vier borden hoort bij deze
 betekenis" (dezelfde scene, maar dan met `signId` per keuze-optie i.p.v. een `promptSignId`).
 Distractors zijn drie willekeurige andere catalogus-entries (seeded per bordcode, dus
-stabiel tussen reseeds). Beide vormen krijgen een eigen topic (`bord-naar-betekenis` /
-`betekenis-naar-bord`) met een eigen knop op de Oefenen-pagina, en zijn bewust uitgesloten
-van "Snel oefenen"/"Oefenexamen"/"Zwakke punten" (zie `RECOGNITION_TOPIC_SLUGS` in
-`practice.ts`) — anders zouden 272 gegenereerde herkenningsvragen die modi domineren
+stabiel tussen reseeds). Beide vormen delen één topic (`bord-naar-betekenis`) met één
+knop op de Oefenen-pagina, en zijn bewust uitgesloten van "Snel oefenen"/"Oefenexamen"/
+"Zwakke punten" (zie `RECOGNITION_TOPIC_SLUGS` in `practice.ts`) — anders zouden 272
+gegenereerde herkenningsvragen die modi domineren
 tegenover de ~28 handgeschreven scenariovragen. Wel expliciet kiesbaar via de twee
 dedicated knoppen, en ze tellen gewoon mee voor "Mijn fouten" als je ze fout beantwoordt.
 

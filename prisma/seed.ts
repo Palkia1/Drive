@@ -56,8 +56,11 @@ const TOPICS = [
   { slug: "weggebruikers", name: "Weggebruikers", icon: "pedestrian", order: 7 },
   { slug: "autosnelwegen", name: "Autosnelwegen", icon: "highway", order: 8 },
   { slug: "veiligheid", name: "Veiligheid", icon: "shield", order: 9 },
-  { slug: "bord-naar-betekenis", name: "Bord → betekenis", icon: "sign", order: 10 },
-  { slug: "betekenis-naar-bord", name: "Betekenis → bord", icon: "sign", order: 11 },
+  // Both practice directions (sign→meaning, meaning→sign) share this one
+  // topic — see generateSignQuestions.ts and
+  // scripts/merge-sign-recognition-topics.ts for the merge of what used to
+  // be two separate topics.
+  { slug: "bord-naar-betekenis", name: "Borden herkennen", icon: "sign", order: 10 },
 ] as const;
 
 const SUBTOPICS: Record<string, { slug: string; name: string }[]> = {

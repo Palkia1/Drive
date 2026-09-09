@@ -60,7 +60,9 @@ function shuffle<T>(arr: T[], rng: () => number): T[] {
 const OPTION_IDS = ["a", "b", "c", "d"];
 
 export type GeneratedSignQuestion = {
-  topic: "bord-naar-betekenis" | "betekenis-naar-bord";
+  // Both directions (sign→meaning, meaning→sign) share one topic — see the
+  // merge in prisma/seed.ts's TOPICS array + scripts/merge-sign-recognition-topics.ts.
+  topic: "bord-naar-betekenis";
   type: "SINGLE_CHOICE";
   difficulty: number;
   prompt: string;
@@ -99,7 +101,7 @@ export function generateSignQuestions(): GeneratedSignQuestion[] {
     const signChoices = shuffle([entry, ...distractors], rng);
     const signCorrectIndex = signChoices.indexOf(entry);
     out.push({
-      topic: "betekenis-naar-bord",
+      topic: "bord-naar-betekenis",
       type: "SINGLE_CHOICE",
       difficulty: 2,
       prompt: entry.definition,
